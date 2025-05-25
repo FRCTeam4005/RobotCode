@@ -1,0 +1,103 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4416237647977481,
+      "y": 5.56823231914295
+    },
+    "rotation": 0.302581371853529
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtensionOutCommand"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Start to Center Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Note to Center Start"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Add at end"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtensionInCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Come Back"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Center Autos",
+  "choreoAuto": false
+}

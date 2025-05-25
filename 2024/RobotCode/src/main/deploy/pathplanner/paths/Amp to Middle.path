@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4253549759335664,
+        "y": 6.858213644870939
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.933795540979835,
+        "y": 7.04105760000839
+      },
+      "isLocked": true,
+      "linkedName": "Amp Note"
+    },
+    {
+      "anchor": {
+        "x": 7.93109546846005,
+        "y": 7.432123801556472
+      },
+      "prevControl": {
+        "x": 6.314723523942461,
+        "y": 7.308462644448225
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake 4th Note",
+      "waypointRelativePos": 0.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionOutCommand"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Linked Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

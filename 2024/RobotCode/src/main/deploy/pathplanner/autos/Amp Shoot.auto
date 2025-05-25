@@ -1,0 +1,50 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7748663077384379,
+      "y": 6.704997589398381
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUpShooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ExtensionOutCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooterSide"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp Side Autos",
+  "choreoAuto": false
+}

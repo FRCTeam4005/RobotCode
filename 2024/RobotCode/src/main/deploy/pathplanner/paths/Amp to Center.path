@@ -1,0 +1,90 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4253549759335664,
+        "y": 6.858213644870939
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.183023338093484,
+        "y": 6.265785148800312
+      },
+      "isLocked": true,
+      "linkedName": "Amp Note"
+    },
+    {
+      "anchor": {
+        "x": 2.36516036668437,
+        "y": 5.56823231914295
+      },
+      "prevControl": {
+        "x": 1.2383187841116787,
+        "y": 5.516811048317198
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Center Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionOutCommand"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot Note",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionInCommand"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "FeedNoteToShooter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -13.55963158147031,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

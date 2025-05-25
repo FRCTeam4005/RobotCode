@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.180196168252599,
+        "y": 1.146585028795966
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.301302348783738,
+        "y": 0.8257852987685586
+      },
+      "isLocked": false,
+      "linkedName": "Hoard Shoot"
+    },
+    {
+      "anchor": {
+        "x": 8.284942222836145,
+        "y": 2.4525089479517073
+      },
+      "prevControl": {
+        "x": 6.8977725898724245,
+        "y": 2.5128881407624943
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Middle #4"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "GetNoteOffFloor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4087537836647726,
+      "y": 5.56320071974205
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtensionOutCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Start to Stage Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage to Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp to Middle"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Center Autos",
+  "choreoAuto": false
+}

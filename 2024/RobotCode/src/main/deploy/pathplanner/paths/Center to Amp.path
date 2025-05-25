@@ -1,0 +1,106 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.36516036668437,
+        "y": 5.56823231914295
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1593199473582714,
+        "y": 6.113086711604028
+      },
+      "isLocked": true,
+      "linkedName": "Center Note"
+    },
+    {
+      "anchor": {
+        "x": 2.3145645794349696,
+        "y": 6.227383662718396
+      },
+      "prevControl": {
+        "x": 2.508833217207719,
+        "y": 5.70253472311226
+      },
+      "nextControl": {
+        "x": 2.036216926103761,
+        "y": 6.979386005287115
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.4253549759335664,
+        "y": 6.858213644870939
+      },
+      "prevControl": {
+        "x": 1.70098106388299,
+        "y": 6.7975108246885405
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Amp Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionOutCommand"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot Note",
+      "waypointRelativePos": 2.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionInCommand"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "FeedNoteToShooter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 9.653549652018857,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

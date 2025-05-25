@@ -1,0 +1,83 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7954629482766972,
+        "y": 6.787854394486081
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.689695537688019,
+        "y": 7.261059859637913
+      },
+      "isLocked": false,
+      "linkedName": "Amp Start"
+    },
+    {
+      "anchor": {
+        "x": 4.449626744959458,
+        "y": 6.787854394486081
+      },
+      "prevControl": {
+        "x": 3.5929515515348434,
+        "y": 6.758819212460367
+      },
+      "nextControl": {
+        "x": 5.306301938384073,
+        "y": 6.816889576511795
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.284942222836145,
+        "y": 7.709983219608658
+      },
+      "prevControl": {
+        "x": 6.4011020022808856,
+        "y": 7.351846200568971
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top Middle Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 1.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "GetNoteOffFloor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 11.464027807720678,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Side Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

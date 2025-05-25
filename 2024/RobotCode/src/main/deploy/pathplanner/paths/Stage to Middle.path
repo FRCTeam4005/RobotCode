@@ -1,0 +1,99 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.410669293610502,
+        "y": 4.170733779750208
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0973976311344558,
+        "y": 2.7931033792294677
+      },
+      "isLocked": true,
+      "linkedName": "Stage Note"
+    },
+    {
+      "anchor": {
+        "x": 3.850620514696687,
+        "y": 2.1577940288908106
+      },
+      "prevControl": {
+        "x": 2.4301872765612,
+        "y": 3.372978565682236
+      },
+      "nextControl": {
+        "x": 4.645003705145022,
+        "y": 1.478197027494973
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.864236048808489,
+        "y": 2.4560125687529664
+      },
+      "prevControl": {
+        "x": 5.9350121834800245,
+        "y": 1.3127107446875443
+      },
+      "nextControl": {
+        "x": 7.40026443926313,
+        "y": 3.115533120714914
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.9198669177154875,
+        "y": 4.104501110378368
+      },
+      "prevControl": {
+        "x": 6.411269447156632,
+        "y": 4.0648824684499525
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionOutCommand"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Linked Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

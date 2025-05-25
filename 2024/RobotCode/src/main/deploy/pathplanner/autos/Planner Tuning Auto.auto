@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.394813283664046,
+      "y": 5.569906608297032
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Planner Tuning"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Drive"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Test Autos",
+  "choreoAuto": false
+}

@@ -1,0 +1,78 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7954629482766972,
+        "y": 6.787854394486081
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.2654186325685481,
+        "y": 6.89100589464873
+      },
+      "isLocked": true,
+      "linkedName": "Amp Start"
+    },
+    {
+      "anchor": {
+        "x": 2.4253549759335664,
+        "y": 6.858213644870939
+      },
+      "prevControl": {
+        "x": 1.7775928057953654,
+        "y": 6.749530985249632
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Amp Note"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 17.077569715449435,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 60.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "GetNoteOffFloor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 18.65782911790292,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Side Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

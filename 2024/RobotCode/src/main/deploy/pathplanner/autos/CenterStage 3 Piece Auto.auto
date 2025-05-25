@@ -1,0 +1,110 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4416237647977481,
+      "y": 5.56823231914295
+    },
+    "rotation": -0.2892420236628158
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUpShooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ExtensionOutCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Start to Center Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Note to Center Start"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Start to Stage Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage Note to Center Start"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Center Autos",
+  "choreoAuto": false
+}

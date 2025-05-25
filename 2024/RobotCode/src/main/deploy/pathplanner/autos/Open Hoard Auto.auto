@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8383491039180041,
+      "y": 4.368313422762217
+    },
+    "rotation": -59.32227793230215
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUpShooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ExtensionOutCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooterSide"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Open Start to 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 to Hoard Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooterSide"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hoard Shoot to 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtensionInCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 to Speaker"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Open Side Autos",
+  "choreoAuto": false
+}

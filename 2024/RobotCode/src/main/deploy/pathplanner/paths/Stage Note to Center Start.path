@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.410669293610502,
+        "y": 4.170733779750208
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2894910844926026,
+        "y": 4.826381090019895
+      },
+      "isLocked": true,
+      "linkedName": "Stage Note"
+    },
+    {
+      "anchor": {
+        "x": 1.3274844567707151,
+        "y": 5.556066607628711
+      },
+      "prevControl": {
+        "x": 1.8757877185883012,
+        "y": 5.296445483401019
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Center Start"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -0.6247459126046786,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Center Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

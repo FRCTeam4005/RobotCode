@@ -1,0 +1,37 @@
+package frc.robot.subsystems;
+
+import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.RobotConstants;
+
+public class SolenoidPCM
+{
+  public static final SolenoidPCM instance = new SolenoidPCM(RobotConstants.SOLENOID_PCM_CANID);
+
+  private final Solenoid feederSolenoid_OUT;
+  private final Solenoid feederSolenoid_IN;
+
+  private final Solenoid liftSolenoid_OUT;
+  private final Solenoid liftSolenoid_IN;
+
+  private SolenoidPCM(int solenoidCanId)
+  {
+    feederSolenoid_OUT = new Solenoid(solenoidCanId,RobotConstants.SOLENOID_FEEDERID_OUT);
+    feederSolenoid_IN = new Solenoid(solenoidCanId,RobotConstants.SOLENOID_FEEDERID_IN);
+    liftSolenoid_OUT = new Solenoid(solenoidCanId,RobotConstants.SOLENOID_LIFTID_OUT);
+    liftSolenoid_IN = new Solenoid(solenoidCanId,RobotConstants.SOLENOID_LIFTID_IN);
+  }
+
+  public void setFeederSolenoid(Boolean state)
+  {
+    feederSolenoid_OUT.set(state);
+    feederSolenoid_IN.set(!state);
+  }
+
+  public void setLiftSolenoid(Boolean state)
+  {
+    liftSolenoid_OUT.set(state);
+    liftSolenoid_IN.set(!state);
+  }
+
+
+}

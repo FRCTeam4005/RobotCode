@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.270256540513081,
+        "y": 0.7783411631223989
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.806827392112141,
+        "y": 0.872587984728512
+      },
+      "isLocked": false,
+      "linkedName": "Middle #5"
+    },
+    {
+      "anchor": {
+        "x": 5.180196168252599,
+        "y": 1.146585028795966
+      },
+      "prevControl": {
+        "x": 6.046069432873746,
+        "y": 0.9464814672738582
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Hoard Shoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -35.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

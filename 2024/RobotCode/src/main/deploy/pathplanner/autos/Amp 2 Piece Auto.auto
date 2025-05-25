@@ -1,0 +1,110 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7952442380734501,
+      "y": 6.7994709155786826
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUpShooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ExtensionOutCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooterSide"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Start to Amp Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Note to Amp Start"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FeedNoteToShooterSide"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Start to 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtensionInCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 to TeleOp Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp Side Autos",
+  "choreoAuto": false
+}

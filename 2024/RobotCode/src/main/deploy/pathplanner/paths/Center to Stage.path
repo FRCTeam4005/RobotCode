@@ -1,0 +1,106 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.36516036668437,
+        "y": 5.56823231914295
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2078625903151172,
+        "y": 5.293353474278225
+      },
+      "isLocked": true,
+      "linkedName": "Center Note"
+    },
+    {
+      "anchor": {
+        "x": 2.1971306098575507,
+        "y": 5.060251813928705
+      },
+      "prevControl": {
+        "x": 2.362911090501081,
+        "y": 5.171654727866032
+      },
+      "nextControl": {
+        "x": 1.4083334826416865,
+        "y": 4.5301876101326535
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.410669293610502,
+        "y": 4.170733779750208
+      },
+      "prevControl": {
+        "x": 1.9806501231746079,
+        "y": 4.359657823500434
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Stage Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot 2nd Note",
+      "waypointRelativePos": 2.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionInCommand"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "FeedNoteToShooter"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ExtensionOutCommand"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -40.08576971623876,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

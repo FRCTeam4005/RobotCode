@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3274844567707151,
+        "y": 5.556066607628711
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.7567876738536357,
+        "y": 6.075877388158533
+      },
+      "isLocked": true,
+      "linkedName": "Center Start"
+    },
+    {
+      "anchor": {
+        "x": 2.4253549759335664,
+        "y": 6.858213644870939
+      },
+      "prevControl": {
+        "x": 1.0201600934717299,
+        "y": 6.867458348045029
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Amp Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pick Up Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "GetNoteOffFloor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Center Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}
