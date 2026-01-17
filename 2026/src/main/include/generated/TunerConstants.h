@@ -16,8 +16,8 @@ namespace CANConstants {
 
     inline const int kTurretMotorID{63};
 
-    inline const int kShooterUpperMotorID{10};
-    inline const int kShooterLowerMoterID{9};
+    inline const int kRightShooterID{58};
+    inline const int kLeftShooterID{59};
 
     inline const int kClimberID{30};
     //inline const int kClimberRightID{31};

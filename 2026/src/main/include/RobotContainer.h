@@ -9,6 +9,7 @@
 #include "subsystems/Drivetrain.h"
 #include "Telemetry.h"
 #include "subsystems/Turret.h"
+#include "subsystems/Shooter.h"
 
 class RobotContainer {
 private:
@@ -27,7 +28,7 @@ private:
     Telemetry logger{MaxSpeed};
 
     frc2::CommandXboxController Driver{0};
-    frc2::CommandXboxController Operator{1};
+    //frc2::CommandXboxController Operator{1};
 
 public:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
@@ -37,9 +38,11 @@ public:
     frc2::CommandPtr GetAutonomousCommand();
 
 private:
+    std::unique_ptr<Shooter> Shooter_Sys;
+
     void ConfigureBindings();
     void DriverControls();
     void OperatorControls();
 
-    std::unique_ptr<Turret> Turret_Sys;
+    //std::unique_ptr<Turret> Turret_Sys;
 };

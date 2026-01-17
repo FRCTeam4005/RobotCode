@@ -10,7 +10,8 @@
 
 RobotContainer::RobotContainer()
 {
-    Turret_Sys = std::make_unique<Turret>();
+    //Turret_Sys = std::make_unique<Turret>();
+    Shooter_Sys = std::make_unique<Shooter>();
 
     ConfigureBindings();
 }
@@ -47,7 +48,7 @@ void RobotContainer::DriverControls()
 {
     Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
     Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
-        return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
+       return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
     }));
 
     // Run SysId routines when holding back/start and X/Y.
@@ -59,26 +60,28 @@ void RobotContainer::DriverControls()
 
     // reset the field-centric heading on left bumper press
     Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
+    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
 }
 
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
-    Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
+    //Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
+    //Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
 
     //Hoping this will face the turret to the drivers
     //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
+    //Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
+    
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     // Simple drive forward auton
-    return frc2::cmd::Sequence(
+   return frc2::cmd::Sequence(
         // Reset our field centric heading to match the robot
         // facing away from our alliance station wall (0 deg).
-        drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
+       drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
         // Then slowly drive forward (away from us) for 5 seconds.
         drivetrain.ApplyRequest([this]() -> auto&& {
             return drive.WithVelocityX(0.5_mps)
