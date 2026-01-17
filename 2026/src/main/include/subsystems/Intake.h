@@ -20,9 +20,16 @@
 class Intake : public frc2::SubsystemBase
 {
  public:
-  Intake ();
+  Intake (); //Constructor
+
+  auto Collect() -> frc2::CommandPtr;
+  auto Unstick() -> frc2::CommandPtr;
   
 private:
-  
+  std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeMotor;
+
+  void SpinIntakeIn();
+  void SpinIntakeOut();
+  void StopIntake();
 
 };

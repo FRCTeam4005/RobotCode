@@ -10,7 +10,8 @@
 
 RobotContainer::RobotContainer()
 {
-    Turret_Sys = std::make_unique<Turret>();
+    //Turret_Sys = std::make_unique<Turret>();
+    Intake_Sys = std::make_unique<Intake>();
 
     ConfigureBindings();
 }
@@ -59,17 +60,19 @@ void RobotContainer::DriverControls()
 
     // reset the field-centric heading on left bumper press
     Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
+    Driver.X().WhileTrue(std::move(Intake_Sys->Collect()));
+    Driver.Y().WhileTrue(std::move(Intake_Sys->Unstick()));
 }
 
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
-    Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
+    //Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
+    //Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
 
     //Hoping this will face the turret to the drivers
     //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
+    //Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()

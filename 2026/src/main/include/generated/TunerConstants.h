@@ -21,6 +21,7 @@ namespace CANConstants {
 
     inline const int kClimberID{30};
     //inline const int kClimberRightID{31};
+    
 }
 
 namespace ShooterConstants
