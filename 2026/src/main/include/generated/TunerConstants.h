@@ -13,6 +13,7 @@ namespace subsystems {
 
 namespace CANConstants {
     inline const int kIntakeMotorID{62};
+    inline const int kConveyorMotorID{61};
 
     inline const int kTurretMotorID{63};
 

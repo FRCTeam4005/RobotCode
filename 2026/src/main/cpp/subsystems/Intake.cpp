@@ -5,7 +5,8 @@ using namespace CANConstants;
 Intake::Intake()
 {
 
-    IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(58);
+    IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kIntakeMotorID);
+    ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kConveyorMotorID);
     SetName ("Intake");
 
 }
@@ -35,14 +36,17 @@ frc2::CommandPtr Intake::Unstick()
 void Intake::SpinIntakeOut()
 {
     IntakeMotor->Set(1.0);
+    ConveyorMotor->Set(-1.0);
 }
 
 void Intake::SpinIntakeIn()
 {
     IntakeMotor->Set(-1.0);
+    ConveyorMotor->Set(1.0);
 }
 
 void Intake::StopIntake()
 {
     IntakeMotor->Set(0.0);
+    ConveyorMotor->Set(0.0);
 }
