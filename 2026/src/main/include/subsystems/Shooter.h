@@ -26,10 +26,13 @@ private:
 
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
+  std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
 
   units::turns_per_second_t GetShooterSpeed();
   
   void SetShooterSpeeds(units::turns_per_second_t speed) ;
 
   void SetShooterSpeeds(double speed) ;
+
+  void SetKicker(double voltage);
 };
