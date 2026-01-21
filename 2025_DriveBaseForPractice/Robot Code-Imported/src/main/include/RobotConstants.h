@@ -44,7 +44,7 @@ inline const int PDH_ID {30};
 inline constexpr bool FL_DRIVE_INVERT{false};
 inline constexpr double FL_DRIVE_KP{.06};
 inline constexpr bool FL_TURN_INVERT{true};
-inline constexpr units::turn_t FL_cancoder_offset{-0.984619140625};
+inline constexpr units::turn_t FL_cancoder_offset{-0.984375};
 
 //Front Right Swerve Module
 inline constexpr bool FR_DRIVE_INVERT{true};
@@ -56,13 +56,13 @@ inline constexpr units::turn_t FR_cancoder_offset{-0.947265625};
 inline constexpr bool BL_DRIVE_INVERT{false};
 inline constexpr double BL_DRIVE_KP{.06};
 inline constexpr bool BL_TURN_INVERT{true};
-inline constexpr units::turn_t BL_cancoder_offset{-0.14453125};
+inline constexpr units::turn_t BL_cancoder_offset{-0.144287109375};
 
 //Back Right Swerve Module
 inline constexpr bool BR_DRIVE_INVERT{true};
 inline constexpr double BR_DRIVE_KP{.06};
 inline constexpr bool BR_TURN_INVERT{true};
-inline constexpr units::turn_t BR_cancoder_offset{-0.86328125};
+inline constexpr units::turn_t BR_cancoder_offset{-0.863037109375};
 
 inline constexpr units::turn_t MagnetSensorRange{ 1_tr };  
 
