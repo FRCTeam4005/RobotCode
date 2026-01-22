@@ -29,6 +29,7 @@ class Intake : public frc2::SubsystemBase
   
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeMotor;
+  std::unique_ptr<ctre::phoenix6::hardware::TalonFX> ConveyorMotor;
   frc::DigitalInput FuelSensor{OIConstants::FuelSensorPort};
 
   void setSpeed(double speed);

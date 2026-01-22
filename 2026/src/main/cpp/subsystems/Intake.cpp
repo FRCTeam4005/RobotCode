@@ -3,12 +3,15 @@
 Intake::Intake()
 {
     IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
+    ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
     SetName("Intake");
 }
 
 void Intake::setSpeed(double speed)
 {
     IntakeMotor->Set(speed);
+    ConveyorMotor->Set(speed);
+
 }
 
 frc2::Trigger Intake::IsIntakeFull()

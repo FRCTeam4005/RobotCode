@@ -13,9 +13,9 @@ namespace subsystems {
 
 namespace CANConstants {
     inline const int kIntakeMotorID{62};
-    inline const int kKickerMotorID{64};
-
-    inline const int kTurretMotorID{63};
+    inline const int kKickerMotorID{56};
+    inline const int kConveyorMotorID{55};
+    inline const int kTurretMotorID{60};
 
     inline const int kRightShooterID{58};
     inline const int kLeftShooterID{59};
