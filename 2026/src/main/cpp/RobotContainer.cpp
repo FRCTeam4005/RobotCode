@@ -10,8 +10,8 @@
 
 RobotContainer::RobotContainer()
 {
-    //Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
+    Intake_Sys = std::make_unique<Intake>();
 
     ConfigureBindings();
 }
@@ -60,18 +60,13 @@ void RobotContainer::DriverControls()
 
     // reset the field-centric heading on left bumper press
     Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
-    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
+    Driver.B().OnTrue(std::move(Shooter_Sys->SetShootSpeed()));
+    Driver.LeftTrigger(0.5).OnTrue(std::move(Intake_Sys->FuelUp()));
+   // Driver.LeftTrigger(0.5).OnTrue(std::move(Intake_Sys->FuelUp()));
 }
 
 void RobotContainer::OperatorControls()
 {
-    //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
-    Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
-
-    //Hoping this will face the turret to the drivers
-    //1 Full Turret Revolution is 40,960 "ticks."
-    Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(40960))));
     
 }
 

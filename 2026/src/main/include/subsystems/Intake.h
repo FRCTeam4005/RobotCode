@@ -25,7 +25,6 @@ class Intake : public frc2::SubsystemBase
   auto FuelUp() -> frc2::CommandPtr; //Pick up fuel, intake in
   auto FuelOut() -> frc2::CommandPtr; //Feed fuel to shooter
   auto Stop() -> frc2::CommandPtr; //Stop intaking
-  frc2::Trigger IsIntakeFull(); //Sensor to verify if intake is full
   
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeMotor;
