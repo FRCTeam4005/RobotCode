@@ -7,10 +7,11 @@
 
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 RobotContainer::RobotContainer()
 {
-    //Turret_Sys = std::make_unique<Turret>();
+    Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
 
     ConfigureBindings();
@@ -65,13 +66,14 @@ void RobotContainer::DriverControls()
 
 void RobotContainer::OperatorControls()
 {
+    //auto start = Turret_Sys->GetPosition();
     //These should just test if the turret works
-    //Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
-    //Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
+    Operator.B().OnTrue(std::move(Turret_Sys->Move(units::turn_t(5))));
+    Operator.X().OnTrue(std::move(Turret_Sys->Move(units::turn_t(-5))));
 
     //Hoping this will face the turret to the drivers
     //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    //Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
+    Operator.A().OnTrue(std::move(Turret_Sys->ShootDrivers()));
     
 }
 

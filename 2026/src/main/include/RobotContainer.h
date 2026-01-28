@@ -28,7 +28,7 @@ private:
     Telemetry logger{MaxSpeed};
 
     frc2::CommandXboxController Driver{0};
-    //frc2::CommandXboxController Operator{1};
+    frc2::CommandXboxController Operator{1};
 
 public:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
@@ -44,5 +44,6 @@ private:
     void DriverControls();
     void OperatorControls();
 
-    //std::unique_ptr<Turret> Turret_Sys;
+    std::unique_ptr<Turret> Turret_Sys;
+    double angle;
 };
