@@ -9,7 +9,7 @@ Intake::Intake()
 
 void Intake::setSpeed(double speed)
 {
-    IntakeMotor->Set(speed);
+    IntakeMotor->Set(-speed);
     ConveyorMotor->Set(speed);
 
 }
@@ -31,7 +31,7 @@ frc2::CommandPtr Intake::FuelUp()
     [this] {},
     [this] {setSpeed(1);},
     [this] (bool interrupted) {setSpeed(0);},
-    [this] {return true;},
+    [this] {return false;},
     {this}
   ).ToPtr();
 }

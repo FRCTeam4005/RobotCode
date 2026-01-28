@@ -20,8 +20,8 @@ Shooter::Shooter()
 
 void Shooter::SetShooterSpeeds(double voltage) 
 {
-    LeftMotor->Set(-voltage);
-    RightMotor->Set(voltage);
+    LeftMotor->Set(voltage);
+    RightMotor->Set(-voltage);
 }
 
 void Shooter::SetKicker(double voltage)
@@ -34,7 +34,7 @@ frc2::CommandPtr Shooter::SetShootSpeed()
   return frc2::FunctionalCommand(
     [this] {},
     [this] {
-      SetKicker(1.0);
+      SetKicker(-1.0);
       SetShooterSpeeds(.58);},
     [this] (bool interrupted){
       SetKicker(0.0);

@@ -13,6 +13,7 @@
 #include <units/voltage.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 class Shooter : public frc2::SubsystemBase 
 {
@@ -23,6 +24,11 @@ class Shooter : public frc2::SubsystemBase
   
   
 private:
+
+  void Periodic() override
+  {
+    frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", LeftMotor->GetVelocity().GetValueAsDouble());
+  }
 
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
