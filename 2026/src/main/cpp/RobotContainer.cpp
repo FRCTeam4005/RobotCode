@@ -66,14 +66,15 @@ void RobotContainer::DriverControls()
 
 void RobotContainer::OperatorControls()
 {
-    //auto start = Turret_Sys->GetPosition();
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->Move(units::turn_t(5))));
-    Operator.X().OnTrue(std::move(Turret_Sys->Move(units::turn_t(-5))));
+    Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
+    Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
+    
+    
 
     //Hoping this will face the turret to the drivers
     //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    Operator.A().OnTrue(std::move(Turret_Sys->ShootDrivers()));
+    //Operator.A().OnTrue(std::move(Turret_Sys->ShootDrivers()));
     
 }
 

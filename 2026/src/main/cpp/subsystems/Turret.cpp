@@ -17,6 +17,8 @@ Turret::Turret()
     turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
     turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::angle::turn_t(-20);
 
+    turret_cfg.MotorOutput.Inverted = true;
+
     turret_cfg.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(80);
     turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
 
@@ -31,9 +33,15 @@ Turret::Turret()
     ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
     status = TurretMotor->GetConfigurator().Apply(turret_cfg);
 
+    turret_controller = std::make_unique<frc::PIDController> (0.0045, 0.07, 0.00004);
+
     Pigeon_Sys = std::make_unique<ctre::phoenix6::hardware::Pigeon2>(45);
 
     TurretMotor->SetPosition(units::turn_t(0));
+
+    // frc::SmartDashboard::PutNumber("Prop", 0.0045);
+    // frc::SmartDashboard::PutNumber("FeedForward", 0.07);
+    // frc::SmartDashboard::PutNumber("Derivative", 0.00004);
 
     SetName("Turret");
 }
@@ -66,3 +74,44 @@ frc2::CommandPtr Turret::ShootDrivers() {
   ).ToPtr();
 }
 
+frc2::CommandPtr Turret::TrackTag() {
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {Track(tx);},
+    [this] (bool interrupted) {},
+    [this] {return false;},
+    {this}
+  ).ToPtr();
+}
+
+
+frc2::CommandPtr Turret::StopTrackingTag() {
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {Stop();},
+    [this] (bool interrupted) {},
+    [this] {return false;},
+    {this}
+  ).ToPtr();
+}
+
+void Turret::Track(double offset) {
+  auto desiredOutput = turret_controller->Calculate(offset, 0);
+  //TurretMotor->Set(desiredOutput);
+  if (desiredOutput>0) 
+  {
+    TurretMotor->Set(desiredOutput + feedforward);
+  }
+  else if (desiredOutput < 0)
+  {
+    TurretMotor->Set(desiredOutput - feedforward);
+  }
+  frc::SmartDashboard::PutNumber("motor output",desiredOutput);
+}
+
+void Turret::Stop() {
+  auto desiredOutput = 0;
+  TurretMotor->Set(desiredOutput);
+
+  frc::SmartDashboard::PutNumber("motor output",desiredOutput);
+}
