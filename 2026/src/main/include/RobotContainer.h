@@ -9,6 +9,8 @@
 #include "subsystems/Drivetrain.h"
 #include "Telemetry.h"
 #include "subsystems/Turret.h"
+#include "subsystems/Shooter.h"
+#include "subsystems/Intake.h"
 
 class RobotContainer {
 private:
@@ -37,9 +39,10 @@ public:
     frc2::CommandPtr GetAutonomousCommand();
 
 private:
+    std::unique_ptr<Shooter> Shooter_Sys;
+    std::unique_ptr<Intake> Intake_Sys;
+
     void ConfigureBindings();
     void DriverControls();
     void OperatorControls();
-
-    std::unique_ptr<Turret> Turret_Sys;
 };

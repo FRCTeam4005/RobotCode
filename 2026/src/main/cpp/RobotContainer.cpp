@@ -10,9 +10,8 @@
 
 RobotContainer::RobotContainer()
 {
-    //Turret_Sys = std::make_unique<Turret>();
-
-    NEOShooter_Sys = std::make_unique<NEOShooter>();
+    Shooter_Sys = std::make_unique<Shooter>();
+    Intake_Sys = std::make_unique<Intake>();
 
     ConfigureBindings();
 }
@@ -47,10 +46,10 @@ void RobotContainer::ConfigureBindings()
 // If this doesn't work, these all need to go back into ConfigureBindings()
 void RobotContainer::DriverControls()
 {
-    //Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    //Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
-    //    return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
-    //}));
+    Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
+       return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
+    }));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -60,29 +59,24 @@ void RobotContainer::DriverControls()
     //(Driver.Start() && Driver.X()).WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
 
     // reset the field-centric heading on left bumper press
-    //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
+    Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
+    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
+    Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
+   // Driver.LeftTrigger(0.5).OnTrue(std::move(Intake_Sys->FuelUp()));
 }
 
 void RobotContainer::OperatorControls()
 {
-    //These should just test if the turret works
-    //Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
-    //Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
-
-    Operator.B().OnTrue(std::move(NEOShooter_Sys->SetShootSpeed()));
-
-    //Hoping this will face the turret to the drivers
-    //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    //Operator.A().OnTrue(std::move(Turret_Sys->Move(((180.0 - drivetrain.GetRotation3d().ToRotation2d().Degrees().value())/360.0) * units::turn_t(4096))));
+    
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     // Simple drive forward auton
-    return frc2::cmd::Sequence(
+   return frc2::cmd::Sequence(
         // Reset our field centric heading to match the robot
         // facing away from our alliance station wall (0 deg).
-        drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
+       drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
         // Then slowly drive forward (away from us) for 5 seconds.
         drivetrain.ApplyRequest([this]() -> auto&& {
             return drive.WithVelocityX(0.5_mps)

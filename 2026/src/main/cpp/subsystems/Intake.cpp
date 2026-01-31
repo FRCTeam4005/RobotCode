@@ -3,17 +3,15 @@
 Intake::Intake()
 {
     IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
+    ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
     SetName("Intake");
 }
 
 void Intake::setSpeed(double speed)
 {
-    IntakeMotor->Set(speed);
-}
+    IntakeMotor->Set(-speed);
+    ConveyorMotor->Set(speed);
 
-frc2::Trigger Intake::IsIntakeFull()
-{
-    return frc2::Trigger{ [this] {return !FuelSensor.Get();}};
 }
 
 frc2::CommandPtr Intake::FuelOut()
@@ -21,11 +19,8 @@ frc2::CommandPtr Intake::FuelOut()
     return frc2::FunctionalCommand(
         [this] {},
         [this] {setSpeed(1);},
-        [this] (bool interrupted)
-        {
-            setSpeed(0);
-        },
-        [this] {return !IsIntakeFull().Get();},
+        [this] (bool interrupted) {setSpeed(0);},
+        [this] {return true;},
         {this}
     ).ToPtr();
 }
@@ -34,9 +29,9 @@ frc2::CommandPtr Intake::FuelUp()
 {
   return frc2::FunctionalCommand(
     [this] {},
-    [this] {setSpeed(0.5);},
-    [this] (bool interrupted){setSpeed(0);},
-    [this] {return IsIntakeFull().Get();},
+    [this] {setSpeed(1);},
+    [this] (bool interrupted) {setSpeed(0);},
+    [this] {return false;},
     {this}
   ).ToPtr();
 }

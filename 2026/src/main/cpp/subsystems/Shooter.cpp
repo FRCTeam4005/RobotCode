@@ -1,72 +1,45 @@
-#pragma once
-
 #include "subsystems/Shooter.h"
-#include "generated/TunerConstants.h"
-#include <frc2/command/button/NetworkButton.h>
 
+// #define kLeftNEOMotorID 59
+// #define kRightNEOMotorID 58
 
+using namespace ShooterConstants;
 using namespace CANConstants;
 
 Shooter::Shooter()
 {
 
-  TopShooterMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kShooterLowerMoterID);
-  pid.kV = ShooterConstants::kTopShooterFF;
-  pid.kP = ShooterConstants::kTopShooterP;
-  pid.kI = ShooterConstants::kTopShooterI;
-  pid.kD = ShooterConstants::kTopShooterD;
-  TopShooterMotor->GetConfigurator().Apply(pid);
-  
-  BottomShooterMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kShooterUpperMotorID);
-  pid.kV = ShooterConstants::kBottomShooterFF;
-  pid.kP = ShooterConstants::kBottomShooterP;
-  pid.kI = ShooterConstants::kBottomShooterI;
-  pid.kD = ShooterConstants::kBottomShooterD;
-  BottomShooterMotor->GetConfigurator().Apply(pid);
+  LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kLeftShooterID);
+  RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
+  KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
+
   SetName("Shooter");
   
-  SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0_tps, 0_tps);}, {this}));
+  SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0);}, {this}));
 }
 
-void Shooter::SetShooterSpeeds(units::turns_per_second_t TopRPM, units::turns_per_second_t BottomRPM)
+void Shooter::SetShooterSpeeds(double voltage) 
 {
-  SetTopMotorRPM(TopRPM);
-  SetBottomMotorRPM(BottomRPM); 
+    LeftMotor->Set(voltage);
+    RightMotor->Set(-voltage);
 }
 
-void Shooter::SetBottomMotorRPM(units::turns_per_second_t RPM)
+void Shooter::SetKicker(double voltage)
 {
-  BottomShooterMotor->SetControl(VelocityClosedLoop.WithVelocity(RPM));
-
+  KickerMotor->Set(voltage);
 }
 
-void Shooter::SetTopMotorRPM(units::turns_per_second_t RPM)
-{
-  TopShooterMotor->SetControl(VelocityClosedLoop.WithVelocity(RPM));
-}
-
-units::turns_per_second_t Shooter::GetBottomMotorRPM()
-{
-  return BottomShooterMotor->GetVelocity().GetValue();
-}
-
-units::turns_per_second_t Shooter::GetTopMotorRPM()
-{
-  return TopShooterMotor->GetVelocity().GetValue();
-}
-
-bool Shooter::IsShooterDone(units::turns_per_second_t DesiredTopRPM, units::turns_per_second_t DesiredBottomRPM)
-{
-  return (DesiredBottomRPM.value() >= GetBottomMotorRPM().value()) && (DesiredTopRPM.value() >= GetTopMotorRPM().value());
-}
-
-frc2::CommandPtr Shooter::SetShootSpeed(units::turns_per_second_t topWheelTPS, units::turns_per_second_t bottomWheelTPS)
+frc2::CommandPtr Shooter::SetShootSpeed()
 {
   return frc2::FunctionalCommand(
     [this] {},
-    [topWheelTPS, bottomWheelTPS, this] {SetShooterSpeeds(topWheelTPS, bottomWheelTPS);},
-    [this] (bool interrupted){},
-    [topWheelTPS, this] {return (GetTopMotorRPM() > topWheelTPS);},
+    [this] {
+      SetKicker(-1.0);
+      SetShooterSpeeds(.58);},
+    [this] (bool interrupted){
+      SetKicker(0.0);
+      SetShooterSpeeds(0);},
+    [this] {return (false);},
     {this}
   ).ToPtr();
 }
