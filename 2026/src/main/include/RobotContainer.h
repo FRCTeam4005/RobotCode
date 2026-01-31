@@ -45,4 +45,7 @@ private:
     void ConfigureBindings();
     void DriverControls();
     void OperatorControls();
+
+    std::unique_ptr<Turret> Turret_Sys;
+    double angle;
 };
