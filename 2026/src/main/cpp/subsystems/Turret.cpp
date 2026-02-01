@@ -10,12 +10,13 @@ Turret::Turret()
     mm.MotionMagicJerk = 800_tr_per_s_cu;// Take approximately 0.1 seconds to reach max accel 
 
     turret_cfg.ClosedLoopGeneral.ContinuousWrap = false;
+    turret_cfg.Feedback.SensorToMechanismRatio = 10;
 
     turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::angle::turn_t(20);
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::angle::turn_t(-20);
+    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::turn_t(3);
+    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(-3);
 
     turret_cfg.MotorOutput.Inverted = true;
 
@@ -26,7 +27,7 @@ Turret::Turret()
     slot0_.kS = 0; // Add 0.25 V output to overcome static friction
     slot0_.kV = 0.2; // A velocity target of 1 rps results in 0.12 V output
     slot0_.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0_.kP = 4; // A position error of 0.2 rotations results in 12 V output
+    slot0_.kP = 32; // A position error of 0.2 rotations results in 12 V output
     slot0_.kI = 0; // No output for integrated error
     slot0_.kD = 0; // A velocity error of 1 rps results in 0.5 V output
 
@@ -47,11 +48,32 @@ Turret::Turret()
 }
 
 void Turret::SetTurretCommand(units::turn_t goal) {
-    TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
+  if (double(goal) < -0.4) {
+    if (double(goal) + 1 > 0.4)
+    {
+      goal = goal + units::turn_t(0.8);
+    }
+    else
+    {
+      goal = goal + units::turn_t(1);
+    }
+  }
+  else if (double(goal) > 0.4) {
+    if (double(goal) - 1 < -0.4)
+    {
+      goal = goal - units::turn_t(0.8);
+    }
+    else
+    {
+      goal = goal - units::turn_t(1);
+    }
+  }
+  
+  TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
 }
 
 units::turn_t Turret::GetPosition() {
-    return units::turn_t(TurretMotor->GetRotorPosition().GetValue());
+    return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
 }
 
 frc2::CommandPtr Turret::Move(units::turn_t goal) {

@@ -72,6 +72,8 @@ void RobotContainer::OperatorControls()
     //These should just test if the turret works
     Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
     Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
+    Operator.X().OnTrue(std::move(Turret_Sys->Move(units::turn_t(0.1))));
+    Operator.A().OnTrue(std::move(Turret_Sys->Move(units::turn_t(-0.1))));
     
     
 
