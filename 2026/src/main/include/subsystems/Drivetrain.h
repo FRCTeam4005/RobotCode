@@ -33,6 +33,9 @@ class Drivetrain : public frc2::SubsystemBase, public TunerSwerveDrivetrain {
     /* Keep track if we've ever applied the operator perspective before or not */
     bool m_hasAppliedOperatorPerspective = false;
 
+    /** Swerve request to apply during robot-centric path following */
+    swerve::requests::ApplyRobotSpeeds m_pathApplyRobotSpeeds;
+
     /* Swerve requests to apply during SysId characterization */
     swerve::requests::SysIdSwerveTranslation m_translationCharacterization;
     swerve::requests::SysIdSwerveSteerGains m_steerCharacterization;
@@ -128,6 +131,7 @@ public:
         if (utils::IsSimulation()) {
             StartSimThread();
         }
+        ConfigureAutoBuilder();
     }
 
     /**
@@ -154,6 +158,7 @@ public:
         if (utils::IsSimulation()) {
             StartSimThread();
         }
+        ConfigureAutoBuilder();
     }
 
     /**
@@ -187,6 +192,7 @@ public:
         if (utils::IsSimulation()) {
             StartSimThread();
         }
+        ConfigureAutoBuilder();
     }
 
     /**
@@ -295,6 +301,7 @@ public:
     }
 
 private:
+    void ConfigureAutoBuilder();
     void StartSimThread();
 };
 

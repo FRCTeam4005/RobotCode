@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <frc/smartdashboard/SendableChooser.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include "subsystems/Drivetrain.h"
@@ -36,7 +37,7 @@ public:
 
     RobotContainer();
 
-    frc2::CommandPtr GetAutonomousCommand();
+    frc2::Command *GetAutonomousCommand();
 
 private:
     std::unique_ptr<Shooter> Shooter_Sys;
@@ -48,4 +49,5 @@ private:
 
     std::unique_ptr<Turret> Turret_Sys;
     double angle;
+    frc::SendableChooser<frc2::Command *> autoChooser;
 };
