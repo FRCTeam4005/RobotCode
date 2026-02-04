@@ -1,9 +1,11 @@
 #include "subsystems/Intake.h"
 
-Intake::Intake()
+Intake::Intake(frc::PneumaticHub hub)
 {
     IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
     ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
+    m_doubleSolenoid = &hub.MakeDoubleSolenoid(SOLENOID_FORWARD_CHANNEL,SOLENOID_REVERSE_CHANNEL);
+
     SetName("Intake");
 }
 

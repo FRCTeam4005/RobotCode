@@ -11,6 +11,9 @@
 #include "subsystems/Turret.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
+#include <frc/PneumaticHub.h>
+
+#define PH_CAN_ID 34
 
 class RobotContainer {
 private:
@@ -41,6 +44,7 @@ public:
 private:
     std::unique_ptr<Shooter> Shooter_Sys;
     std::unique_ptr<Intake> Intake_Sys;
+    frc::PneumaticHub m_PH{PH_CAN_ID};
 
     void ConfigureBindings();
     void DriverControls();
