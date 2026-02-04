@@ -1,18 +1,19 @@
 #include "subsystems/Intake.h"
 
-Intake::Intake(frc::PneumaticHub hub)
+Intake::Intake(std::function<void()> intakeOutFxn, std::function<void()> intakeInFxn)
 {
+  IntakeOut_ = intakeOutFxn;
+  IntakeIn_ = intakeInFxn;
     IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
     ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
-    m_doubleSolenoid = &hub.MakeDoubleSolenoid(SOLENOID_FORWARD_CHANNEL,SOLENOID_REVERSE_CHANNEL);
 
     SetName("Intake");
 }
 
 void Intake::setSpeed(double speed)
 {
-    IntakeMotor->Set(-speed);
-    ConveyorMotor->Set(speed);
+  IntakeMotor->Set(-speed);
+  ConveyorMotor->Set(speed);
 
 }
 
@@ -43,4 +44,14 @@ frc2::CommandPtr Intake::Stop()
   return this->RunOnce(
     [this] {setSpeed(0);}
   );
+}
+
+frc2::CommandPtr Intake::IntakeIn()
+{
+  return this->RunOnce(IntakeIn_);
+}
+
+frc2::CommandPtr Intake::IntakeOut()
+{
+  return this->RunOnce(IntakeOut_);
 }

@@ -11,6 +11,7 @@
 #include "subsystems/Turret.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
+#include "subsystems/pneumatics.h"
 #include <frc/PneumaticHub.h>
 
 #define PH_CAN_ID 34
@@ -44,7 +45,7 @@ public:
 private:
     std::unique_ptr<Shooter> Shooter_Sys;
     std::unique_ptr<Intake> Intake_Sys;
-    frc::PneumaticHub m_PH{PH_CAN_ID};
+    std::unique_ptr<Pneumatics> Pneumatics_Sys;
 
     void ConfigureBindings();
     void DriverControls();

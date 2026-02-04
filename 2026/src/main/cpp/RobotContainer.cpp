@@ -13,7 +13,9 @@ RobotContainer::RobotContainer()
 {
     Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
-    Intake_Sys = std::make_unique<Intake>(m_PH);
+
+    Pneumatics_Sys = std::make_unique<Pneumatics>();
+    Intake_Sys = std::make_unique<Intake>([this]{this->Pneumatics_Sys->IntakeIn();}, [this]{this->Pneumatics_Sys->IntakeOut();});
 
     ConfigureBindings();
 }
