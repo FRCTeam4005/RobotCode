@@ -51,8 +51,9 @@ private:
     {
         frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
         position = GetPosition();
-        angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0)*10.0;
+        angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
         frc::SmartDashboard::PutNumber("Angle", angle);
+
         tx = LimelightHelpers::getTX("limelight-turret");
         frc::SmartDashboard::PutNumber("offset", tx);
         target = LimelightHelpers::getTV("limelight-turret");

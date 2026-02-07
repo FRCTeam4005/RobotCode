@@ -10,12 +10,13 @@ Turret::Turret()
     mm.MotionMagicJerk = 800_tr_per_s_cu;// Take approximately 0.1 seconds to reach max accel 
 
     turret_cfg.ClosedLoopGeneral.ContinuousWrap = false;
+    turret_cfg.Feedback.SensorToMechanismRatio = 10;
 
     turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::angle::turn_t(20);
+    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::turn_t(1);
     turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::angle::turn_t(-20);
+    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(-1);
 
     turret_cfg.MotorOutput.Inverted = true;
 
@@ -24,9 +25,9 @@ Turret::Turret()
 
     ctre::phoenix6::configs::Slot0Configs &slot0_ = turret_cfg.Slot0;
     slot0_.kS = 0; // Add 0.25 V output to overcome static friction
-    slot0_.kV = 0.2; // A velocity target of 1 rps results in 0.12 V output
+    slot0_.kV = 0.4; // A velocity target of 1 rps results in 0.12 V output
     slot0_.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0_.kP = 4; // A position error of 0.2 rotations results in 12 V output
+    slot0_.kP = 32; // A position error of 0.2 rotations results in 12 V output
     slot0_.kI = 0; // No output for integrated error
     slot0_.kD = 0; // A velocity error of 1 rps results in 0.5 V output
 
@@ -38,6 +39,7 @@ Turret::Turret()
     Pigeon_Sys = std::make_unique<ctre::phoenix6::hardware::Pigeon2>(45);
 
     TurretMotor->SetPosition(units::turn_t(0));
+    Pigeon_Sys->SetYaw(units::degree_t(0));
 
     // frc::SmartDashboard::PutNumber("Prop", 0.0045);
     // frc::SmartDashboard::PutNumber("FeedForward", 0.07);
@@ -47,11 +49,17 @@ Turret::Turret()
 }
 
 void Turret::SetTurretCommand(units::turn_t goal) {
-    TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
+  while (double(goal) < -0.5) {
+    goal = goal + units::turn_t(1.0);
+  }
+  while(double(goal) > 0.5) {
+    goal = goal - units::turn_t(1.0);
+  }
+  TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
 }
 
 units::turn_t Turret::GetPosition() {
-    return units::turn_t(TurretMotor->GetRotorPosition().GetValue());
+    return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
 }
 
 frc2::CommandPtr Turret::Move(units::turn_t goal) {
@@ -97,8 +105,7 @@ frc2::CommandPtr Turret::StopTrackingTag() {
 
 void Turret::Track(double offset) {
   auto desiredOutput = turret_controller->Calculate(offset, 0);
-  //TurretMotor->Set(desiredOutput);
-  if (desiredOutput>0) 
+  if (desiredOutput > 0) 
   {
     TurretMotor->Set(desiredOutput + feedforward);
   }
@@ -106,7 +113,15 @@ void Turret::Track(double offset) {
   {
     TurretMotor->Set(desiredOutput - feedforward);
   }
-  frc::SmartDashboard::PutNumber("motor output",desiredOutput);
+  
+  
+  while (double(position) <= -0.5) {
+    SetTurretCommand(position + units::turn_t(1.0));
+  }
+  while (double(position) >= 0.5) {
+    SetTurretCommand(position + units::turn_t(-1.0));
+  }
+  //frc::SmartDashboard::PutNumber("motor output",desiredOutput);
 }
 
 void Turret::Stop() {

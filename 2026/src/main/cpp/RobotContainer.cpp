@@ -48,10 +48,10 @@ void RobotContainer::ConfigureBindings()
 // If this doesn't work, these all need to go back into ConfigureBindings()
 void RobotContainer::DriverControls()
 {
-    Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
-       return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
-    }));
+    // Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    // Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
+    //    return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
+    // }));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -64,14 +64,14 @@ void RobotContainer::DriverControls()
     Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
     Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-   // Driver.LeftTrigger(0.5).OnTrue(std::move(Intake_Sys->FuelUp()));
 }
 
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Intake_Sys->IntakeOut()));
-    //Operator.B().WhileFalse(std::move(Intake_Sys->IntakeOut()));
+    Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
+    Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
     
     
 
