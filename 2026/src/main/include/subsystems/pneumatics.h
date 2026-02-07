@@ -5,6 +5,7 @@
 #include <frc/DoubleSolenoid.h>
 #include <frc/AnalogPotentiometer.h>
 #include <frc/Compressor.h>
+#include "generated/TunerConstants.h"
 
 class Pneumatics
 {
