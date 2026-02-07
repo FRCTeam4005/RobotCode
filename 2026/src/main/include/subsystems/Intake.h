@@ -16,7 +16,6 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/DigitalInput.h>
 #include <iostream>
-#include <frc/PneumaticHub.h>
 #include <frc/DoubleSolenoid.h>
 
 #define SOLENOID_FORWARD_CHANNEL 0
@@ -25,18 +24,19 @@
 class Intake : public frc2::SubsystemBase
 {
  public:
-  Intake (frc::PneumaticHub hub);
-
+  Intake ();
   auto FuelUp() -> frc2::CommandPtr; //Pick up fuel, intake in
   auto FuelOut() -> frc2::CommandPtr; //Feed fuel to shooter
   auto Stop() -> frc2::CommandPtr; //Stop intaking
+  auto IntakeOut() -> frc2::CommandPtr;
+  auto IntakeIn() -> frc2::CommandPtr;
   
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> ConveyorMotor;
   frc::DigitalInput FuelSensor{OIConstants::FuelSensorPort};
 
-  frc::DoubleSolenoid *m_doubleSolenoid;
+  frc::DoubleSolenoid m_doubleSolenoid;
 
   void setSpeed(double speed);
 };

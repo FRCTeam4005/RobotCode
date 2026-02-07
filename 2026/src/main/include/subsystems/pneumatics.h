@@ -11,25 +11,15 @@ class Pneumatics
 public:
   Pneumatics();
 
-  frc::PneumaticHub pnH{33};
 
-  void IntakeOut()
-  {
-    IntakeInOut.Set(frc::DoubleSolenoid::kForward);
-  }
-  
-  void IntakeIn()
-  {
-    IntakeInOut.Set(frc::DoubleSolenoid::kReverse);
-  }
+
+
 
 private:
-  double scale = 250, offset = -25;
-  frc::AnalogPotentiometer pressureSensor{5, scale, offset};
-  const units::pressure::pounds_per_square_inch_t MinPressure{20};
-  const units::pressure::pounds_per_square_inch_t MaxPressure{30};
 
-  frc::DoubleSolenoid IntakeInOut = pnH.MakeDoubleSolenoid(0,1);
+  frc::Compressor m_compressor;
+
+  
 
 };
 

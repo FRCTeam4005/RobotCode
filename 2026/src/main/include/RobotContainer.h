@@ -45,7 +45,7 @@ public:
 private:
     std::unique_ptr<Shooter> Shooter_Sys;
     std::unique_ptr<Intake> Intake_Sys;
-    std::unique_ptr<Pneumatics> Pneumatics_Sys;
+    Pneumatics Pneumatics_Sys;
 
     void ConfigureBindings();
     void DriverControls();

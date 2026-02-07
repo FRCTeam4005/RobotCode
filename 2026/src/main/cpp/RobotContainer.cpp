@@ -13,7 +13,7 @@ RobotContainer::RobotContainer()
 {
     Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
-    Intake_Sys = std::make_unique<Intake>(m_PH);
+    Intake_Sys = std::make_unique<Intake>();
 
     ConfigureBindings();
 }
@@ -70,8 +70,8 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
-    Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
+    Operator.B().OnTrue(std::move(Intake_Sys->IntakeOut()));
+    //Operator.B().WhileFalse(std::move(Intake_Sys->IntakeOut()));
     
     
 
