@@ -13,15 +13,23 @@ Shooter::Shooter()
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
 
+  pid.kV = ShooterConstants::kBottomShooterFF;
+  pid.kP = ShooterConstants::kBottomShooterP;
+  pid.kI = ShooterConstants::kBottomShooterI;
+  pid.kD = ShooterConstants::kBottomShooterD;
+  LeftMotor->GetConfigurator().Apply(pid);
+  RightMotor->GetConfigurator().Apply(pid);
+
   SetName("Shooter");
   
-  SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0);}, {this}));
+  SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0_tps);}, {this}));
 }
 
-void Shooter::SetShooterSpeeds(double voltage) 
+void Shooter::SetShooterSpeeds(units::turns_per_second_t TPS) 
 {
-    LeftMotor->Set(voltage);
-    RightMotor->Set(-voltage);
+    ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
+    LeftMotor->SetControl(m_velocity.WithVelocity(TPS));
+    RightMotor->SetControl(m_velocity.WithVelocity(-TPS));
 }
 
 void Shooter::SetKicker(double voltage)
@@ -35,10 +43,10 @@ frc2::CommandPtr Shooter::SetShootSpeed()
     [this] {},
     [this] {
       SetKicker(-1.0);
-      SetShooterSpeeds(.58);},
+      SetShooterSpeeds(70_tps);},
     [this] (bool interrupted){
       SetKicker(0.0);
-      SetShooterSpeeds(0);},
+      SetShooterSpeeds(0_tps);},
     [this] {return (false);},
     {this}
   ).ToPtr();
