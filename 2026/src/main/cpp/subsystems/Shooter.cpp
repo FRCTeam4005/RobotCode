@@ -28,8 +28,8 @@ Shooter::Shooter()
 void Shooter::SetShooterSpeeds(units::turns_per_second_t TPS) 
 {
     ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
-    LeftMotor->SetControl(m_velocity.WithVelocity(TPS));
-    RightMotor->SetControl(m_velocity.WithVelocity(-TPS));
+    LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
+    RightMotor->SetControl(m_velocity.WithVelocity(TPS));
 }
 
 void Shooter::SetKicker(double voltage)
@@ -43,7 +43,7 @@ frc2::CommandPtr Shooter::SetShootSpeed()
     [this] {},
     [this] {
       SetKicker(-1.0);
-      SetShooterSpeeds(70_tps);},
+      SetShooterSpeeds(85_tps);},
     [this] (bool interrupted){
       SetKicker(0.0);
       SetShooterSpeeds(0_tps);},
