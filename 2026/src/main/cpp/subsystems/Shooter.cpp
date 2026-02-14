@@ -13,10 +13,13 @@ Shooter::Shooter()
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
 
-  pid.kV = ShooterConstants::kBottomShooterFF;
-  pid.kP = ShooterConstants::kBottomShooterP;
-  pid.kI = ShooterConstants::kBottomShooterI;
-  pid.kD = ShooterConstants::kBottomShooterD;
+  LeftMotor->SetNeutralMode(0);
+  RightMotor->SetNeutralMode(0);
+
+  pid.kV = ShooterConstants::kShooterFF;
+  pid.kP = ShooterConstants::kShooterP;
+  pid.kI = ShooterConstants::kShooterI;
+  pid.kD = ShooterConstants::kShooterD;
   LeftMotor->GetConfigurator().Apply(pid);
   RightMotor->GetConfigurator().Apply(pid);
 
@@ -27,9 +30,26 @@ Shooter::Shooter()
 
 void Shooter::SetShooterSpeeds(units::turns_per_second_t TPS) 
 {
-    ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
-    LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
-    RightMotor->SetControl(m_velocity.WithVelocity(TPS));
+  if (double(TPS) != 0) 
+  {
+    pid.kV = ShooterConstants::kShooterFF;
+    pid.kP = ShooterConstants::kShooterP;
+    pid.kI = ShooterConstants::kShooterI;
+    pid.kD = ShooterConstants::kShooterD;
+    LeftMotor->GetConfigurator().Apply(pid);
+    RightMotor->GetConfigurator().Apply(pid);
+  }
+  else {
+    pid.kV = 0;
+    pid.kP = 0;
+    pid.kI = 0;
+    pid.kD = 0;
+    LeftMotor->GetConfigurator().Apply(pid);
+    RightMotor->GetConfigurator().Apply(pid);
+  }
+  ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
+  LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
+  RightMotor->SetControl(m_velocity.WithVelocity(TPS));
 }
 
 void Shooter::SetKicker(double voltage)
@@ -43,7 +63,7 @@ frc2::CommandPtr Shooter::SetShootSpeed()
     [this] {},
     [this] {
       SetKicker(-1.0);
-      SetShooterSpeeds(85_tps);},
+      SetShooterSpeeds(70_tps);},
     [this] (bool interrupted){
       SetKicker(0.0);
       SetShooterSpeeds(0_tps);},

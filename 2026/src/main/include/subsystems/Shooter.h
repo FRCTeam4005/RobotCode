@@ -27,7 +27,7 @@ private:
 
   void Periodic() override
   {
-    frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", LeftMotor->GetVelocity().GetValueAsDouble());
+    frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", RightMotor->GetVelocity().GetValueAsDouble());
   }
 
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;

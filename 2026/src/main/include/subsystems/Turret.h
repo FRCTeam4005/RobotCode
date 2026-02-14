@@ -51,6 +51,8 @@ private:
     {
         frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
         position = GetPosition();
+
+        //Change 180 to whatever angle you are aiming at
         angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
         frc::SmartDashboard::PutNumber("Angle", angle);
 
