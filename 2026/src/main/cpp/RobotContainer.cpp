@@ -12,7 +12,7 @@ RobotContainer::RobotContainer()
 {
     //Turret_Sys = std::make_unique<Turret>();
 
-    NEOShooter_Sys = std::make_unique<NEOShooter>();
+    //NEOShooter_Sys = std::make_unique<NEOShooter>();
 
     ConfigureBindings();
 }
@@ -69,7 +69,7 @@ void RobotContainer::OperatorControls()
     //Operator.B().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() + units::turn_t(100))));
     //Operator.X().OnTrue(std::move(Turret_Sys->Move(Turret_Sys->GetPosition() - units::turn_t(100))));
 
-    Operator.B().OnTrue(std::move(NEOShooter_Sys->SetShootSpeed()));
+    //Operator.B().OnTrue(std::move(NEOShooter_Sys->SetShootSpeed()));
 
     //Hoping this will face the turret to the drivers
     //Change the 4096 to however many "ticks" are in one full revolution of the turret
