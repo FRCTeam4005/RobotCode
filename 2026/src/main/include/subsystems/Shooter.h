@@ -20,7 +20,8 @@ class Shooter : public frc2::SubsystemBase
  public:
   Shooter();
 
-  auto SetShootSpeed() -> frc2::CommandPtr;
+  auto SetShootSpeed(units::turns_per_second_t speed) -> frc2::CommandPtr;
+  auto FeedShooter() -> frc2::CommandPtr;
   
   
 private:
@@ -34,10 +35,10 @@ private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
 
-  units::turns_per_second_t GetShooterSpeed();
+  
 
   ctre::phoenix6::configs::Slot0Configs pid;
-  
+  double GetShooterSpeed(); 
   void SetShooterSpeeds(units::turns_per_second_t speed) ;
 
   void SetKicker(double voltage);

@@ -57,19 +57,37 @@ void Shooter::SetKicker(double voltage)
   KickerMotor->Set(voltage);
 }
 
-frc2::CommandPtr Shooter::SetShootSpeed()
+frc2::CommandPtr Shooter::SetShootSpeed(units::turns_per_second_t speed)
+{
+  return frc2::FunctionalCommand(
+    [this] {},
+    [speed, this] {
+      SetShooterSpeeds(speed);},
+    [this] (bool interrupted) {},
+    [speed, this] {return (GetShooterSpeed() > double(speed));},
+    {this}
+  ).ToPtr();
+}
+
+frc2::CommandPtr Shooter::FeedShooter()
 {
   return frc2::FunctionalCommand(
     [this] {},
     [this] {
       SetKicker(-1.0);
-      SetShooterSpeeds(70_tps);},
+    },
     [this] (bool interrupted){
       SetKicker(0.0);
-      SetShooterSpeeds(0_tps);},
+      },
     [this] {return (false);},
     {this}
   ).ToPtr();
 }
+
+double Shooter::GetShooterSpeed() 
+{
+  return RightMotor->GetVelocity().GetValueAsDouble();
+}
+
 
 
