@@ -12,6 +12,7 @@
 #include <frc2/command/button/Trigger.h>
 #include <units/angle.h>
 #include <units/voltage.h>
+#include <units/angle.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/DigitalInput.h>
@@ -23,7 +24,8 @@
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/controller/PIDController.h>
 #include "LimelightHelpers.h"
-
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Rotation2d.h>
 
 class Turret : public frc2::SubsystemBase
 {
@@ -34,6 +36,7 @@ class Turret : public frc2::SubsystemBase
     auto GetPosition() -> units::angle::turn_t;
     auto TrackTag() -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
+    auto m_getPose() -> frc::Pose2d;
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
@@ -46,21 +49,49 @@ private:
     bool target;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward;
+    
 
     void Periodic () override
     {
         frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
         position = GetPosition();
-        angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
-        frc::SmartDashboard::PutNumber("Angle", angle);
+        
+        
 
         tx = LimelightHelpers::getTX("limelight-turret");
-        frc::SmartDashboard::PutNumber("offset", tx);
+        frc::SmartDashboard::PutNumber("tx camera offset", tx);
         target = LimelightHelpers::getTV("limelight-turret");
         frc::SmartDashboard::PutBoolean("Target Detected", target);
-        //turret_controller->SetP(frc::SmartDashboard::GetNumber("Prop", 0));
-        //feedforward = frc::SmartDashboard::GetNumber("Feedforward", 0);
-        //turret_controller->SetD(frc::SmartDashboard::GetNumber("Derivative", 0));
+        
+        units::meter_t desiredX = 4.625_m;
+        units::meter_t desiredY = 4.030_m;
+
+        auto currentPose = m_getPose();
+        if (target)
+        {
+        frc::SmartDashboard::PutNumber("Desired X", double(desiredX));
+        frc::SmartDashboard::PutNumber("Desired Y", double(desiredY));
+        frc::SmartDashboard::PutNumber("Current Y", currentPose.Y().value());
+        frc::SmartDashboard::PutNumber("Current X", currentPose.X().value());
+
+        frc::SmartDashboard::PutNumber("Delta Y", double(double(desiredY) - currentPose.Y().value()));
+        frc::SmartDashboard::PutNumber("Delta X", double(double(desiredX) - currentPose.X().value()));
+
+        
+
+        auto Theta = (atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()))*180)/3.14;
+        angle = ((Theta - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
+        frc::SmartDashboard::PutNumber("Angle", angle);
+
+
+        auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
+
+
+        frc::SmartDashboard::PutNumber("current degrees", currentPose.Rotation().Degrees().value());
+        //frc::SmartDashboard::PutNumber("Desired Degrees", units::radian_t(Theta).convert<units::degree>().value());
+        frc::SmartDashboard::PutNumber("Desired Degrees", Theta);
+        frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
+        }
     }
 
     void SetTurretCommand(units::turn_t goal);

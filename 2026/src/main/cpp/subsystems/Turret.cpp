@@ -1,4 +1,5 @@
 #include "subsystems/Turret.h"
+#include <cmath>
 
 Turret::Turret()
 {
@@ -18,7 +19,7 @@ Turret::Turret()
     turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
     turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(-1);
 
-    turret_cfg.MotorOutput.Inverted = true;
+    turret_cfg.MotorOutput.Inverted = false;
 
     turret_cfg.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(80);
     turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
@@ -34,16 +35,16 @@ Turret::Turret()
     ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
     status = TurretMotor->GetConfigurator().Apply(turret_cfg);
 
-    turret_controller = std::make_unique<frc::PIDController> (0.0045, 0.07, 0.00004);
+    turret_controller = std::make_unique<frc::PIDController> (0.0045, 0.00, 0.0000);
 
     Pigeon_Sys = std::make_unique<ctre::phoenix6::hardware::Pigeon2>(45);
 
     TurretMotor->SetPosition(units::turn_t(0));
     Pigeon_Sys->SetYaw(units::degree_t(0));
 
-    // frc::SmartDashboard::PutNumber("Prop", 0.0045);
-    // frc::SmartDashboard::PutNumber("FeedForward", 0.07);
-    // frc::SmartDashboard::PutNumber("Derivative", 0.00004);
+    frc::SmartDashboard::PutNumber("Prop", 0.0045);
+    frc::SmartDashboard::PutNumber("FeedForward", 0.0);
+    frc::SmartDashboard::PutNumber("Derivative", 0.0000);
 
     SetName("Turret");
 }
@@ -103,16 +104,53 @@ frc2::CommandPtr Turret::StopTrackingTag() {
   ).ToPtr();
 }
 
+
+frc::Pose2d Turret::m_getPose()
+{
+  return LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2("limelight-turret").pose;
+}
+
+
 void Turret::Track(double offset) {
-  auto desiredOutput = turret_controller->Calculate(offset, 0);
-  if (desiredOutput > 0) 
+
+  units::meter_t desiredX = 4.625_m;
+  units::meter_t desiredY = 4.030_m;
+
+  auto currentPose = m_getPose();
+
+  auto Theta = atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()));
+
+
+
+  auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
+
+
+  frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
+
+  if ((LimelightHelpers::getTV("limelight-turret")) == true)
   {
-    TurretMotor->Set(desiredOutput + feedforward);
+    if (desiredOutput > 0) 
+    {
+      TurretMotor->Set(desiredOutput + feedforward);
+    }
+    else if (desiredOutput < 0)
+    {
+      TurretMotor->Set(desiredOutput - feedforward);
+    }
   }
-  else if (desiredOutput < 0)
+  else
   {
-    TurretMotor->Set(desiredOutput - feedforward);
+    TurretMotor->Set(0);
   }
+
+  // if (desiredOutput > 0) 
+  // {
+  //   TurretMotor->Set(desiredOutput + feedforward);
+  // }
+  // else if (desiredOutput < 0)
+  // {
+  //   TurretMotor->Set(desiredOutput - feedforward);
+  // }
   
   
   while (double(position) <= -0.5) {
