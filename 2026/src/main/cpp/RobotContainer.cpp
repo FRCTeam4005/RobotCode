@@ -62,9 +62,9 @@ void RobotContainer::DriverControls()
 
     // reset the field-centric heading on left bumper press
     //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
-    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
+    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(70_tps).AndThen(Shooter_Sys->FeedShooter())));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-    //Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 }
 
 void RobotContainer::OperatorControls()
@@ -72,7 +72,7 @@ void RobotContainer::OperatorControls()
     //These should just test if the turret works
     Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
     Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
+    
     
     
 
