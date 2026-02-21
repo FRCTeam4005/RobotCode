@@ -62,7 +62,7 @@ void RobotContainer::DriverControls()
 
     // reset the field-centric heading on left bumper press
     //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
-    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(70_tps).AndThen(Shooter_Sys->FeedShooter())));
+    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(59.3_tps).AndThen(Shooter_Sys->FeedShooter())));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
     Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 }
