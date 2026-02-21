@@ -5,12 +5,13 @@
 #include <frc/DoubleSolenoid.h>
 #include <frc/AnalogPotentiometer.h>
 #include <frc/Compressor.h>
+#include "generated/TunerConstants.h"
 
 class Pneumatics
 {
 public:
   Pneumatics();
-  frc::PneumaticHub pnH{33};
+  frc::PneumaticHub pnH{CANConstants::kPneumaticHub};
 
 private:
   double scale = 250, offset = -25;
