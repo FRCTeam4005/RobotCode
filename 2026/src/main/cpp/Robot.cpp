@@ -44,7 +44,7 @@ void Robot::TeleopPeriodic() {}
 void Robot::TeleopExit() {}
 
 void Robot::TestInit() {
-    frc2::CommandScheduler::GetInstance().CancelAll();
+    // frc2::CommandScheduler::GetInstance().CancelAll();
 }
 
 void Robot::TestPeriodic() {}

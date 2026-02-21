@@ -53,45 +53,45 @@ private:
 
     void Periodic () override
     {
-        frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
-        position = GetPosition();
+        // frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
+        // position = GetPosition();
         
         
 
-        tx = LimelightHelpers::getTX("limelight-turret");
-        frc::SmartDashboard::PutNumber("tx camera offset", tx);
-        target = LimelightHelpers::getTV("limelight-turret");
-        frc::SmartDashboard::PutBoolean("Target Detected", target);
+        // tx = LimelightHelpers::getTX("limelight-turret");
+        // frc::SmartDashboard::PutNumber("tx camera offset", tx);
+        // target = LimelightHelpers::getTV("limelight-turret");
+        // frc::SmartDashboard::PutBoolean("Target Detected", target);
         
-        units::meter_t desiredX = 4.625_m;
-        units::meter_t desiredY = 4.030_m;
+        // units::meter_t desiredX = 4.625_m;
+        // units::meter_t desiredY = 4.030_m;
 
-        auto currentPose = m_getPose();
-        if (target)
-        {
-        frc::SmartDashboard::PutNumber("Desired X", double(desiredX));
-        frc::SmartDashboard::PutNumber("Desired Y", double(desiredY));
-        frc::SmartDashboard::PutNumber("Current Y", currentPose.Y().value());
-        frc::SmartDashboard::PutNumber("Current X", currentPose.X().value());
+        // auto currentPose = m_getPose();
+        // if (target)
+        // {
+        // frc::SmartDashboard::PutNumber("Desired X", double(desiredX));
+        // frc::SmartDashboard::PutNumber("Desired Y", double(desiredY));
+        // frc::SmartDashboard::PutNumber("Current Y", currentPose.Y().value());
+        // frc::SmartDashboard::PutNumber("Current X", currentPose.X().value());
 
-        frc::SmartDashboard::PutNumber("Delta Y", double(double(desiredY) - currentPose.Y().value()));
-        frc::SmartDashboard::PutNumber("Delta X", double(double(desiredX) - currentPose.X().value()));
+        // frc::SmartDashboard::PutNumber("Delta Y", double(double(desiredY) - currentPose.Y().value()));
+        // frc::SmartDashboard::PutNumber("Delta X", double(double(desiredX) - currentPose.X().value()));
 
         
 
-        auto Theta = (atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()))*180)/3.14;
-        angle = ((Theta - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
-        frc::SmartDashboard::PutNumber("Angle", angle);
+        // auto Theta = (atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()))*180)/3.14;
+        // angle = ((Theta - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
+        // frc::SmartDashboard::PutNumber("Angle", angle);
 
 
-        auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
+        // auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
 
 
-        frc::SmartDashboard::PutNumber("current degrees", currentPose.Rotation().Degrees().value());
-        //frc::SmartDashboard::PutNumber("Desired Degrees", units::radian_t(Theta).convert<units::degree>().value());
-        frc::SmartDashboard::PutNumber("Desired Degrees", Theta);
-        frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
-        }
+        // frc::SmartDashboard::PutNumber("current degrees", currentPose.Rotation().Degrees().value());
+        // //frc::SmartDashboard::PutNumber("Desired Degrees", units::radian_t(Theta).convert<units::degree>().value());
+        // frc::SmartDashboard::PutNumber("Desired Degrees", Theta);
+        // frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
+        // }
     }
 
     void SetTurretCommand(units::turn_t goal);
