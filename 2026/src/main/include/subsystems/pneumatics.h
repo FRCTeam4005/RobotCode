@@ -11,13 +11,9 @@ class Pneumatics
 {
 public:
   Pneumatics();
-  frc::PneumaticHub pnH{CANConstants::kPneumaticHub};
-
+  
 private:
-  double scale = 250, offset = -25;
-  frc::AnalogPotentiometer pressureSensor{5, scale, offset};
-  const units::pressure::pounds_per_square_inch_t MinPressure{20};
-  const units::pressure::pounds_per_square_inch_t MaxPressure{30};
+  frc::PneumaticHub pnH{CANConstants::kPneumaticHub};
 };
 
 #endif
