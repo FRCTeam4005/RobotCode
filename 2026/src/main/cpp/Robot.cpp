@@ -8,6 +8,8 @@
 #include <frc2/command/CommandScheduler.h>
 
 
+constexpr auto LimeLightYawOffset = 180_deg;
+
 Robot::Robot() {}
 
 void Robot::RobotPeriodic() {
@@ -17,11 +19,24 @@ void Robot::RobotPeriodic() {
 
 void Robot::DisabledInit() {}
 
-void Robot::DisabledPeriodic() {}
+void Robot::DisabledPeriodic() 
+{
+
+    if (BodyTargetAvaliable())
+    {
+        m_container.drivetrain.ResetPose(BodyGetPose());
+    }
+
+}
 
 void Robot::DisabledExit() {}
 
 void Robot::AutonomousInit() {
+
+    auto BotPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2("limelight-bodycam").pose;
+    BotPose = frc::Pose2d{BotPose.X(), BotPose.Y(), frc::Rotation2d{BotPose.Rotation().Degrees()}};
+
+    m_container.drivetrain.ResetPose(BotPose);
     m_autonomousCommand = m_container.GetAutonomousCommand();
 
     if (m_autonomousCommand) {

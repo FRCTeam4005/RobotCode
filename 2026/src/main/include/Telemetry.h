@@ -10,6 +10,8 @@
 #include <networktables/StructArrayTopic.h>
 #include <networktables/StructTopic.h>
 
+
+#include <ctre/phoenix6/Pigeon2.hpp>
 #include "subsystems/Drivetrain.h"
 
 class Telemetry {
@@ -60,6 +62,8 @@ private:
             ->Append<frc::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, frc::Color8Bit{frc::Color::kWhite}),
     };
 
+
+    std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
 public:
     /**
      * Construct a telemetry object with the specified max speed of the robot.

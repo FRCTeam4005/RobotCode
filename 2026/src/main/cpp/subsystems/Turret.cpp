@@ -25,6 +25,7 @@ Turret::Turret()
     turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
 
     ctre::phoenix6::configs::Slot0Configs &slot0_ = turret_cfg.Slot0;
+
     slot0_.kS = 0; // Add 0.25 V output to overcome static friction
     slot0_.kV = 0.4; // A velocity target of 1 rps results in 0.12 V output
     slot0_.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -35,19 +36,38 @@ Turret::Turret()
     ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
     status = TurretMotor->GetConfigurator().Apply(turret_cfg);
 
-    turret_controller = std::make_unique<frc::PIDController> (0.0045, 0.00, 0.0000);
+    turret_controller = std::make_unique<frc::PIDController> (0.000, 0.00, 0.0000);
 
-    Pigeon_Sys = std::make_unique<ctre::phoenix6::hardware::Pigeon2>(45);
 
-    TurretMotor->SetPosition(units::turn_t(0));
-    Pigeon_Sys->SetYaw(units::degree_t(0));
+    frc::Pose2d TurretPose, BodyPose;
+
+    if(TurretTargetAvaliable() && BodyTargetAvaliable())
+    {
+      //TurretPose = TurretGetPose
+    }
+    else
+    {
+      TurretMotor->SetPosition(units::turn_t(0));
+    }
 
     frc::SmartDashboard::PutNumber("Prop", 0.0045);
     frc::SmartDashboard::PutNumber("FeedForward", 0.0);
     frc::SmartDashboard::PutNumber("Derivative", 0.0000);
 
+
     SetName("Turret");
 }
+
+
+
+
+
+
+
+
+
+
+
 
 void Turret::SetTurretCommand(units::turn_t goal) {
   while (double(goal) < -0.5) {
@@ -86,7 +106,7 @@ frc2::CommandPtr Turret::ShootDrivers() {
 frc2::CommandPtr Turret::TrackTag() {
     return frc2::FunctionalCommand(
     [this] {},
-    [this] {Track(tx);},
+    [this] {Track();},
     [this] (bool interrupted) {},
     [this] {return false;},
     {this}
@@ -111,7 +131,7 @@ frc::Pose2d Turret::m_getPose()
 }
 
 
-void Turret::Track(double offset) {
+void Turret::Track() {
 
   units::meter_t desiredX = 4.625_m;
   units::meter_t desiredY = 4.030_m;
@@ -120,7 +140,7 @@ void Turret::Track(double offset) {
 
   auto Theta = atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()));
 
-
+  
 
   auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
 
@@ -153,13 +173,14 @@ void Turret::Track(double offset) {
   // }
   
   
-  while (double(position) <= -0.5) {
-    SetTurretCommand(position + units::turn_t(1.0));
-  }
-  while (double(position) >= 0.5) {
-    SetTurretCommand(position + units::turn_t(-1.0));
-  }
+  // while (double(position) <= -0.5) {
+  //   SetTurretCommand(position + units::turn_t(1.0));
+  // }
+  // while (double(position) >= 0.5) {
+  //   SetTurretCommand(position + units::turn_t(-1.0));
+  // }
   //frc::SmartDashboard::PutNumber("motor output",desiredOutput);
+
 }
 
 void Turret::Stop() {

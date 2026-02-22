@@ -11,6 +11,8 @@
 
 RobotContainer::RobotContainer()
 {
+    
+
     Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
@@ -20,8 +22,18 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::ConfigureBindings()
 {
-    // Note that X is defined as forward according to WPILib convention,
-    // and Y is defined as to the left according to WPILib convention.
+
+    DriverControls();
+    OperatorControls();
+
+    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+}
+
+// If this doesn't work, these all need to go back into ConfigureBindings()
+void RobotContainer::DriverControls()
+{
+
+
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.ApplyRequest([this]() -> auto&& {
@@ -39,29 +51,8 @@ void RobotContainer::ConfigureBindings()
         }).IgnoringDisable(true)
     );
 
-    DriverControls();
-    OperatorControls();
 
-    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
-}
-
-// If this doesn't work, these all need to go back into ConfigureBindings()
-void RobotContainer::DriverControls()
-{
-    // Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    // Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
-    //    return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
-    // }));
-
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
-    //(Driver.Back() && Driver.Y()).WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    //(Driver.Back() && Driver.X()).WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
-    //(Driver.Start() && Driver.Y()).WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    //(Driver.Start() && Driver.X()).WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-
-    // reset the field-centric heading on left bumper press
-    //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
+    
     Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(56_tps).AndThen(Shooter_Sys->FeedShooter())));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
     Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));

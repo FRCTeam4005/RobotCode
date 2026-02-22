@@ -215,9 +215,7 @@ public:
      * \param request Function returning the request to apply
      * \returns Command to run
      */
-    template <typename RequestSupplier>
-        requires (!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) &&
-            requires(RequestSupplier req, TunerSwerveDrivetrain &drive) { drive.SetControl(req()); }
+    template <typename RequestSupplier>requires (!std::is_lvalue_reference_v<std::invoke_result_t<RequestSupplier>>) && requires(RequestSupplier req, TunerSwerveDrivetrain &drive) { drive.SetControl(req()); }
     frc2::CommandPtr ApplyRequest(RequestSupplier request)
     {
         return Run([this, request=std::move(request)] {
