@@ -25,7 +25,13 @@ void Robot::DisabledPeriodic()
     if (BodyTargetAvaliable())
     {
         m_container.drivetrain.ResetPose(BodyGetPose());
+
+        //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
+        auto UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
+        LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
     }
+    
+
 
 }
 
