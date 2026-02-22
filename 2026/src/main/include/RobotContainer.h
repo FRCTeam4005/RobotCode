@@ -40,7 +40,7 @@ public:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
     std::unique_ptr<Turret> Turret_Sys;
     RobotContainer();
-
+    void CalibrateSensors();
     frc2::CommandPtr GetAutonomousCommand();
 
 private:
@@ -53,4 +53,52 @@ private:
     void OperatorControls();
 
     double angle;
+
+
+
+
+
+    frc::Pose2d getAlliancePose(std::string CameraName)
+    {
+        frc::Pose2d CameraPose;
+
+
+        if (auto ally = frc::DriverStation::GetAlliance()) 
+        {
+            if (ally.value() == frc::DriverStation::Alliance::kRed) 
+            {
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(CameraName).pose;
+            }
+            if (ally.value() == frc::DriverStation::Alliance::kBlue) {
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
+            }
+        }
+        else 
+        {
+        }
+
+        frc::Pose2d BotPose = frc::Pose2d{CameraPose.X(), CameraPose.Y(), frc::Rotation2d{CameraPose.Rotation().Degrees()}};
+        return BotPose;
+    }
+
+    bool TurretTargetAvaliable()
+    {
+        return LimelightHelpers::getTV("limelight-turret") > 0;
+    }
+
+    //please just use m_TurretPose to reduce blocking calls to the network table
+    frc::Pose2d TurretGetPose()
+    {   
+        return getAlliancePose("limelight-turret");
+    }
+
+    bool BodyTargetAvaliable()
+    {
+        return LimelightHelpers::getTV("limelight-bodycam") > 0;
+    }
+
+    frc::Pose2d BodyGetPose()
+    {
+        return getAlliancePose("limelight-bodycam");
+    }
 };

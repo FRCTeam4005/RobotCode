@@ -139,24 +139,36 @@ void Turret::Track(std::function<frc::Pose2d()> getRobotPose)
   units::meter_t desiredY = 4.030_m;
 
   auto RobotPose = getRobotPose();
+  auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
 
   //combined pose that is the robots x and y but the cameras yaw
-  auto currentPose = frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{-TurretMotor->GetPosition().GetValue() + RobotPose.Rotation().Degrees()}};
+  auto currentPose = frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{TurretYaw}};
+
+  frc::SmartDashboard::PutNumber("Turret IMU YAW", TurretYaw.value());
 
 
-  auto Theta = atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()));
+  m_TurretPose = currentPose;
 
-  
 
-  auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
+  auto DeltaY = desiredY - currentPose.Y();
+  auto DeltaX = desiredX - currentPose.X();
+  frc::SmartDashboard::PutNumber("DeltaX", DeltaX.value());
+  frc::SmartDashboard::PutNumber("DeltaY", DeltaY.value());
+
+
+  auto Theta = -units::angle::radian_t{atan(((desiredY - currentPose.Y()) / (desiredX - currentPose.X())).value())};
+
+  frc::SmartDashboard::PutNumber("Theta", Theta.convert<units::degree>().value());
+
+  //[TODO] do liek if halfway down field invert theta
+
+  auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), Theta.convert<units::degree>().value());
 
 
   frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
-  frc::SmartDashboard::PutNumber("asdf X pose", currentPose.X().value());
-  frc::SmartDashboard::PutNumber("asdf Y pose", currentPose.Y().value());
-  frc::SmartDashboard::PutNumber("asdf yaw pose", currentPose.Rotation().Degrees().value());
-  frc::SmartDashboard::PutNumber("asdf yaw pose TURRET", -TurretMotor->GetPosition().GetValue().convert<units::degree>().value());
-  frc::SmartDashboard::PutNumber("asdf yaw pose BODY", RobotPose.Rotation().Degrees().value());
+
+  m_DesiredPoseField.SetRobotPose(frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{Theta}}});
+  frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
 
   if ((LimelightHelpers::getTV("limelight-turret")) == true)
   {

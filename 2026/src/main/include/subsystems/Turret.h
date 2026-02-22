@@ -30,6 +30,10 @@
 #include <Optional>
 #include <functional>
 
+#include <frc/smartdashboard/Field2d.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+
+
 class Turret : public frc2::SubsystemBase
 {
  public:
@@ -55,6 +59,10 @@ private:
     double feedforward;
     frc::Pose2d m_TurretCameraPose;
 
+    frc::Field2d m_field;
+    frc::Field2d m_DesiredPoseField;
+    frc::Pose2d m_TurretPose;
+
     
 
     void Periodic () override
@@ -65,6 +73,13 @@ private:
 
         //just update the camera pose once to reduce blocking calls
         m_TurretCameraPose = TurretGetPose();
+
+        // Do this in either robot or subsystem init
+        // Do this in either robot periodic or subsystem periodic
+
+        m_field.SetRobotPose(m_TurretPose);
+        frc::SmartDashboard::PutData("Field", &m_field);
+
 
         // tx = LimelightHelpers::getTX("limelight-turret");
         // frc::SmartDashboard::PutNumber("tx camera offset", tx);
