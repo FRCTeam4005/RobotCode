@@ -28,6 +28,7 @@
 #include <frc/geometry/Rotation2d.h>
 #include <frc/DriverStation.h>
 #include <Optional>
+#include <functional>
 
 class Turret : public frc2::SubsystemBase
 {
@@ -36,9 +37,10 @@ class Turret : public frc2::SubsystemBase
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     auto ShootDrivers() -> frc2::CommandPtr;
     auto GetPosition() -> units::angle::turn_t;
-    auto TrackTag() -> frc2::CommandPtr;
+    auto TrackTag(std::function<frc::Pose2d()> getRobotPose) -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
     auto m_getPose() -> frc::Pose2d;
+    auto CalibratePose() -> void;
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
@@ -51,6 +53,8 @@ private:
     bool target;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward;
+    frc::Pose2d m_TurretCameraPose;
+
     
 
     void Periodic () override
@@ -58,9 +62,9 @@ private:
 
 
         position = GetPosition();
-        frc::SmartDashboard::PutNumber("Turret Position", position.value());
-        
-        
+
+        //just update the camera pose once to reduce blocking calls
+        m_TurretCameraPose = TurretGetPose();
 
         // tx = LimelightHelpers::getTX("limelight-turret");
         // frc::SmartDashboard::PutNumber("tx camera offset", tx);
@@ -100,7 +104,7 @@ private:
 
     void SetTurretCommand(units::turn_t goal);
     
-    void Track();
+    void Track(std::function<frc::Pose2d()> getRobotPose);
     void Stop();
 
 
@@ -132,6 +136,7 @@ private:
         return LimelightHelpers::getTV("limelight-turret") > 0;
     }
 
+    //please just use m_TurretPose to reduce blocking calls to the network table
     frc::Pose2d TurretGetPose()
     {   
         return getAlliancePose("limelight-turret");

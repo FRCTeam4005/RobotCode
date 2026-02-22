@@ -17,7 +17,7 @@
 #define PH_CAN_ID 34
 
 class RobotContainer {
-private:
+    private:
     units::meters_per_second_t MaxSpeed = 0.5 * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
     units::radians_per_second_t MaxAngularRate = 0.75_tps; // 3/4 of a rotation per second max angular velocity
 
@@ -35,9 +35,10 @@ private:
     frc2::CommandXboxController Driver{0};
     frc2::CommandXboxController Operator{1};
 
+    
 public:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
-
+    std::unique_ptr<Turret> Turret_Sys;
     RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
@@ -51,6 +52,5 @@ private:
     void DriverControls();
     void OperatorControls();
 
-    std::unique_ptr<Turret> Turret_Sys;
     double angle;
 };

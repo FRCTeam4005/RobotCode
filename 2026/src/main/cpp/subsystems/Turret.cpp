@@ -1,5 +1,7 @@
 #include "subsystems/Turret.h"
+#include "subsystems/Drivetrain.h"
 #include <cmath>
+
 
 Turret::Turret()
 {
@@ -43,7 +45,7 @@ Turret::Turret()
 
     if(TurretTargetAvaliable() && BodyTargetAvaliable())
     {
-      //TurretPose = TurretGetPose
+      TurretMotor->SetPosition(TurretGetPose().Rotation().Degrees());
     }
     else
     {
@@ -57,15 +59,6 @@ Turret::Turret()
 
     SetName("Turret");
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -103,10 +96,10 @@ frc2::CommandPtr Turret::ShootDrivers() {
   ).ToPtr();
 }
 
-frc2::CommandPtr Turret::TrackTag() {
+frc2::CommandPtr Turret::TrackTag(std::function<frc::Pose2d()> getRobotPose) {
     return frc2::FunctionalCommand(
     [this] {},
-    [this] {Track();},
+    [this,getRobotPose] {Track(getRobotPose);},
     [this] (bool interrupted) {},
     [this] {return false;},
     {this}
@@ -124,19 +117,30 @@ frc2::CommandPtr Turret::StopTrackingTag() {
   ).ToPtr();
 }
 
-
-frc::Pose2d Turret::m_getPose()
+void Turret::CalibratePose()
 {
-  return LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2("limelight-turret").pose;
+  if(TurretTargetAvaliable() && BodyTargetAvaliable())
+  {
+    TurretMotor->SetPosition(TurretGetPose().Rotation().Degrees() - BodyGetPose().Rotation().Degrees());
+  }
+  else
+  {
+    TurretMotor->SetPosition(units::turn_t(0));
+  }
 }
 
 
-void Turret::Track() {
+void Turret::Track(std::function<frc::Pose2d()> getRobotPose) 
+{
 
   units::meter_t desiredX = 4.625_m;
   units::meter_t desiredY = 4.030_m;
 
-  auto currentPose = m_getPose();
+  auto RobotPose = getRobotPose();
+
+  //combined pose that is the robots x and y but the cameras yaw
+  auto currentPose = frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{m_TurretCameraPose.Rotation().Degrees()}};
+
 
   auto Theta = atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()));
 

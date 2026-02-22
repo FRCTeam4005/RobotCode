@@ -65,6 +65,11 @@ private:
 
     std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
 public:
+
+    frc::Pose2d getPose()
+    {
+        return drivePose;
+    }
     /**
      * Construct a telemetry object with the specified max speed of the robot.
      *

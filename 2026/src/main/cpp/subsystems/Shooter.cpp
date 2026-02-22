@@ -67,7 +67,6 @@ frc2::CommandPtr Shooter::FeedShooter()
   return frc2::FunctionalCommand(
     [this] {},
     [this] {
-      frc::SmartDashboard::SmartDashboard::PutNumber("asdasdfsadfsa",-1.0);
       SetKicker(-1.0);
     },
     [this] (bool interrupted){
