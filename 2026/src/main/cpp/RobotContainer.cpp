@@ -33,7 +33,7 @@ void RobotContainer::ConfigureBindings()
 void RobotContainer::DriverControls()
 {
 
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag([this](){return logger.})));
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag([this](){return drivetrain.GetState().Pose;})));
 
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
@@ -62,7 +62,7 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
+    //Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
     Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
     
     

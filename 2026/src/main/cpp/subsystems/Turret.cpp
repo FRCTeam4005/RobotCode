@@ -56,6 +56,8 @@ Turret::Turret()
     frc::SmartDashboard::PutNumber("FeedForward", 0.0);
     frc::SmartDashboard::PutNumber("Derivative", 0.0000);
 
+    feedforward = 0.001;
+
 
     SetName("Turret");
 }
@@ -139,7 +141,7 @@ void Turret::Track(std::function<frc::Pose2d()> getRobotPose)
   auto RobotPose = getRobotPose();
 
   //combined pose that is the robots x and y but the cameras yaw
-  auto currentPose = frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{m_TurretCameraPose.Rotation().Degrees()}};
+  auto currentPose = frc::Pose2d{RobotPose.X(),RobotPose.Y(),frc::Rotation2d{-TurretMotor->GetPosition().GetValue() + RobotPose.Rotation().Degrees()}};
 
 
   auto Theta = atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()));
@@ -150,6 +152,11 @@ void Turret::Track(std::function<frc::Pose2d()> getRobotPose)
 
 
   frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
+  frc::SmartDashboard::PutNumber("asdf X pose", currentPose.X().value());
+  frc::SmartDashboard::PutNumber("asdf Y pose", currentPose.Y().value());
+  frc::SmartDashboard::PutNumber("asdf yaw pose", currentPose.Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("asdf yaw pose TURRET", -TurretMotor->GetPosition().GetValue().convert<units::degree>().value());
+  frc::SmartDashboard::PutNumber("asdf yaw pose BODY", RobotPose.Rotation().Degrees().value());
 
   if ((LimelightHelpers::getTV("limelight-turret")) == true)
   {
