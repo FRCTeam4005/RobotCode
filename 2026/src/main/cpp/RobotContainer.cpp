@@ -39,7 +39,7 @@ void RobotContainer::DriverControls()
         drivetrain.ApplyRequest([this]() -> auto&& {
             return drive.WithVelocityX(-Driver.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                 .WithVelocityY(-Driver.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(-Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                .WithRotationalRate(Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
         })
     );
 
