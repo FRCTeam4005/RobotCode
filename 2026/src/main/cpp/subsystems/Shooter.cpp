@@ -30,26 +30,19 @@ Shooter::Shooter()
 
 void Shooter::SetShooterSpeeds(units::turns_per_second_t TPS) 
 {
-  if (double(TPS) != 0) 
+
+  if(TPS.value() != 0)
   {
-    pid.kV = ShooterConstants::kShooterFF;
-    pid.kP = ShooterConstants::kShooterP;
-    pid.kI = ShooterConstants::kShooterI;
-    pid.kD = ShooterConstants::kShooterD;
-    LeftMotor->GetConfigurator().Apply(pid);
-    RightMotor->GetConfigurator().Apply(pid);
+    ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
+    LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
+    RightMotor->SetControl(m_velocity.WithVelocity(TPS));
   }
-  else {
-    pid.kV = 0;
-    pid.kP = 0;
-    pid.kI = 0;
-    pid.kD = 0;
-    LeftMotor->GetConfigurator().Apply(pid);
-    RightMotor->GetConfigurator().Apply(pid);
+  else 
+  {
+    LeftMotor->SetVoltage(0_V);
+    RightMotor->SetVoltage(0_V);
   }
-  ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
-  LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
-  RightMotor->SetControl(m_velocity.WithVelocity(TPS));
+
 }
 
 void Shooter::SetKicker(double voltage)
