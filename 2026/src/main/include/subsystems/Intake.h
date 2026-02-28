@@ -18,8 +18,6 @@
 #include <iostream>
 #include <frc/DoubleSolenoid.h>
 
-#define SOLENOID_FORWARD_CHANNEL 0
-#define SOLENOID_REVERSE_CHANNEL 1
 
 class Intake : public frc2::SubsystemBase
 {
@@ -28,8 +26,9 @@ class Intake : public frc2::SubsystemBase
   auto FuelUp() -> frc2::CommandPtr; //Pick up fuel, intake in
   auto FuelOut() -> frc2::CommandPtr; //Feed fuel to shooter
   auto Stop() -> frc2::CommandPtr; //Stop intaking
-  auto IntakeOut() -> frc2::CommandPtr;
+  auto IntakeToggle() -> frc2::CommandPtr;
   auto IntakeIn() -> frc2::CommandPtr;
+  auto IntakeOut() -> frc2::CommandPtr;
   
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeMotor;
