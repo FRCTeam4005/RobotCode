@@ -67,7 +67,7 @@ private:
         {
             if (ally.value() == frc::DriverStation::Alliance::kRed) 
             {
-                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(CameraName).pose;
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
             }
             if (ally.value() == frc::DriverStation::Alliance::kBlue) {
                 CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;

@@ -13,7 +13,7 @@ RobotContainer::RobotContainer()
 {
     
 
-    Turret_Sys = std::make_unique<Turret>();
+    Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;});
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
 
@@ -33,7 +33,7 @@ void RobotContainer::ConfigureBindings()
 void RobotContainer::DriverControls()
 {
 
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag([this](){return drivetrain.GetState().Pose;})));
+    // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag()));
 
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
@@ -55,8 +55,8 @@ void RobotContainer::DriverControls()
 
     
     Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(56_tps).AndThen(Shooter_Sys->FeedShooter())));
-    Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
+    // Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
+    // Driver.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
     // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 }
 
@@ -96,8 +96,10 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 
 void RobotContainer::CalibrateSensors()
 {
+    double UnstableYaw;
+
     //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    auto UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
+    UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
     LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
 
     //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time

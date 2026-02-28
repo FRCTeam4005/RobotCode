@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-Turret::Turret()
+Turret::Turret(std::function<frc::Pose2d()> getRobotPose) : getRobotBodyPose{getRobotPose}
 {
     TurretMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kTurretMotorID);
     ctre::phoenix6::configs::TalonFXConfiguration turret_cfg{};
@@ -62,51 +62,56 @@ Turret::Turret()
     SetName("Turret");
 }
 
+void Turret::Periodic ()
+{
+  position = getTurretPosition();
+  m_TurretCameraPose = TurretGetPose();
+
+  m_RobotPose = getRobotBodyPose();
 
 
-void Turret::SetTurretCommand(units::turn_t goal) {
-  while (double(goal) < -0.5) {
-    goal = goal + units::turn_t(1.0);
-  }
-  while(double(goal) > 0.5) {
-    goal = goal - units::turn_t(1.0);
-  }
-  TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
+  CalculateTheta({0_m,0_m});
+
+  auto RobotFieldPose = m_RobotPose;
+  // if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
+  // {
+  //   m_Theta = m_Theta + 180;
+  // }
+  auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
+  m_TurretPose =  frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),{TurretYaw}};
+
+  auto desiredRobotPose = frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{m_Theta}}};
+
+  m_field.SetRobotPose(RobotFieldPose);
+  frc::SmartDashboard::PutData("Current Filed State", &m_field);
+
+  m_DesiredPoseField.SetRobotPose(desiredRobotPose);
+  frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
 }
 
-units::turn_t Turret::GetPosition() {
-    return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
+
+
+
+
+
+
+
+
+
+
+units::turn_t Turret::getTurretPosition() {
+  return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
 }
 
-frc2::CommandPtr Turret::Move(units::turn_t goal) {
-    return frc2::FunctionalCommand(
-    [this] {},
-    [goal, this] {SetTurretCommand(position + goal);},
-    [this] (bool interrupted) {},
-    [goal, this] {return true;},
-    {this}
-  ).ToPtr();
-}
-
-frc2::CommandPtr Turret::ShootDrivers() {
-    return frc2::FunctionalCommand(
-    [this] {},
-    [this] {SetTurretCommand(units::turn_t(angle));},
-    [this] (bool interrupted) {},
-    [this] {return false;},
-    {this}
-  ).ToPtr();
-}
-
-frc2::CommandPtr Turret::TrackTag(std::function<frc::Pose2d()> getRobotPose) {
-    return frc2::FunctionalCommand(
-    [this] {},
-    [this,getRobotPose] {Track(getRobotPose);},
-    [this] (bool interrupted) {},
-    [this] {return false;},
-    {this}
-  ).ToPtr();
-}
+// frc2::CommandPtr Turret::TrackTag() {
+//     return frc2::FunctionalCommand(
+//     [this] {},
+//     [this] {Track();},
+//     [this] (bool interrupted) {},
+//     [this] {return false;},
+//     {this}
+//   ).ToPtr();
+// }
 
 
 frc2::CommandPtr Turret::StopTrackingTag() {
@@ -132,13 +137,26 @@ void Turret::CalibratePose()
 }
 
 
-void Turret::Track(std::function<frc::Pose2d()> getRobotPose) 
+void Turret::CalculateTheta(frc::Translation2d TargetPose)
+{
+  frc::Translation2d DeltaPose{TargetPose.X() - m_TurretPose.X() ,TargetPose.Y() - m_TurretPose.Y()};
+
+  m_Theta = atan((DeltaPose.Y() / DeltaPose.X()).value()) * (180/3.14);
+
+  frc::SmartDashboard::PutNumber("Delta Pose X", DeltaPose.X().value());
+  frc::SmartDashboard::PutNumber("Delta Pose Y", DeltaPose.Y().value());
+  m_Theta = TargetPose.X() < m_TurretPose.X() ? m_Theta + 180 : m_Theta; 
+  
+  frc::SmartDashboard::PutNumber("Delta Pose Theta", m_Theta);
+}
+
+void Turret::Track() 
 {
 
   units::meter_t desiredX = 4.625_m;
   units::meter_t desiredY = 4.030_m;
 
-  auto RobotPose = getRobotPose();
+  auto RobotPose = getRobotBodyPose();
   auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
 
   //combined pose that is the robots x and y but the cameras yaw

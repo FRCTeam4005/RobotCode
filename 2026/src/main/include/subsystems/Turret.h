@@ -33,14 +33,18 @@
 #include <frc/smartdashboard/Field2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+#define BLUE_LINE_COORD 4.625594_m
+#define RED_LINE_COORD  11.9_m
+#define MID_FIELD_LINE 4.0211375_m
+
 
 class Turret : public frc2::SubsystemBase
 {
  public:
-    Turret();
+    Turret(std::function<frc::Pose2d()> getRobotPose);
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     auto ShootDrivers() -> frc2::CommandPtr;
-    auto GetPosition() -> units::angle::turn_t;
+    auto getTurretPosition() -> units::angle::turn_t;
     auto TrackTag(std::function<frc::Pose2d()> getRobotPose) -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
     auto m_getPose() -> frc::Pose2d;
@@ -51,76 +55,31 @@ private:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
     std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
     ctre::phoenix6::controls::MotionMagicVoltage elevate_mmReq{0_tr};
+
+
     units::turn_t position;
     double angle;
     double tx;
     bool target;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward;
-    frc::Pose2d m_TurretCameraPose;
-
+    
     frc::Field2d m_field;
     frc::Field2d m_DesiredPoseField;
+    frc::Pose2d m_TurretCameraPose;
     frc::Pose2d m_TurretPose;
+    frc::Pose2d m_RobotPose;
 
-    
+    double m_Theta;
 
-    void Periodic () override
-    {
-
-
-        position = GetPosition();
-
-        //just update the camera pose once to reduce blocking calls
-        m_TurretCameraPose = TurretGetPose();
-
-        // Do this in either robot or subsystem init
-        // Do this in either robot periodic or subsystem periodic
-
-        m_field.SetRobotPose(m_TurretPose);
-        frc::SmartDashboard::PutData("Field", &m_field);
+    std::function<frc::Pose2d()> getRobotBodyPose;
+    void Periodic () override;
+    auto Track()  -> void;
+    auto Stop() -> void;
+    auto CalculateTheta(frc::Translation2d TargetPose) -> void;
 
 
-        // tx = LimelightHelpers::getTX("limelight-turret");
-        // frc::SmartDashboard::PutNumber("tx camera offset", tx);
-        // target = LimelightHelpers::getTV("limelight-turret");
-        // frc::SmartDashboard::PutBoolean("Target Detected", target);
-        
-        // units::meter_t desiredX = 4.625_m;
-        // units::meter_t desiredY = 4.030_m;
 
-        // auto currentPose = m_getPose();
-        // if (target)
-        // {
-        // frc::SmartDashboard::PutNumber("Desired X", double(desiredX));
-        // frc::SmartDashboard::PutNumber("Desired Y", double(desiredY));
-        // frc::SmartDashboard::PutNumber("Current Y", currentPose.Y().value());
-        // frc::SmartDashboard::PutNumber("Current X", currentPose.X().value());
-
-        // frc::SmartDashboard::PutNumber("Delta Y", double(double(desiredY) - currentPose.Y().value()));
-        // frc::SmartDashboard::PutNumber("Delta X", double(double(desiredX) - currentPose.X().value()));
-
-        
-
-        // auto Theta = (atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()))*180)/3.14;
-        // angle = ((Theta - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
-        // frc::SmartDashboard::PutNumber("Angle", angle);
-
-
-        // auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
-
-
-        // frc::SmartDashboard::PutNumber("current degrees", currentPose.Rotation().Degrees().value());
-        // //frc::SmartDashboard::PutNumber("Desired Degrees", units::radian_t(Theta).convert<units::degree>().value());
-        // frc::SmartDashboard::PutNumber("Desired Degrees", Theta);
-        // frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
-        // }
-    }
-
-    void SetTurretCommand(units::turn_t goal);
-    
-    void Track(std::function<frc::Pose2d()> getRobotPose);
-    void Stop();
 
 
     frc::Pose2d getAlliancePose(std::string CameraName)
@@ -132,7 +91,7 @@ private:
         {
             if (ally.value() == frc::DriverStation::Alliance::kRed) 
             {
-                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(CameraName).pose;
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
             }
             if (ally.value() == frc::DriverStation::Alliance::kBlue) {
                 CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
