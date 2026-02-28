@@ -2,7 +2,10 @@
 
 
 Intake::Intake()
-:m_doubleSolenoid(CANConstants::kPneumaticHub,frc::PneumaticsModuleType::REVPH,0,1)
+:m_doubleSolenoid( CANConstants::kPneumaticHub,
+                   frc::PneumaticsModuleType::REVPH,
+                   PneumaticsChannelConst::kIntakeInChannel,
+                   PneumaticsChannelConst::kIntakeOutChannel )
 {
   IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
   ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);

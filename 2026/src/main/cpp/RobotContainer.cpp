@@ -32,7 +32,6 @@ void RobotContainer::ConfigureBindings()
 // If this doesn't work, these all need to go back into ConfigureBindings()
 void RobotContainer::DriverControls()
 {
-
     Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag([this](){return drivetrain.GetState().Pose;})));
 
     drivetrain.SetDefaultCommand(
@@ -56,7 +55,7 @@ void RobotContainer::DriverControls()
     
     Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(56_tps).AndThen(Shooter_Sys->FeedShooter())));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));  //TODO: Make this automatic with current draw
     // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 }
 
