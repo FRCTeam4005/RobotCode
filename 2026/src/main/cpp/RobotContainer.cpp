@@ -11,6 +11,8 @@
 
 RobotContainer::RobotContainer()
 {
+    
+
     Turret_Sys = std::make_unique<Turret>();
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
@@ -20,14 +22,25 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::ConfigureBindings()
 {
-    // Note that X is defined as forward according to WPILib convention,
-    // and Y is defined as to the left according to WPILib convention.
+
+    DriverControls();
+    OperatorControls();
+
+    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+}
+
+// If this doesn't work, these all need to go back into ConfigureBindings()
+void RobotContainer::DriverControls()
+{
+
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag([this](){return drivetrain.GetState().Pose;})));
+
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.ApplyRequest([this]() -> auto&& {
             return drive.WithVelocityX(-Driver.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                 .WithVelocityY(-Driver.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(-Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                .WithRotationalRate(Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
         })
     );
 
@@ -39,40 +52,19 @@ void RobotContainer::ConfigureBindings()
         }).IgnoringDisable(true)
     );
 
-    DriverControls();
-    OperatorControls();
 
-    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
-}
-
-// If this doesn't work, these all need to go back into ConfigureBindings()
-void RobotContainer::DriverControls()
-{
-    // Driver.A().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    // Driver.B().WhileTrue(drivetrain.ApplyRequest([this]() -> auto&& {
-    //    return point.WithModuleDirection(frc::Rotation2d{-Driver.GetLeftY(), -Driver.GetLeftX()});
-    // }));
-
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
-    //(Driver.Back() && Driver.Y()).WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    //(Driver.Back() && Driver.X()).WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
-    //(Driver.Start() && Driver.Y()).WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    //(Driver.Start() && Driver.X()).WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-
-    // reset the field-centric heading on left bumper press
-    //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
-    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
+    
+    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(56_tps).AndThen(Shooter_Sys->FeedShooter())));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-    //Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
+    // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 }
 
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
+    //Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
     Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
+    
     
     
 
@@ -99,4 +91,20 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
         // Finally idle for the rest of auton
         drivetrain.ApplyRequest([] { return swerve::requests::Idle{}; })
     );
+}
+
+void RobotContainer::CalibrateSensors()
+{
+    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
+    auto UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
+    LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
+
+    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
+    UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
+    LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
+
+    //set the pose of the drive train pose to match with the 
+    drivetrain.ResetPose(BodyGetPose());
+
+    Turret_Sys->CalibratePose();
 }

@@ -12,6 +12,7 @@
 #include <frc2/command/button/Trigger.h>
 #include <units/angle.h>
 #include <units/voltage.h>
+#include <units/angle.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/DigitalInput.h>
@@ -23,6 +24,14 @@
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/controller/PIDController.h>
 #include "LimelightHelpers.h"
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Rotation2d.h>
+#include <frc/DriverStation.h>
+#include <Optional>
+#include <functional>
+
+#include <frc/smartdashboard/Field2d.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 
 class Turret : public frc2::SubsystemBase
@@ -32,8 +41,10 @@ class Turret : public frc2::SubsystemBase
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     auto ShootDrivers() -> frc2::CommandPtr;
     auto GetPosition() -> units::angle::turn_t;
-    auto TrackTag() -> frc2::CommandPtr;
+    auto TrackTag(std::function<frc::Pose2d()> getRobotPose) -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
+    auto m_getPose() -> frc::Pose2d;
+    auto CalibratePose() -> void;
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
@@ -46,25 +57,113 @@ private:
     bool target;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward;
+    frc::Pose2d m_TurretCameraPose;
+
+    frc::Field2d m_field;
+    frc::Field2d m_DesiredPoseField;
+    frc::Pose2d m_TurretPose;
+
+    
 
     void Periodic () override
     {
-        frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
-        position = GetPosition();
-        angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
-        frc::SmartDashboard::PutNumber("Angle", angle);
 
-        tx = LimelightHelpers::getTX("limelight-turret");
-        frc::SmartDashboard::PutNumber("offset", tx);
-        target = LimelightHelpers::getTV("limelight-turret");
-        frc::SmartDashboard::PutBoolean("Target Detected", target);
-        //turret_controller->SetP(frc::SmartDashboard::GetNumber("Prop", 0));
-        //feedforward = frc::SmartDashboard::GetNumber("Feedforward", 0);
-        //turret_controller->SetD(frc::SmartDashboard::GetNumber("Derivative", 0));
+
+        position = GetPosition();
+
+        //just update the camera pose once to reduce blocking calls
+        m_TurretCameraPose = TurretGetPose();
+
+        // Do this in either robot or subsystem init
+        // Do this in either robot periodic or subsystem periodic
+
+        m_field.SetRobotPose(m_TurretPose);
+        frc::SmartDashboard::PutData("Field", &m_field);
+
+
+        // tx = LimelightHelpers::getTX("limelight-turret");
+        // frc::SmartDashboard::PutNumber("tx camera offset", tx);
+        // target = LimelightHelpers::getTV("limelight-turret");
+        // frc::SmartDashboard::PutBoolean("Target Detected", target);
+        
+        // units::meter_t desiredX = 4.625_m;
+        // units::meter_t desiredY = 4.030_m;
+
+        // auto currentPose = m_getPose();
+        // if (target)
+        // {
+        // frc::SmartDashboard::PutNumber("Desired X", double(desiredX));
+        // frc::SmartDashboard::PutNumber("Desired Y", double(desiredY));
+        // frc::SmartDashboard::PutNumber("Current Y", currentPose.Y().value());
+        // frc::SmartDashboard::PutNumber("Current X", currentPose.X().value());
+
+        // frc::SmartDashboard::PutNumber("Delta Y", double(double(desiredY) - currentPose.Y().value()));
+        // frc::SmartDashboard::PutNumber("Delta X", double(double(desiredX) - currentPose.X().value()));
+
+        
+
+        // auto Theta = (atan((desiredY.value() - currentPose.Y().value()) / (desiredX.value() - currentPose.X().value()))*180)/3.14;
+        // angle = ((Theta - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
+        // frc::SmartDashboard::PutNumber("Angle", angle);
+
+
+        // auto desiredOutput = turret_controller->Calculate(currentPose.Rotation().Degrees().value(), units::radian_t(Theta).convert<units::degree>().value());
+
+
+        // frc::SmartDashboard::PutNumber("current degrees", currentPose.Rotation().Degrees().value());
+        // //frc::SmartDashboard::PutNumber("Desired Degrees", units::radian_t(Theta).convert<units::degree>().value());
+        // frc::SmartDashboard::PutNumber("Desired Degrees", Theta);
+        // frc::SmartDashboard::PutNumber("Turret COntroll Output", desiredOutput);
+        // }
     }
 
     void SetTurretCommand(units::turn_t goal);
     
-    void Track(double tx);
+    void Track(std::function<frc::Pose2d()> getRobotPose);
     void Stop();
+
+
+    frc::Pose2d getAlliancePose(std::string CameraName)
+    {
+        frc::Pose2d CameraPose;
+
+
+        if (auto ally = frc::DriverStation::GetAlliance()) 
+        {
+            if (ally.value() == frc::DriverStation::Alliance::kRed) 
+            {
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(CameraName).pose;
+            }
+            if (ally.value() == frc::DriverStation::Alliance::kBlue) {
+                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
+            }
+        }
+        else 
+        {
+        }
+
+        frc::Pose2d BotPose = frc::Pose2d{CameraPose.X(), CameraPose.Y(), frc::Rotation2d{CameraPose.Rotation().Degrees()}};
+        return BotPose;
+    }
+
+    bool TurretTargetAvaliable()
+    {
+        return LimelightHelpers::getTV("limelight-turret") > 0;
+    }
+
+    //please just use m_TurretPose to reduce blocking calls to the network table
+    frc::Pose2d TurretGetPose()
+    {   
+        return getAlliancePose("limelight-turret");
+    }
+
+    bool BodyTargetAvaliable()
+    {
+        return LimelightHelpers::getTV("limelight-bodycam") > 0;
+    }
+
+    frc::Pose2d BodyGetPose()
+    {
+        return getAlliancePose("limelight-bodycam");
+    }
 };
