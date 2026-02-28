@@ -20,25 +20,26 @@ class Shooter : public frc2::SubsystemBase
  public:
   Shooter();
 
-  auto SetShootSpeed() -> frc2::CommandPtr;
+  auto SetShootSpeed(units::turns_per_second_t speed) -> frc2::CommandPtr;
+  auto FeedShooter() -> frc2::CommandPtr;
   
   
 private:
 
   void Periodic() override
   {
-    frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", LeftMotor->GetVelocity().GetValueAsDouble());
+    frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", RightMotor->GetVelocity().GetValueAsDouble());
   }
 
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
 
-  units::turns_per_second_t GetShooterSpeed();
   
-  void SetShooterSpeeds(units::turns_per_second_t speed) ;
 
-  void SetShooterSpeeds(double speed) ;
+  ctre::phoenix6::configs::Slot0Configs pid;
+  double GetShooterSpeed(); 
+  void SetShooterSpeeds(units::turns_per_second_t speed) ;
 
   void SetKicker(double voltage);
 };

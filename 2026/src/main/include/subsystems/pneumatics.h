@@ -11,17 +11,9 @@ class Pneumatics
 {
 public:
   Pneumatics();
-
-
-
-
-
-private:
-
-  frc::Compressor m_compressor;
-
   
-
+private:
+  frc::PneumaticHub pnH{CANConstants::kPneumaticHub};
 };
 
 #endif
