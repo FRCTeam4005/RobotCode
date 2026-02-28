@@ -16,7 +16,7 @@ Shooter::Shooter()
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
- m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
   LeftMotor->SetNeutralMode(0);
   RightMotor->SetNeutralMode(0);
 

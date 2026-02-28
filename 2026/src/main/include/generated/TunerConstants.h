@@ -27,8 +27,9 @@ namespace CANConstants {
 }
 
 namespace PneumaticsChannelConst {
-    inline const int kIntakeOutChannel{1};
     inline const int kIntakeInChannel{0};
+    inline const int kIntakeOutChannel{1};
+    
     inline const int kShooterUpChannel{2};
     inline const int kShooterDownChannel{3};
 }
