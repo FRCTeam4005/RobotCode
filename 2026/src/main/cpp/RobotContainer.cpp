@@ -13,7 +13,7 @@ RobotContainer::RobotContainer()
 {
     
 
-    Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;});
+    Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;},[this](frc::Pose2d visionRobotPose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(visionRobotPose,Timestamp);});
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
 
@@ -33,7 +33,7 @@ void RobotContainer::ConfigureBindings()
 void RobotContainer::DriverControls()
 {
 
-    // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->TrackTag()));
+    Driver.RightTrigger(0.5).OnTrue(std::move(Turret_Sys->TrackTag())).OnFalse(std::move(Turret_Sys->StopTrackingTag()));
 
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically

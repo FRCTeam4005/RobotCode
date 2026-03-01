@@ -34,18 +34,18 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 #define BLUE_LINE_COORD 4.625594_m
-#define RED_LINE_COORD  11.9_m
+#define RED_LINE_COORD  11.888_m
 #define MID_FIELD_LINE 4.0211375_m
 
 
 class Turret : public frc2::SubsystemBase
 {
  public:
-    Turret(std::function<frc::Pose2d()> getRobotPose);
+    Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc::Pose2d, units::time::second_t)> setVisionMeasurement);
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     auto ShootDrivers() -> frc2::CommandPtr;
     auto getTurretPosition() -> units::angle::turn_t;
-    auto TrackTag(std::function<frc::Pose2d()> getRobotPose) -> frc2::CommandPtr;
+    auto TrackTag() -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
     auto m_getPose() -> frc::Pose2d;
     auto CalibratePose() -> void;
@@ -55,23 +55,34 @@ private:
     subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
     std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
     ctre::phoenix6::controls::MotionMagicVoltage elevate_mmReq{0_tr};
-
-
+    
+    
+    
     units::turn_t position;
     double angle;
     double tx;
     bool target;
     std::unique_ptr<frc::PIDController> turret_controller;
-    double feedforward;
+    double feedforward = 0.025;
     
     frc::Field2d m_field;
     frc::Field2d m_DesiredPoseField;
     frc::Pose2d m_TurretCameraPose;
     frc::Pose2d m_TurretPose;
     frc::Pose2d m_RobotPose;
-
+    
     double m_Theta;
-
+    
+    const frc::Translation2d SauronBlue = frc::Translation2d(BLUE_LINE_COORD, 4.034663_m);
+    const frc::Translation2d LeftPassBlue = frc::Translation2d(1_m, 1_m);
+    const frc::Translation2d RightPassBlue = frc::Translation2d(1_m, 7_m);
+    
+    const frc::Translation2d SauronRed = frc::Translation2d(11.888_m, 4.034663_m);
+    const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1_m);
+    const frc::Translation2d RightPassRed = frc::Translation2d(15.5_m, 7_m);
+    
+    
+    std::function<void(frc::Pose2d, units::time::second_t)> setRobotBodyVisionMeasurement;
     std::function<frc::Pose2d()> getRobotBodyPose;
     void Periodic () override;
     auto Track()  -> void;
