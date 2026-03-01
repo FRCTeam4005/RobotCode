@@ -96,18 +96,18 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 
 void RobotContainer::CalibrateSensors()
 {
-    double UnstableYaw;
+    // double UnstableYaw;
 
     //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
-    LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
+    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
+    // LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
 
     //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
-    LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
+    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
+    // LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
 
     //set the pose of the drive train pose to match with the 
     drivetrain.ResetPose(BodyGetPose());
 
-    Turret_Sys->CalibratePose();
+    // Turret_Sys->CalibratePose();
 }

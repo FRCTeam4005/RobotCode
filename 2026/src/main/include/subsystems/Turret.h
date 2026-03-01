@@ -62,6 +62,7 @@ private:
     double angle;
     double tx;
     bool target;
+    double omega;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward = 0.025;
     
@@ -74,11 +75,11 @@ private:
     double m_Theta;
     
     const frc::Translation2d SauronBlue = frc::Translation2d(BLUE_LINE_COORD, 4.034663_m);
-    const frc::Translation2d LeftPassBlue = frc::Translation2d(1_m, 1_m);
+    const frc::Translation2d LeftPassBlue = frc::Translation2d(1_m, 1.5_m);
     const frc::Translation2d RightPassBlue = frc::Translation2d(1_m, 7_m);
     
     const frc::Translation2d SauronRed = frc::Translation2d(11.888_m, 4.034663_m);
-    const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1_m);
+    const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1.5_m);
     const frc::Translation2d RightPassRed = frc::Translation2d(15.5_m, 7_m);
     
     
@@ -97,21 +98,7 @@ private:
     frc::Pose2d getAlliancePose(std::string CameraName)
     {
         frc::Pose2d CameraPose;
-
-
-        if (auto ally = frc::DriverStation::GetAlliance()) 
-        {
-            if (ally.value() == frc::DriverStation::Alliance::kRed) 
-            {
-                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
-            }
-            if (ally.value() == frc::DriverStation::Alliance::kBlue) {
-                CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
-            }
-        }
-        else 
-        {
-        }
+        CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
 
         frc::Pose2d BotPose = frc::Pose2d{CameraPose.X(), CameraPose.Y(), frc::Rotation2d{CameraPose.Rotation().Degrees()}};
         return BotPose;
