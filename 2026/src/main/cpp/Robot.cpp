@@ -15,6 +15,15 @@ void Robot::RobotPeriodic() {
     m_timeAndJoystickReplay.Update();
     frc2::CommandScheduler::GetInstance().Run();
 
+    m_chooser.SetDefaultOption(AvaliablePathPlannerAutos[1],AvaliablePathPlannerAutos[1]);
+    for(auto Path : AvaliablePathPlannerAutos)
+    {
+        m_chooser.AddOption(Path, Path);
+
+    }
+
+  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+
     /*
      * This example of adding Limelight is very simple and may not be sufficient for on-field use.
      * Users typically need to provide a standard deviation that scales with the distance to target

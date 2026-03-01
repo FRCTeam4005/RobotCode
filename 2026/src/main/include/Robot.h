@@ -33,6 +33,7 @@ private:
     static constexpr bool kUseLimelight = false;
 
     frc2::Command *m_autonomousCommand;
+    frc::SendableChooser<std::string> m_chooser;
 
     RobotContainer m_container;
 
@@ -40,4 +41,11 @@ private:
     ctre::phoenix6::HootAutoReplay m_timeAndJoystickReplay = ctre::phoenix6::HootAutoReplay{}
         .WithTimestampReplay()
         .WithJoystickReplay();
+    
+    std::vector<std::string> AvaliablePathPlannerAutos =
+    {
+        "Left Auto",
+        "Right Auto",
+        "New Auto"
+    };
 };

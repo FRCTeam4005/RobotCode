@@ -17,7 +17,7 @@ RobotContainer::RobotContainer()
     Intake_Sys = std::make_unique<Intake>();
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("Tests");
-    frc::SmartDashboard::PutData("Auto Mode", &autoChooser);
+    frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
 
     ConfigureBindings();
 }

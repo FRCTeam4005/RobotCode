@@ -2,8 +2,8 @@
 #include <frc/MathUtil.h>
 #include <units/angle.h>
 #include <units/dimensionless.h>
-#include "subsystems/LimeLightHelpers/LimelightHelpers.h"
-#include "Constants.h"
+#include "LimelightHelpers.h"
+#include "generated/TunerConstants.h"
 
 //TODO: Test that an overrun error is not occuring
 LimeLight::LimeLight(LimeLightData* limelightdata, std::string tableName)
