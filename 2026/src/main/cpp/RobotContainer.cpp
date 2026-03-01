@@ -16,7 +16,7 @@ RobotContainer::RobotContainer()
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
 
-    autoChooser = pathplanner::AutoBuilder::buildAutoChooser("Tests");
+    autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
 
     ConfigureBindings();
@@ -68,7 +68,6 @@ void RobotContainer::DriverControls()
     //Driver.LeftBumper().OnTrue(drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(); }));
     Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed()));
     Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
-    //Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
 }
 
 void RobotContainer::OperatorControls()
@@ -77,12 +76,6 @@ void RobotContainer::OperatorControls()
     Operator.B().OnTrue(std::move(Turret_Sys->TrackTag()));
     Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
     Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
-    
-    
-
-    //Hoping this will face the turret to the drivers
-    //Change the 4096 to however many "ticks" are in one full revolution of the turret
-    //Operator.A().OnTrue(std::move(Turret_Sys->ShootDrivers()));
     
 }
 
