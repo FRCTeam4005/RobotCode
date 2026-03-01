@@ -7,12 +7,16 @@ using namespace ShooterConstants;
 using namespace CANConstants;
 
 Shooter::Shooter()
+:m_doubleSolenoid( CANConstants::kPneumaticHub,
+                   frc::PneumaticsModuleType::REVPH,
+                   PneumaticsChannelConst::kShooterDownChannel,
+                   PneumaticsChannelConst::kShooterUpChannel )
 {
 
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
-
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
   LeftMotor->SetNeutralMode(0);
   RightMotor->SetNeutralMode(0);
 
@@ -80,6 +84,28 @@ frc2::CommandPtr Shooter::FeedShooter()
 double Shooter::GetShooterSpeed() 
 {
   return RightMotor->GetVelocity().GetValueAsDouble();
+}
+
+frc2::CommandPtr Shooter::ShooterToggle()
+{
+  return this->RunOnce(
+    [this] {m_doubleSolenoid.Toggle(); }
+  );
+
+}
+frc2::CommandPtr Shooter::ShooterUp()
+{
+  return this->RunOnce(
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
+  );
+
+}
+frc2::CommandPtr Shooter::ShooterDown()
+{
+  return this->RunOnce(
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
+  );
+
 }
 
 

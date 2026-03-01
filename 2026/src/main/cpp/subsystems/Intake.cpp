@@ -2,7 +2,10 @@
 
 
 Intake::Intake()
-:m_doubleSolenoid(CANConstants::kPneumaticHub,frc::PneumaticsModuleType::REVPH,0,1)
+:m_doubleSolenoid( CANConstants::kPneumaticHub,
+                   frc::PneumaticsModuleType::REVPH,
+                   PneumaticsChannelConst::kIntakeOutChannel,
+                   PneumaticsChannelConst::kIntakeInChannel )
 {
   IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
   ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
@@ -47,7 +50,7 @@ frc2::CommandPtr Intake::Stop()
   );
 }
 
-frc2::CommandPtr Intake::IntakeOut()
+frc2::CommandPtr Intake::IntakeToggle()
 {
   return this->RunOnce(
     [this] {m_doubleSolenoid.Toggle(); }
@@ -58,6 +61,13 @@ frc2::CommandPtr Intake::IntakeIn()
 {
   return this->RunOnce(
     [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
+  );
+
+}
+frc2::CommandPtr Intake::IntakeOut()
+{
+  return this->RunOnce(
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
   );
 
 }

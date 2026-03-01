@@ -14,6 +14,7 @@
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/DoubleSolenoid.h>
 
 class Shooter : public frc2::SubsystemBase 
 {
@@ -23,6 +24,10 @@ class Shooter : public frc2::SubsystemBase
   auto SetShootSpeed(units::turns_per_second_t speed) -> frc2::CommandPtr;
   auto FeedShooter() -> frc2::CommandPtr;
   
+  auto ShooterToggle() -> frc2::CommandPtr;
+  auto ShooterUp() -> frc2::CommandPtr;
+  auto ShooterDown() -> frc2::CommandPtr;
+
   
 private:
 
@@ -35,7 +40,8 @@ private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
 
-  
+  frc::DoubleSolenoid m_doubleSolenoid;
+
 
   ctre::phoenix6::configs::Slot0Configs pid;
   double GetShooterSpeed(); 

@@ -26,6 +26,14 @@ namespace CANConstants {
     //inline const int kClimberRightID{31};
 }
 
+namespace PneumaticsChannelConst {
+    inline const int kIntakeInChannel{0};
+    inline const int kIntakeOutChannel{1};
+    
+    inline const int kShooterUpChannel{2};
+    inline const int kShooterDownChannel{3};
+}
+
 namespace ShooterConstants
 {
     const double kShooterFF = 0.12;
