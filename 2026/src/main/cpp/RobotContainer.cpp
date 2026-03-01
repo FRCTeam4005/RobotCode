@@ -32,8 +32,8 @@ void RobotContainer::ConfigureBindings()
 // If this doesn't work, these all need to go back into ConfigureBindings()
 void RobotContainer::DriverControls()
 {
-
-    Driver.RightTrigger(0.5).OnTrue(std::move(Turret_Sys->TrackTag())).OnFalse(std::move(Turret_Sys->StopTrackingTag()));
+    Driver.RightTrigger(0.5).WhileTrue(Turret_Sys->ShootDrivers());
+    //Driver.RightTrigger(0.5).OnTrue(std::move(Turret_Sys->TrackTag())).OnFalse(std::move(Turret_Sys->StopTrackingTag()));
 
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically

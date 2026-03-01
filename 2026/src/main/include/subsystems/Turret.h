@@ -88,7 +88,8 @@ private:
     auto Track()  -> void;
     auto Stop() -> void;
     auto CalculateTheta(frc::Translation2d TargetPose) -> void;
-
+    auto SetTurretCommand(units::turn_t goal) -> void;
+    auto GetPosition() -> units::turn_t;
 
 
 

@@ -16,16 +16,16 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
     turret_cfg.ClosedLoopGeneral.ContinuousWrap = false;
     turret_cfg.Feedback.SensorToMechanismRatio = 10;
 
-    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::turn_t(1);
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(-1);
+    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::turn_t(0.6);
+    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(0);
 
     turret_cfg.MotorOutput.Inverted = true;
 
     turret_cfg.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(10);
-    turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
+    turret_cfg.CurrentLimits.StatorCurrentLimitEnable = true;
 
     ctre::phoenix6::configs::Slot0Configs &slot0_ = turret_cfg.Slot0;
 
@@ -45,14 +45,7 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
     frc::Pose2d TurretPose, BodyPose;
 
-    if(TurretTargetAvaliable() && BodyTargetAvaliable())
-    {
-      TurretMotor->SetPosition(TurretGetPose().Rotation().Degrees());
-    }
-    else
-    {
-      TurretMotor->SetPosition(units::turn_t(0));
-    }
+    TurretMotor->SetPosition(units::turn_t(0));
 
     // frc::SmartDashboard::PutNumber("Prop", 0.0045);
     // frc::SmartDashboard::PutNumber("FeedForward", 0.);
@@ -66,6 +59,11 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
 void Turret::Periodic ()
 {
+
+  frc::SmartDashboard::PutNumber("Turret Position", GetPosition().value());
+  position = GetPosition();
+  angle = ((180.0 - Pigeon_Sys->GetYaw().GetValueAsDouble())/360.0);
+  frc::SmartDashboard::PutNumber("Angle", angle);
 
   // frc::SmartDashboard::PutNumber("Stator Current",TurretMotor->GetStatorCurrent().GetValueAsDouble());
   // frc::SmartDashboard::PutNumber("Supply Current",TurretMotor->GetSupplyCurrent().GetValueAsDouble());
@@ -146,8 +144,39 @@ void Turret::Periodic ()
 
 
 
+units::turn_t Turret::GetPosition() 
+{
+  return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
+}
 
+frc2::CommandPtr Turret::ShootDrivers() {
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {SetTurretCommand(units::turn_t(angle));},
+    [this] (bool interrupted) {},
+    [this] {return false;},
+    {this}
+  ).ToPtr();
+}
 
+void Turret::SetTurretCommand(units::turn_t goal) {
+  //Ensures we are considering equivalent angles
+  while (double(goal) < 0) {
+    goal = goal + units::turn_t(1.0);
+  }
+  while(double(goal) > 0.6) {
+    goal = goal - units::turn_t(1.0);
+  }
+
+  //If out of range, will center turret
+  if (double(goal) < 0 && double(goal) > 0.6)
+  {
+    goal = units::turn_t(0.3);
+  }
+
+  //Run to position
+  TurretMotor->SetControl(elevate_mmReq.WithPosition(goal).WithSlot(0));
+}
 
 units::turn_t Turret::getTurretPosition() {
   return (units::turn_t(TurretMotor->GetRotorPosition().GetValue())/10);
