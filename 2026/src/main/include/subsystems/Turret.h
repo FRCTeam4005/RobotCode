@@ -62,7 +62,7 @@ private:
     
     units::turn_t position;
     double distance;
-    double angle;
+    double angle_;
     double tx;
     bool target;
     double omega;
@@ -86,9 +86,8 @@ private:
     const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1.5_m);
     const frc::Translation2d RightPassRed = frc::Translation2d(15.5_m, 7_m);
     
-    
-    std::function<void(frc::Pose2d, units::time::second_t)> setRobotBodyVisionMeasurement;
     std::function<frc::Pose2d()> getRobotBodyPose;
+    std::function<void(frc::Pose2d, units::time::second_t)> setRobotBodyVisionMeasurement;
     void Periodic () override;
     auto Track()  -> void;
     auto Stop() -> void;

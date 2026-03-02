@@ -55,7 +55,7 @@ void RobotContainer::DriverControls()
 
 
     //Tracking targets
-    Driver.RightTrigger(0.5).OnTrue(Turret_Sys->ShootDrivers());
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 
     //Shooting/Passing
     Driver.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
