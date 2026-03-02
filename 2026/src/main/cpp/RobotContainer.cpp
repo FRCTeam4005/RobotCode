@@ -8,6 +8,7 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
 
 RobotContainer::RobotContainer()
 {
@@ -16,6 +17,9 @@ RobotContainer::RobotContainer()
     Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;},[this](frc::Pose2d visionRobotPose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(visionRobotPose,Timestamp);});
     Shooter_Sys = std::make_unique<Shooter>();
     Intake_Sys = std::make_unique<Intake>();
+
+    autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
+    frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
 
     ConfigureBindings();
 }
@@ -68,39 +72,7 @@ void RobotContainer::OperatorControls()
     Operator.Y().OnTrue(std::move(Shooter_Sys->ShooterToggle()));
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand()
+frc2::Command *RobotContainer::GetAutonomousCommand()
 {
-    // Simple drive forward auton
-   return frc2::cmd::Sequence(
-        // Reset our field centric heading to match the robot
-        // facing away from our alliance station wall (0 deg).
-       drivetrain.RunOnce([this] { drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
-        // Then slowly drive forward (away from us) for 5 seconds.
-        drivetrain.ApplyRequest([this]() -> auto&& {
-            return drive.WithVelocityX(0.5_mps)
-                .WithVelocityY(0_mps)
-                .WithRotationalRate(0_tps);
-        })
-        .WithTimeout(5_s),
-        // Finally idle for the rest of auton
-        drivetrain.ApplyRequest([] { return swerve::requests::Idle{}; })
-    );
-}
-
-void RobotContainer::CalibrateSensors()
-{
-    // double UnstableYaw;
-
-    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
-    // LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
-
-    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
-    // LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
-
-    //set the pose of the drive train pose to match with the 
-    drivetrain.ResetPose(BodyGetPose());
-
-    // Turret_Sys->CalibratePose();
+    return autoChooser.GetSelected();
 }
