@@ -15,7 +15,7 @@ RobotContainer::RobotContainer()
     
 
     Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;},[this](frc::Pose2d visionRobotPose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(visionRobotPose,Timestamp);});
-    Shooter_Sys = std::make_unique<Shooter>();
+    Shooter_Sys = std::make_unique<Shooter>(Turret_Sys.get());
     Intake_Sys = std::make_unique<Intake>();
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
@@ -36,9 +36,6 @@ void RobotContainer::ConfigureBindings()
 // If this doesn't work, these all need to go back into ConfigureBindings()
 void RobotContainer::DriverControls()
 {
-    Driver.RightTrigger(0.5).WhileTrue(Turret_Sys->ShootDrivers());
-    //Driver.RightTrigger(0.5).OnTrue(std::move(Turret_Sys->TrackTag())).OnFalse(std::move(Turret_Sys->StopTrackingTag()));
-
     drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.ApplyRequest([this]() -> auto&& {
@@ -47,7 +44,6 @@ void RobotContainer::DriverControls()
                 .WithRotationalRate(Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
         })
     );
-
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled().WhileTrue(
@@ -57,8 +53,16 @@ void RobotContainer::DriverControls()
     );
 
 
-    
-    Driver.B().WhileTrue(std::move(Shooter_Sys->SetShootSpeed(56_tps).AndThen(Shooter_Sys->FeedShooter())));
+
+    //Tracking targets
+    Driver.RightTrigger(0.5).OnTrue(Turret_Sys->ShootDrivers());
+
+    //Shooting/Passing
+    Driver.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
+
+    Driver.A().OnTrue(Intake_Sys->FuelUp());
+
+
     // Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
     // Driver.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
     // Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
@@ -67,12 +71,29 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.B().OnFalse(std::move(Turret_Sys->StopTrackingTag()));
-    Operator.X().OnTrue(std::move(Intake_Sys->IntakeToggle()));
-    Operator.Y().OnTrue(std::move(Shooter_Sys->ShooterToggle()));
+    Operator.X().OnTrue(Intake_Sys->IntakeToggle());
+    Operator.Y().OnTrue(Shooter_Sys->ShooterToggle());
 }
 
 frc2::Command *RobotContainer::GetAutonomousCommand()
 {
     return autoChooser.GetSelected();
+}
+
+void RobotContainer::CalibrateSensors()
+{
+    double UnstableYaw;
+
+    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
+    UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
+    LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
+
+    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
+    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
+    // LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
+
+    //set the pose of the drive train pose to match with the 
+    drivetrain.ResetPose(BodyGetPose());
+
+    Turret_Sys->CalibratePose();
 }

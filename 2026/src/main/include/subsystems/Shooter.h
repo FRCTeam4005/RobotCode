@@ -15,11 +15,13 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DoubleSolenoid.h>
+#include "subsystems/Turret.h"
+
 
 class Shooter : public frc2::SubsystemBase 
 {
  public:
-  Shooter();
+  Shooter(Turret* Turret_Sys);
 
   auto SetShootSpeed(units::turns_per_second_t speed) -> frc2::CommandPtr;
   auto FeedShooter() -> frc2::CommandPtr;
@@ -33,9 +35,18 @@ private:
 
   void Periodic() override
   {
+    if (Turret_Sys->IsHoodUp())
+    {
+      ShooterUpCommand();
+    }
+    else
+    {
+      ShooterDownCommand();
+    }
     frc::SmartDashboard::PutNumber("Shooter Velocity (Turns per Second)", RightMotor->GetVelocity().GetValueAsDouble());
+    distance = Turret_Sys->GetDistance();
   }
-
+  Turret* Turret_Sys;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
@@ -46,6 +57,10 @@ private:
   ctre::phoenix6::configs::Slot0Configs pid;
   double GetShooterSpeed(); 
   void SetShooterSpeeds(units::turns_per_second_t speed) ;
+  units::turns_per_second_t autoSpeed;
+  double distance;
 
   void SetKicker(double voltage);
+  auto ShooterUpCommand() -> void;
+  auto ShooterDownCommand() -> void;
 };

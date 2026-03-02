@@ -9,7 +9,7 @@ Intake::Intake()
 {
   IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
   ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
-  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
   IntakeMotor->Set(0);
   ConveyorMotor->Set(0);
     SetName("Intake");

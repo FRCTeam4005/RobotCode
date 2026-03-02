@@ -6,17 +6,17 @@
 using namespace ShooterConstants;
 using namespace CANConstants;
 
-Shooter::Shooter()
+Shooter::Shooter(Turret* turret_sys)
 :m_doubleSolenoid( CANConstants::kPneumaticHub,
                    frc::PneumaticsModuleType::REVPH,
                    PneumaticsChannelConst::kShooterDownChannel,
                    PneumaticsChannelConst::kShooterUpChannel )
 {
-
+  Turret_Sys = turret_sys;
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
-  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
   LeftMotor->SetNeutralMode(0);
   RightMotor->SetNeutralMode(0);
 
@@ -31,6 +31,7 @@ Shooter::Shooter()
   
   SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0_tps);}, {this}));
 }
+
 
 void Shooter::SetShooterSpeeds(units::turns_per_second_t TPS) 
 {
@@ -59,9 +60,10 @@ frc2::CommandPtr Shooter::SetShootSpeed(units::turns_per_second_t speed)
   return frc2::FunctionalCommand(
     [this] {},
     [speed, this] {
-      SetShooterSpeeds(speed);},
+      autoSpeed = units::turns_per_second_t(5.31 * distance + 37.95);
+      SetShooterSpeeds(autoSpeed);},
     [this] (bool interrupted) {},
-    [speed, this] {return (GetShooterSpeed() > double(speed));},
+    [this] {return (GetShooterSpeed() > double(autoSpeed));},
     {this}
   ).ToPtr();
 }
@@ -96,17 +98,25 @@ frc2::CommandPtr Shooter::ShooterToggle()
 frc2::CommandPtr Shooter::ShooterUp()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
   );
 
 }
 frc2::CommandPtr Shooter::ShooterDown()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
   );
 
 }
 
+void Shooter::ShooterUpCommand()
+{
+    m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+}
+void Shooter::ShooterDownCommand()
+{
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+}
 
 

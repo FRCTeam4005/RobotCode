@@ -34,7 +34,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 #define BLUE_LINE_COORD 4.625594_m
-#define RED_LINE_COORD  11.888_m
+#define RED_LINE_COORD  12.563094_m
 #define MID_FIELD_LINE 4.0211375_m
 
 
@@ -49,6 +49,8 @@ class Turret : public frc2::SubsystemBase
     auto StopTrackingTag() -> frc2::CommandPtr;
     auto m_getPose() -> frc::Pose2d;
     auto CalibratePose() -> void;
+    auto GetDistance() -> double;
+    bool IsHoodUp();
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
@@ -59,10 +61,12 @@ private:
     
     
     units::turn_t position;
+    double distance;
     double angle;
     double tx;
     bool target;
     double omega;
+    bool hoodUp;
     std::unique_ptr<frc::PIDController> turret_controller;
     double feedforward = 0.025;
     
@@ -78,7 +82,7 @@ private:
     const frc::Translation2d LeftPassBlue = frc::Translation2d(1_m, 1.5_m);
     const frc::Translation2d RightPassBlue = frc::Translation2d(1_m, 7_m);
     
-    const frc::Translation2d SauronRed = frc::Translation2d(11.888_m, 4.034663_m);
+    const frc::Translation2d SauronRed = frc::Translation2d(11.915394_m, 4.034663_m);
     const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1.5_m);
     const frc::Translation2d RightPassRed = frc::Translation2d(15.5_m, 7_m);
     

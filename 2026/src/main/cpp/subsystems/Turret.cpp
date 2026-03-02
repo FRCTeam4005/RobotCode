@@ -45,7 +45,7 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
     frc::Pose2d TurretPose, BodyPose;
 
-    TurretMotor->SetPosition(units::turn_t(0.015));
+    TurretMotor->SetPosition(units::turn_t(0));
 
     // frc::SmartDashboard::PutNumber("Prop", 0.0045);
     // frc::SmartDashboard::PutNumber("FeedForward", 0.);
@@ -91,9 +91,19 @@ void Turret::Periodic ()
     if (m_RobotPose.X() > RED_LINE_COORD)
     {
       CalculateTheta(SauronRed);
+      hoodUp = false;
     }
     else
     {
+      if(m_RobotPose.X() < (RED_LINE_COORD - 3_m))
+      {
+        hoodUp = true;
+      }
+      else
+      {
+        hoodUp = false;
+      }
+
       if(m_RobotPose.Y() < MID_FIELD_LINE)
       {
         CalculateTheta(LeftPassRed);
@@ -109,9 +119,18 @@ void Turret::Periodic ()
     if (m_RobotPose.X() < BLUE_LINE_COORD)
     {
       CalculateTheta(SauronBlue);
+      hoodUp = false;
     }
     else
     {
+      if (m_RobotPose.X() > (BLUE_LINE_COORD + 3_m))
+      {
+        hoodUp = true;
+      }
+      else 
+      {
+        hoodUp = false;
+      }
       if(m_RobotPose.Y() < MID_FIELD_LINE)
       {
         CalculateTheta(LeftPassBlue);
@@ -125,7 +144,7 @@ void Turret::Periodic ()
 
   position = getTurretPosition();
   auto body = m_RobotPose.Rotation().Degrees().value();
-  angle = ((m_Theta - body + 114.0)/360.0);
+  angle = ((m_Theta - body + 122.0)/360.0);
 
   frc::SmartDashboard::PutNumber("Rotor Position", position.value());
   frc::SmartDashboard::PutNumber("Body YAW", body);
@@ -137,6 +156,8 @@ void Turret::Periodic ()
   auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
   m_TurretPose =  frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),{TurretYaw}};
   auto desiredRobotPose = frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{m_Theta}}};
+
+  frc::SmartDashboard::PutNumber("Turret YAW", TurretYaw.value());
 
   m_field.SetRobotPose(RobotFieldPose);
   frc::SmartDashboard::PutData("Current Filed State", &m_field);
@@ -216,28 +237,27 @@ frc2::CommandPtr Turret::StopTrackingTag() {
 
 void Turret::CalibratePose()
 {
-  // if(TurretTargetAvaliable() && BodyTargetAvaliable())
-  // {
-  //   TurretMotor->SetPosition(TurretGetPose().Rotation().Degrees() - BodyGetPose().Rotation().Degrees());
-  // }
-  // else
-  // {
-  //   TurretMotor->SetPosition(units::turn_t(0));
-  // }
+  
 }
 
 
 void Turret::CalculateTheta(frc::Translation2d TargetPose)
 {
-  frc::Translation2d DeltaPose{TargetPose.X() - m_TurretPose.X() ,TargetPose.Y() - m_TurretPose.Y()};
+  frc::Translation2d DeltaPose{TargetPose.X() - m_TurretPose.X(), TargetPose.Y() - m_TurretPose.Y()};
 
   m_Theta = atan((DeltaPose.Y() / DeltaPose.X()).value()) * (180/3.14);
 
-  frc::SmartDashboard::PutNumber("Delta Pose X", DeltaPose.X().value());
-  frc::SmartDashboard::PutNumber("Delta Pose Y", DeltaPose.Y().value());
+  //frc::SmartDashboard::PutNumber("Delta Pose X", DeltaPose.X().value());
+  //frc::SmartDashboard::PutNumber("Delta Pose Y", DeltaPose.Y().value());
   m_Theta = TargetPose.X() < m_TurretPose.X() ? m_Theta + 180 : m_Theta; 
-  
-  frc::SmartDashboard::PutNumber("Delta Pose Theta", m_Theta);
+  distance = std::sqrt(DeltaPose.Y().value() * DeltaPose.Y().value() + DeltaPose.X().value() * DeltaPose.X().value());
+  //frc::SmartDashboard::PutNumber("Delta Pose Theta", m_Theta);
+  frc::SmartDashboard::PutNumber("Distance", distance);
+}
+
+double Turret::GetDistance()
+{
+  return distance;
 }
 
 void Turret::Track() 
@@ -295,4 +315,9 @@ void Turret::Stop() {
   TurretMotor->Set(desiredOutput);
 
   frc::SmartDashboard::PutNumber("motor output",desiredOutput);
+}
+
+bool Turret::IsHoodUp()
+{
+  return hoodUp;
 }
