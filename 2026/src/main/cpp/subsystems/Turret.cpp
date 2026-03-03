@@ -45,12 +45,12 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
     frc::Pose2d TurretPose, BodyPose;
 
-    TurretMotor->SetPosition(units::turn_t(0));
+    TurretMotor->SetPosition(units::turn_t(0.35));
 
     // frc::SmartDashboard::PutNumber("Prop", 0.0045);
     // frc::SmartDashboard::PutNumber("FeedForward", 0.);
     // frc::SmartDashboard::PutNumber("Derivative", 0.0000);
-    frc::SmartDashboard::PutData(turret_controller.get());
+    //frc::SmartDashboard::PutData(turret_controller.get());
 
     feedforward = 0.001;
 
