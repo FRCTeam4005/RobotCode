@@ -32,7 +32,7 @@ public:
 private:
     static constexpr bool kUseLimelight = false;
 
-    frc2::Command *m_autonomousCommand;
+    std::optional<frc2::CommandPtr> m_autonomousCommand;
     frc::SendableChooser<std::string> m_chooser;
 
     RobotContainer m_container;

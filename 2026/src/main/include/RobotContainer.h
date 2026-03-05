@@ -42,7 +42,7 @@ public:
     std::unique_ptr<Turret> Turret_Sys;
     RobotContainer();
 
-    frc2::Command *GetAutonomousCommand();
+    frc2::CommandPtr GetAutonomousCommand();
     void CalibrateSensors();
 
 private:

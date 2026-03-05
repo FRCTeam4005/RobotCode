@@ -9,6 +9,7 @@
 #include <frc2/command/button/RobotModeTriggers.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <pathplanner/lib/auto/AutoBuilder.h>
+#include <frc2/command/WaitCommand.h>
 
 RobotContainer::RobotContainer()
 {
@@ -79,9 +80,16 @@ void RobotContainer::OperatorControls()
     Operator.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
 }
 
-frc2::Command *RobotContainer::GetAutonomousCommand()
+frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
-    return autoChooser.GetSelected();
+    return Intake_Sys->IntakeOut().AndThen(
+            std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
+            std::move(Shooter_Sys->SetShootSpeed(54_tps)).AndThen(
+            std::move(Shooter_Sys->FeedShooter()))).AndThen(
+            std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
+            std::move(Intake_Sys->FuelUp())).AndThen(
+            std::move(frc2::WaitCommand(4_s).ToPtr())
+           );
 }
 
 void RobotContainer::CalibrateSensors()
