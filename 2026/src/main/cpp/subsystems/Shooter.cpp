@@ -55,20 +55,15 @@ void Shooter::SetKicker(double voltage)
   KickerMotor->Set(voltage);
 }
 
-#define MAX_SPEED 54_tps
 frc2::CommandPtr Shooter::SetShootSpeed(units::turns_per_second_t speed)
 {
   return frc2::FunctionalCommand(
     [this] {},
     [speed, this] {
       autoSpeed = units::turns_per_second_t(5.31 * distance + 37.95);
-      if(autoSpeed > MAX_SPEED)
-      {
-        autoSpeed = MAX_SPEED;
-      }
       SetShooterSpeeds(autoSpeed);},
     [this] (bool interrupted) {},
-    [this] {return (GetShooterSpeed() > double(autoSpeed));},
+    [this] {return false;},
     {this}
   ).ToPtr();
 }

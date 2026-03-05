@@ -60,11 +60,11 @@ void Robot::AutonomousInit() {
     BotPose = frc::Pose2d{BotPose.X(), BotPose.Y(), frc::Rotation2d{BotPose.Rotation().Degrees()}};
 
     m_container.drivetrain.ResetPose(BotPose);
-    m_autonomousCommand = m_container.GetAutonomousCommand();
+    //m_autonomousCommand = m_container.GetAutonomousCommand();
 
-    if (m_autonomousCommand) {
-        frc2::CommandScheduler::GetInstance().Schedule(std::move(m_autonomousCommand.value()));
-    }
+    //if (m_autonomousCommand) {
+        //frc2::CommandScheduler::GetInstance().Schedule(std::move(m_autonomousCommand.value()));
+    //}
 }
 
 void Robot::AutonomousPeriodic() {}
@@ -72,9 +72,9 @@ void Robot::AutonomousPeriodic() {}
 void Robot::AutonomousExit() {}
 
 void Robot::TeleopInit() {
-    if (m_autonomousCommand) {
-        frc2::CommandScheduler::GetInstance().Cancel(std::move(m_autonomousCommand.value()));
-    }
+    //if (m_autonomousCommand) {
+    //    frc2::CommandScheduler::GetInstance().Cancel(std::move(m_autonomousCommand.value()));
+    //}
 }
 
 void Robot::TeleopPeriodic() {}

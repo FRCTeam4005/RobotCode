@@ -82,11 +82,14 @@ void RobotContainer::OperatorControls()
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
-    auto intakeOut = Intake_Sys->IntakeOut().AndThen(std::move(frc2::WaitCommand(1_s).ToPtr()));
-    auto shoot = Shooter_Sys->SetShootSpeed(54_tps).AndThen(std::move(Shooter_Sys->FeedShooter()));
-    auto feedFuel = Intake_Sys->FuelUp().AndThen(frc2::WaitCommand(4_s).ToPtr());
-
-    return intakeOut.AndThen(shoot).AlongWith(feedFuel);
+    return Intake_Sys->IntakeOut().AndThen(
+            std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
+            std::move(Shooter_Sys->SetShootSpeed(54_tps))).AndThen(
+            std::move(Shooter_Sys->FeedShooter())).AndThen(
+            std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
+            std::move(Intake_Sys->FuelUp())).AndThen(
+            std::move(frc2::WaitCommand(4_s).ToPtr())
+           );
 }
 
 void RobotContainer::CalibrateSensors()
