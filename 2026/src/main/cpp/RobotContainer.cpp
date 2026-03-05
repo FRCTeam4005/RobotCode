@@ -58,9 +58,9 @@ void RobotContainer::DriverControls()
     Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
 
     //Shooting/Passing
-    Driver.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
+    //Driver.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
 
-    Driver.A().OnTrue(Intake_Sys->FuelUp());
+    //Driver.A().OnTrue(Intake_Sys->FuelUp());
 
 
     // Driver.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
@@ -71,8 +71,12 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.X().OnTrue(Intake_Sys->IntakeToggle());
+    Operator.X().OnTrue(std::move(Intake_Sys->IntakeOut())).OnFalse(std::move(Intake_Sys->IntakeIn()));
+    //TODO: Ask if this should go to the driver
     Operator.Y().OnTrue(Shooter_Sys->ShooterToggle());
+    Operator.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
+    Operator.LeftTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelUp()));
+    Operator.RightTrigger(0.5).WhileTrue(std::move(Intake_Sys->FuelOut()));
 }
 
 frc2::Command *RobotContainer::GetAutonomousCommand()

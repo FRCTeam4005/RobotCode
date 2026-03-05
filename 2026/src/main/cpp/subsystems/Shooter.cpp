@@ -1,7 +1,5 @@
 #include "subsystems/Shooter.h"
 
-// #define kLeftNEOMotorID 59
-// #define kRightNEOMotorID 58
 
 using namespace ShooterConstants;
 using namespace CANConstants;
