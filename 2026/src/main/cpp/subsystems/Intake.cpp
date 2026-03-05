@@ -1,5 +1,8 @@
 #include "subsystems/Intake.h"
 
+#define INTAKE_IN frc::DoubleSolenoid::Value::kForward
+#define INTAKE_OUT frc::DoubleSolenoid::Value::kReverse
+
 
 Intake::Intake()
 :m_doubleSolenoid( CANConstants::kPneumaticHub,
@@ -9,7 +12,7 @@ Intake::Intake()
 {
   IntakeMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
   ConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
-  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+  m_doubleSolenoid.Set(INTAKE_IN);
   IntakeMotor->Set(0);
   ConveyorMotor->Set(0);
     SetName("Intake");
@@ -60,14 +63,14 @@ frc2::CommandPtr Intake::IntakeToggle()
 frc2::CommandPtr Intake::IntakeIn()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
+    [this] {m_doubleSolenoid.Set(INTAKE_IN); }
   );
 
 }
 frc2::CommandPtr Intake::IntakeOut()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
+    [this] {m_doubleSolenoid.Set(INTAKE_OUT); }
   );
 
 }
