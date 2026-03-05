@@ -129,11 +129,6 @@ void Turret::Periodic ()
   auto body = m_RobotPose.Rotation().Degrees().value();
   angle_ = ((m_Theta - body + 122.0)/360.0);
 
-//  frc::SmartDashboard::PutNumber("Rotor Position", position.value());
-//  frc::SmartDashboard::PutNumber("Body YAW", body);
-//  frc::SmartDashboard::PutNumber("Theta", m_Theta);
-//  frc::SmartDashboard::PutNumber("Angle", angle_);
-
   auto RobotFieldPose = m_RobotPose;
 
   auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
@@ -150,15 +145,15 @@ void Turret::Periodic ()
 
   omega = drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble();
   //frc::SmartDashboard::PutNumber("Rotation Speed", drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble());
+
+  if(TurretTrack_)
+  {
+    SetTurretCommand(units::turn_t(angle_));
+  }
 }
 
 
-
-
-
-
-
-
+#if 0
 frc2::CommandPtr Turret::ShootDrivers() {
     return frc2::FunctionalCommand(
     [this] {},
@@ -168,6 +163,7 @@ frc2::CommandPtr Turret::ShootDrivers() {
     {this}
   ).ToPtr();
 }
+#endif
 
 void Turret::SetTurretCommand(units::turn_t goal) {
   //Ensures we are considering equivalent angles
@@ -262,4 +258,11 @@ void Turret::Stop() {
 bool Turret::IsHoodUp()
 {
   return hoodUp;
+}
+
+frc2::CommandPtr Turret::ToggleTracking()
+{
+  return this->RunOnce(
+    [this] {TurretTrack_ = !TurretTrack_;}
+  );
 }

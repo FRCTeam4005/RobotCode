@@ -56,7 +56,7 @@ void RobotContainer::DriverControls()
 
 
     //Tracking targets
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ShootDrivers()));
+    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ToggleTracking()));
 
     //Shooting/Passing
     //Driver.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));
@@ -72,7 +72,7 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.X().OnTrue(std::move(Intake_Sys->IntakeOut())).OnFalse(std::move(Intake_Sys->IntakeIn()));
+    Operator.X().OnTrue(std::move(Intake_Sys->IntakeToggle()));
     //TODO: Ask if this should go to the driver
     Operator.Y().OnTrue(Shooter_Sys->ShooterToggle());
     Operator.B().OnTrue(Shooter_Sys->SetShootSpeed(54_tps).AndThen(Shooter_Sys->FeedShooter()));

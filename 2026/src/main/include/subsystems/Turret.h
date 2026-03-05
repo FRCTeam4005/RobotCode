@@ -43,7 +43,7 @@ class Turret : public frc2::SubsystemBase
  public:
     Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc::Pose2d, units::time::second_t)> setVisionMeasurement);
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
-    auto ShootDrivers() -> frc2::CommandPtr;
+    //auto ShootDrivers() -> frc2::CommandPtr;
     auto getTurretPosition() -> units::angle::turn_t;
     auto TrackTag() -> frc2::CommandPtr;
     auto StopTrackingTag() -> frc2::CommandPtr;
@@ -51,6 +51,7 @@ class Turret : public frc2::SubsystemBase
     auto CalibratePose() -> void;
     auto GetDistance() -> double;
     bool IsHoodUp();
+    auto ToggleTracking() -> frc2::CommandPtr;
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
@@ -58,7 +59,7 @@ private:
     std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
     ctre::phoenix6::controls::MotionMagicVoltage elevate_mmReq{0_tr};
     
-    
+    bool TurretTrack_{false};
     
     units::turn_t position;
     double distance;

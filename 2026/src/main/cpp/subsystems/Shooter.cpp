@@ -1,7 +1,5 @@
 #include "subsystems/Shooter.h"
 
-#define SHOOTER_UP frc::DoubleSolenoid::Value::kForward
-#define SHOOTER_DOWN frc::DoubleSolenoid::Value::kReverse
 
 using namespace ShooterConstants;
 using namespace CANConstants;
@@ -16,7 +14,7 @@ Shooter::Shooter(Turret* turret_sys)
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kRightShooterID);
   KickerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(kKickerMotorID);
-  m_doubleSolenoid.Set(SHOOTER_DOWN);
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
   LeftMotor->SetNeutralMode(0);
   RightMotor->SetNeutralMode(0);
 
@@ -63,7 +61,7 @@ frc2::CommandPtr Shooter::SetShootSpeed(units::turns_per_second_t speed)
       autoSpeed = units::turns_per_second_t(5.31 * distance + 37.95);
       SetShooterSpeeds(autoSpeed);},
     [this] (bool interrupted) {},
-    [this] {return false;},
+    [this] {return (GetShooterSpeed() > double(autoSpeed));},
     {this}
   ).ToPtr();
 }
@@ -98,25 +96,25 @@ frc2::CommandPtr Shooter::ShooterToggle()
 frc2::CommandPtr Shooter::ShooterUp()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(SHOOTER_UP); }
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward); }
   );
 
 }
 frc2::CommandPtr Shooter::ShooterDown()
 {
   return this->RunOnce(
-    [this] {m_doubleSolenoid.Set(SHOOTER_DOWN); }
+    [this] {m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); }
   );
 
 }
 
 void Shooter::ShooterUpCommand()
 {
-    //m_doubleSolenoid.Set(SHOOTER_UP);
+    m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 }
 void Shooter::ShooterDownCommand()
 {
-  //m_doubleSolenoid.Set(SHOOTER_DOWN);
+  m_doubleSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
 }
 
 
