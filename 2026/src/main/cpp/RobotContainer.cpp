@@ -65,7 +65,7 @@ void RobotContainer::OperatorControls()
     Operator.X().OnTrue(std::move(IntakePneumatics_Sys->Toggle()));
     //TODO: Ask if this should go to the driver
     Operator.Y().OnTrue(std::move(ShooterHood_Sys->Toggle()));
-    Operator.B().OnTrue(ShooterWheels_Sys->Spin().AndThen(ShooterKicker_Sys->Feed()));
+    Operator.B().OnTrue( std::move(ShooterWheels_Sys->Spin()).AndThen(std::move(ShooterKicker_Sys->Feed())) );
     Operator.LeftTrigger(0.5).WhileTrue(std::move(IntakeConveyor_Sys->In()).AlongWith(std::move(IntakeFrontRoller_Sys->In())));
     Operator.RightTrigger(0.5).WhileTrue(std::move(IntakeFrontRoller_Sys->Out().AlongWith(IntakeConveyor_Sys->Out())));
 }
@@ -73,13 +73,10 @@ void RobotContainer::OperatorControls()
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     return IntakePneumatics_Sys->Out().AndThen(
-           std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
            std::move(ShooterWheels_Sys->Spin())).AndThen(
            std::move(ShooterKicker_Sys->Feed())).AndThen(
-           std::move(frc2::WaitCommand(1_s).ToPtr())).AndThen(
            std::move(IntakeConveyor_Sys->In())).AndThen(
-           std::move(frc2::WaitCommand(5_s).ToPtr())
-           );
+           std::move(IntakeFrontRoller_Sys->In()));
 }
 
 void RobotContainer::CalibrateSensors()

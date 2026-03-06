@@ -19,7 +19,7 @@ class ShooterWheels : public frc2::SubsystemBase
   auto Stop() -> frc2::CommandPtr;
   
 private:
-  bool ShouldShoot = false;
+  bool ShouldShoot_ = false;
   units::turns_per_second_t ShootSpeed_;
 
   Turret* Turret_Sys;

@@ -17,7 +17,7 @@ ShooterWheels::ShooterWheels(Turret* turret_sys)
 
   SetName("ShooterWheels");
   
-  SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0_tps);}, {this}));
+  //SetDefaultCommand(frc2::cmd::Run([this] {SetShooterSpeeds(0_tps);}, {this}));
 }
 
 void ShooterWheels::Periodic()
@@ -25,7 +25,7 @@ void ShooterWheels::Periodic()
   auto distance = Turret_Sys->GetDistanceMeters();
   ShootSpeed_ = units::turns_per_second_t(5.31 * distance + 37.95);
 
-  if(!ShouldShoot)
+  if(!ShouldShoot_)
   {
     ShootSpeed_ = 0_tps;
   }
@@ -51,25 +51,20 @@ void ShooterWheels::SetShooterSpeeds(units::turns_per_second_t TPS)
 frc2::CommandPtr ShooterWheels::Toggle()
 {
   return this->RunOnce(
-    [this] { ShouldShoot = !ShouldShoot; }
+    [this] { ShouldShoot_ = !ShouldShoot_; }
   );
 }
 
 frc2::CommandPtr ShooterWheels::Spin()
 {
-  return frc2::FunctionalCommand(
-    [this] {},
-    [this] {
-      ShouldShoot = true;},
-    [this] (bool interrupted) {},
-    [this] {return (RightMotor->GetVelocity().GetValueAsDouble() > double(ShootSpeed_));},
-    {this}
-  ).ToPtr();
+  return this->RunOnce(
+    [this] { ShouldShoot_ = true; }
+  );
 }
 
 frc2::CommandPtr ShooterWheels::Stop()
 {
   return this->RunOnce(
-    [this] { ShouldShoot = false; }
+    [this] { ShouldShoot_ = false; }
   );
 }

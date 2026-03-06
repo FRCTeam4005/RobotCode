@@ -11,15 +11,15 @@ ShooterKicker::ShooterKicker()
 
   SetName("ShooterKicker");
 
-  SetDefaultCommand(frc2::cmd::Run([this] {KickerMotor->Set(0);}, {this}));
+  //SetDefaultCommand(frc2::cmd::Run([this] {KickerMotor->Set(0);}, {this}));
 }
 
 frc2::CommandPtr ShooterKicker::Feed()
 {
-  return frc2::cmd::RunOnce([this](){KickerMotor->Set(-1);});
+  return this->RunOnce([this](){KickerMotor->Set(-1);});
 }
 
 frc2::CommandPtr ShooterKicker::Stop()
 {
-  return frc2::cmd::RunOnce([this](){KickerMotor->Set(0);});
+  return this->RunOnce([this](){KickerMotor->Set(0);});
 }
