@@ -16,7 +16,7 @@ frc2::CommandPtr IntakeConveyor::Out()
 {
     return frc2::FunctionalCommand(
         [this] {},
-        [this] {setSpeed(-1);},
+        [this] {setSpeed(-.5);},
         [this] (bool interrupted) {setSpeed(0);},
         [this] {return false;},
         {this}

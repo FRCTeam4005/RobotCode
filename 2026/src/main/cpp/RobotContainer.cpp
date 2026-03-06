@@ -72,11 +72,17 @@ void RobotContainer::OperatorControls()
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
-    return IntakePneumatics_Sys->Out().AndThen(
-           std::move(ShooterWheels_Sys->Spin())).AndThen(
-           std::move(ShooterKicker_Sys->Feed())).AndThen(
-           std::move(IntakeConveyor_Sys->In())).AndThen(
-           std::move(IntakeFrontRoller_Sys->In()));
+    auto Commands = frc2::cmd::Sequence(
+        IntakePneumatics_Sys->Out(),
+        ShooterWheels_Sys->Spin(),
+        frc2::WaitCommand(2_s).ToPtr(),
+        ShooterKicker_Sys->Feed(),
+        IntakeConveyor_Sys->In(),
+        IntakeFrontRoller_Sys->In(),
+        frc2::WaitCommand(10_s).ToPtr()
+    );
+
+    return Commands;
 }
 
 void RobotContainer::CalibrateSensors()
