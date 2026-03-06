@@ -49,7 +49,7 @@ class Turret : public frc2::SubsystemBase
     auto StopTrackingTag() -> frc2::CommandPtr;
     auto m_getPose() -> frc::Pose2d;
     auto CalibratePose() -> void;
-    auto GetDistance() -> double;
+    auto GetDistanceMeters() -> double;
     bool IsHoodUp();
     auto ToggleTracking() -> frc2::CommandPtr;
 

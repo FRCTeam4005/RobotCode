@@ -10,15 +10,39 @@
 #include "subsystems/Drivetrain.h"
 #include "Telemetry.h"
 #include "subsystems/Turret.h"
-#include "subsystems/Shooter.h"
-#include "subsystems/Intake.h"
-#include "subsystems/pneumatics.h"
-#include <frc/PneumaticHub.h>
-
-#define PH_CAN_ID 34
+#include "subsystems/ShooterHood.h"
+#include "subsystems/ShooterKicker.h"
+#include "subsystems/ShooterWheels.h"
+#include "subsystems/Compressor.h"
+#include "subsystems/IntakePneumatics.h"
+#include "subsystems/IntakeConveyor.h"
+#include "subsystems/IntakeFrontRoller.h"
 
 class RobotContainer {
-    private:
+
+    
+public:
+    subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
+    std::unique_ptr<Turret> Turret_Sys;
+    RobotContainer();
+
+    frc2::CommandPtr GetAutonomousCommand();
+    void CalibrateSensors();
+
+private:
+    Compressor Compressor_Sys;
+    
+    std::unique_ptr<ShooterHood> ShooterHood_Sys;
+    std::unique_ptr<ShooterKicker> ShooterKicker_Sys;
+    std::unique_ptr<ShooterWheels> ShooterWheels_Sys;
+    std::unique_ptr<IntakePneumatics> IntakePneumatics_Sys;
+    std::unique_ptr<IntakeConveyor> IntakeConveyor_Sys;
+    std::unique_ptr<IntakeFrontRoller> IntakeFrontRoller_Sys;
+    
+    void ConfigureBindings();
+    void DriverControls();
+    void OperatorControls();
+
     units::meters_per_second_t MaxSpeed = 0.5 * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
     units::radians_per_second_t MaxAngularRate = 0.75_tps; // 3/4 of a rotation per second max angular velocity
 
@@ -36,29 +60,8 @@ class RobotContainer {
     frc2::CommandXboxController Driver{0};
     frc2::CommandXboxController Operator{1};
 
-    
-public:
-    subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
-    std::unique_ptr<Turret> Turret_Sys;
-    RobotContainer();
-
-    frc2::CommandPtr GetAutonomousCommand();
-    void CalibrateSensors();
-
-private:
-    std::unique_ptr<Shooter> Shooter_Sys;
-    std::unique_ptr<Intake> Intake_Sys;
-    Pneumatics Pneumatics_Sys;
-
-    void ConfigureBindings();
-    void DriverControls();
-    void OperatorControls();
-
     double angle;
     frc::SendableChooser<frc2::Command *> autoChooser;
-
-
-
 
 
     frc::Pose2d getAlliancePose(std::string CameraName)

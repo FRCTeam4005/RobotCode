@@ -9,25 +9,17 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/Commands.h>
-#include <frc2/command/button/Trigger.h>
-#include <units/angle.h>
-#include <units/voltage.h>
-#include <frc/shuffleboard/Shuffleboard.h>
 #include <ctre/phoenix6/TalonFX.hpp>
-#include <frc/DigitalInput.h>
-#include <iostream>
 
-class Climber : public frc2::SubsystemBase
+class IntakeConveyor : public frc2::SubsystemBase
 {
  public:
-  Climber();
+  IntakeConveyor ();
+  auto In() -> frc2::CommandPtr; //Pick up fuel, intake in
+  auto Out() -> frc2::CommandPtr; //Feed fuel to shooter
+  auto Stop() -> frc2::CommandPtr; //Stop intaking
 
-  auto Up() -> frc2::CommandPtr; 
-  auto Down() -> frc2::CommandPtr;
-  auto Stop() -> frc2::CommandPtr;
-  
 private:
-  std::unique_ptr<ctre::phoenix6::hardware::TalonFX> ClimberMotor;
-
+  std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeConveyorMotor;
   void setSpeed(double speed);
 };

@@ -1,5 +1,5 @@
-#ifndef PNEUMATICS_H
-#define PNEUMATICS_H
+#ifndef COMPRESSOR_H
+#define COMPRESSOR_H
 
 #include <frc/PneumaticHub.h>
 #include <frc/DoubleSolenoid.h>
@@ -7,10 +7,10 @@
 #include <frc/Compressor.h>
 #include "generated/TunerConstants.h"
 
-class Pneumatics
+class Compressor
 {
 public:
-  Pneumatics();
+  Compressor();
   
 private:
   frc::PneumaticHub pnH{CANConstants::kPneumaticHub};

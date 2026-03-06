@@ -229,7 +229,7 @@ void Turret::CalculateTheta(frc::Translation2d TargetPose)
   frc::SmartDashboard::PutNumber("Distance", distance);
 }
 
-double Turret::GetDistance()
+double Turret::GetDistanceMeters()
 {
   return distance;
 }
