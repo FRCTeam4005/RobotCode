@@ -16,10 +16,23 @@ ShooterKicker::ShooterKicker()
 
 frc2::CommandPtr ShooterKicker::Feed()
 {
-  return this->RunOnce([this](){KickerMotor->Set(-1);});
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {
+      KickerMotor->Set(-1);},
+    [this] (bool interrupted) {},
+    [this] {return true;},
+    {this}
+  ).ToPtr();
 }
 
 frc2::CommandPtr ShooterKicker::Stop()
 {
-  return this->RunOnce([this](){KickerMotor->Set(0);});
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {KickerMotor->Set(0);},
+    [this] (bool interrupted) {},
+    [this] {return true;},
+    {this}
+  ).ToPtr();
 }

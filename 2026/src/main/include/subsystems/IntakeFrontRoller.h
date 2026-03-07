@@ -10,18 +10,31 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <frc/DoubleSolenoid.h>
 
 
 class IntakeFrontRoller : public frc2::SubsystemBase
 {
  public:
-  IntakeFrontRoller ();
+  IntakeFrontRoller();
+
+
   auto In() -> frc2::CommandPtr; //Pick up fuel, intake in
   auto Out() -> frc2::CommandPtr; //Feed fuel to shooter
-  auto Stop() -> frc2::CommandPtr; //Stop intaking
+  auto Momentary() -> frc2::CommandPtr; // its momentaary
+  auto Stop() -> frc2::CommandPtr;
+
+
 
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeFrontRollerMotor;
-
+  frc::DoubleSolenoid m_doubleSolenoid;
   void setSpeed(double speed);
+
+
+  auto IntakeIn() -> void;
+  auto IntakeOut() -> void;
+  auto RollerJog(double) -> void;
+  auto RollerIn() -> void;
+  auto RollerOut() -> void;
 };

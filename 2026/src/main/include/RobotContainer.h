@@ -14,7 +14,6 @@
 #include "subsystems/ShooterKicker.h"
 #include "subsystems/ShooterWheels.h"
 #include "subsystems/Compressor.h"
-#include "subsystems/IntakePneumatics.h"
 #include "subsystems/IntakeConveyor.h"
 #include "subsystems/IntakeFrontRoller.h"
 
@@ -35,7 +34,6 @@ private:
     std::unique_ptr<ShooterHood> ShooterHood_Sys;
     std::unique_ptr<ShooterKicker> ShooterKicker_Sys;
     std::unique_ptr<ShooterWheels> ShooterWheels_Sys;
-    std::unique_ptr<IntakePneumatics> IntakePneumatics_Sys;
     std::unique_ptr<IntakeConveyor> IntakeConveyor_Sys;
     std::unique_ptr<IntakeFrontRoller> IntakeFrontRoller_Sys;
     

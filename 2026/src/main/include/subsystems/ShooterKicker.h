@@ -17,9 +17,15 @@ class ShooterKicker : public frc2::SubsystemBase
  
   auto Feed() -> frc2::CommandPtr;
   auto Stop() -> frc2::CommandPtr;
+  auto On() -> frc2::CommandPtr;
+  auto Off() -> frc2::CommandPtr;
+  auto Jog() -> frc2::CommandPtr;
   
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> KickerMotor;
 
+  auto JogIn() -> void;
+  auto JogOut() -> void;
+  void setSpeed(double speed);
   void SetKicker(  double voltage);
 };

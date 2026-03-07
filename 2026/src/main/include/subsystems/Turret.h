@@ -95,7 +95,9 @@ private:
     auto CalculateTheta(frc::Translation2d TargetPose) -> void;
     auto SetTurretCommand(units::turn_t goal) -> void;
     auto GetPosition() -> units::turn_t;
+    auto sadfsafs() -> void;
 
+    void updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose);
 
 
 

@@ -18,7 +18,6 @@ RobotContainer::RobotContainer()
     ShooterHood_Sys = std::make_unique<ShooterHood>();
     ShooterKicker_Sys = std::make_unique<ShooterKicker>();
     ShooterWheels_Sys = std::make_unique<ShooterWheels>(Turret_Sys.get());
-    IntakePneumatics_Sys = std::make_unique<IntakePneumatics>();
     IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
 
@@ -62,24 +61,40 @@ void RobotContainer::DriverControls()
 void RobotContainer::OperatorControls()
 {
     //These should just test if the turret works
-    Operator.X().OnTrue(std::move(IntakePneumatics_Sys->Toggle()));
+    Operator.X().OnTrue(std::move(IntakeFrontRoller_Sys->Out()));
+    Operator.X().OnFalse(std::move(IntakeFrontRoller_Sys->In()));
+
+
+    //right trigger reverse toggle
+    Operator.RightTrigger(0.5).OnTrue(IntakeConveyor_Sys->Out());
+    Operator.RightTrigger(0.5).OnFalse(IntakeConveyor_Sys->Stop());
+
+
+    //b shoot turret // and autotrack
+    Operator.B().OnTrue( std::move(ShooterWheels_Sys->Spin()).AndThen(std::move(ShooterKicker_Sys->Feed())).AndThen(IntakeConveyor_Sys->In()));
+    Operator.B().OnFalse(std::move(ShooterWheels_Sys->Stop()).AndThen(std::move(ShooterKicker_Sys->Stop())).AndThen(IntakeConveyor_Sys->Stop()));
+
+
+
     //TODO: Ask if this should go to the driver
-    Operator.Y().OnTrue(std::move(ShooterHood_Sys->Toggle()));
-    Operator.B().OnTrue( std::move(ShooterWheels_Sys->Spin()).AndThen(std::move(ShooterKicker_Sys->Feed())) );
-    Operator.LeftTrigger(0.5).WhileTrue(std::move(IntakeConveyor_Sys->In()).AlongWith(std::move(IntakeFrontRoller_Sys->In())));
-    Operator.RightTrigger(0.5).WhileTrue(std::move(IntakeFrontRoller_Sys->Out().AlongWith(IntakeConveyor_Sys->Out())));
+    // Operator.Y().OnTrue(std::move(ShooterHood_Sys->Toggle()));
+
+    //
+    
+    // Operator.LeftTrigger(0.5).WhileTrue(std::move(IntakeConveyor_Sys->In()).AlongWith(std::move(IntakeFrontRoller_Sys->In())));
+    // Operator.RightTrigger(0.5).WhileTrue(std::move(IntakeFrontRoller_Sys->Out().AlongWith(IntakeConveyor_Sys->Out())));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
     auto Commands = frc2::cmd::Sequence(
-        IntakePneumatics_Sys->Out(),
-        ShooterWheels_Sys->Spin(),
-        frc2::WaitCommand(2_s).ToPtr(),
-        ShooterKicker_Sys->Feed(),
+        ShooterWheels_Sys->Spin().AndThen(std::move(ShooterKicker_Sys->Feed())).AndThen(IntakeConveyor_Sys->In()),
+        IntakeFrontRoller_Sys->Out(),
+        frc2::cmd::Wait(2_s),
         IntakeConveyor_Sys->In(),
-        IntakeFrontRoller_Sys->In(),
-        frc2::WaitCommand(10_s).ToPtr()
+        // ShooterKicker_Sys->Feed(),
+        // IntakeFrontRoller_Sys->In(),
+        frc2::cmd::Wait(10_s)
     );
 
     return Commands;

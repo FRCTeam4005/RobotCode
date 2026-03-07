@@ -24,13 +24,6 @@ void ShooterWheels::Periodic()
 {
   auto distance = Turret_Sys->GetDistanceMeters();
   ShootSpeed_ = units::turns_per_second_t(5.31 * distance + 37.95);
-
-  if(!ShouldShoot_)
-  {
-    ShootSpeed_ = 0_tps;
-  }
-
-  SetShooterSpeeds(ShootSpeed_);
 }
 
 void ShooterWheels::SetShooterSpeeds(units::turns_per_second_t TPS) 
@@ -57,14 +50,23 @@ frc2::CommandPtr ShooterWheels::Toggle()
 
 frc2::CommandPtr ShooterWheels::Spin()
 {
-  return this->RunOnce(
-    [this] { ShouldShoot_ = true; }
-  );
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {
+      SetShooterSpeeds(ShootSpeed_);},
+    [this] (bool interrupted) {},
+    [this] {return (RightMotor->GetVelocity().GetValue().convert<units::turns_per_second>() >= ShootSpeed_.convert<units::turns_per_second>());},
+    {this}
+  ).ToPtr();
 }
 
 frc2::CommandPtr ShooterWheels::Stop()
 {
-  return this->RunOnce(
-    [this] { ShouldShoot_ = false; }
-  );
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {SetShooterSpeeds(0_tps);},
+    [this] (bool interrupted) {},
+    [this] {return true;},
+    {this}
+  ).ToPtr();
 }

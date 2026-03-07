@@ -45,7 +45,7 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
     frc::Pose2d TurretPose, BodyPose;
 
-    TurretMotor->SetPosition(units::turn_t(0.35));
+    TurretMotor->SetPosition(units::turn_t(0.0));
 
     // frc::SmartDashboard::PutNumber("Prop", 0.0045);
     // frc::SmartDashboard::PutNumber("FeedForward", 0.);
@@ -69,31 +69,64 @@ void Turret::Periodic ()
 
   m_TurretCameraPose = TurretGetPose();
 
+  sadfsafs();
+
+  position = getTurretPosition();
+  auto body = m_RobotPose.Rotation().Degrees().value();
+  angle_ = ((m_Theta - body)/360.0);
+
+  auto RobotFieldPose = m_RobotPose;
+
+  auto TurretYaw = TurretMotor->GetPosition().GetValue().convert<units::degrees>();
+  m_TurretPose =  frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),{TurretYaw}};
+  auto desiredRobotPose = frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{m_Theta}}};
+
+  frc::SmartDashboard::PutNumber("Turret YAW", TurretYaw.value());
+  frc::SmartDashboard::PutNumber("desired Turret YAW", angle_);
+  
+  updateField(RobotFieldPose, desiredRobotPose);
+
+  omega = drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble();
+  //frc::SmartDashboard::PutNumber("Rotation Speed", drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble());
+  
+
+  if(true)
+  {
+    SetTurretCommand(units::turn_t(angle_));
+  }
+}
+
+void Turret::updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose)
+{
+    m_field.SetRobotPose(robotfieldpose);
+  //frc::SmartDashboard::PutData("Current Filed State", &m_field);
+
+  m_DesiredPoseField.SetRobotPose(desiredPose);
+  //frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
+}
+
+
+void Turret::sadfsafs()
+{
+
+  frc::Translation2d DesiredAimCoords;
+
   if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
   {
     if (m_RobotPose.X() > RED_LINE_COORD)
     {
-      CalculateTheta(SauronRed);
-      hoodUp = false;
+      DesiredAimCoords = SauronRed;
     }
     else
     {
-      if(m_RobotPose.X() < (RED_LINE_COORD - 3_m))
-      {
-        hoodUp = true;
-      }
-      else
-      {
-        hoodUp = false;
-      }
 
       if(m_RobotPose.Y() < MID_FIELD_LINE)
       {
-        CalculateTheta(LeftPassRed);
+        DesiredAimCoords = (LeftPassRed);
       }
       else
       {
-        CalculateTheta(RightPassRed);
+        DesiredAimCoords = (RightPassRed);
       }
     }
   }
@@ -101,57 +134,23 @@ void Turret::Periodic ()
   {
     if (m_RobotPose.X() < BLUE_LINE_COORD)
     {
-      CalculateTheta(SauronBlue);
-      hoodUp = false;
+      DesiredAimCoords = (SauronBlue);
     }
     else
     {
-      if (m_RobotPose.X() > (BLUE_LINE_COORD + 3_m))
-      {
-        hoodUp = true;
-      }
-      else 
-      {
-        hoodUp = false;
-      }
       if(m_RobotPose.Y() < MID_FIELD_LINE)
       {
-        CalculateTheta(LeftPassBlue);
+        DesiredAimCoords = (LeftPassBlue);
       }
       else
       {
-        CalculateTheta(RightPassBlue);
+        DesiredAimCoords = (RightPassBlue);
       }
     }
   }
 
-  position = getTurretPosition();
-  auto body = m_RobotPose.Rotation().Degrees().value();
-  angle_ = ((m_Theta - body + 122.0)/360.0);
-
-  auto RobotFieldPose = m_RobotPose;
-
-  auto TurretYaw = units::angle::degree_t{LimelightHelpers::getIMUData("limelight-turret").yaw};
-  m_TurretPose =  frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),{TurretYaw}};
-  auto desiredRobotPose = frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{m_Theta}}};
-
-  frc::SmartDashboard::PutNumber("Turret YAW", TurretYaw.value());
-
-  m_field.SetRobotPose(RobotFieldPose);
-  //frc::SmartDashboard::PutData("Current Filed State", &m_field);
-
-  m_DesiredPoseField.SetRobotPose(desiredRobotPose);
-  //frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
-
-  omega = drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble();
-  //frc::SmartDashboard::PutNumber("Rotation Speed", drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble());
-
-  if(TurretTrack_)
-  {
-    SetTurretCommand(units::turn_t(angle_));
-  }
+  CalculateTheta(DesiredAimCoords);
 }
-
 
 #if 0
 frc2::CommandPtr Turret::ShootDrivers() {

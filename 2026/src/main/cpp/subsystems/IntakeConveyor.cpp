@@ -17,8 +17,8 @@ frc2::CommandPtr IntakeConveyor::Out()
     return frc2::FunctionalCommand(
         [this] {},
         [this] {setSpeed(-.5);},
-        [this] (bool interrupted) {setSpeed(0);},
-        [this] {return false;},
+        [this] (bool interrupted) {},
+        [this] {return true;},
         {this}
     ).ToPtr();
 }
@@ -28,8 +28,8 @@ frc2::CommandPtr IntakeConveyor::In()
   return frc2::FunctionalCommand(
     [this] {},
     [this] {setSpeed(.5);},
-    [this] (bool interrupted) {setSpeed(0);},
-    [this] {return false;},
+    [this] (bool interrupted) {},
+    [this] {return true;},
     {this}
   ).ToPtr();
 }

@@ -1,24 +1,37 @@
 #include "subsystems/IntakeFrontRoller.h"
+#include "generated/TunerConstants.h"
+#include <frc2/command/CommandPtr.h>
+#include <frc2/command/SubsystemBase.h>
+#include <frc2/command/Commands.h>
+#include <frc/DoubleSolenoid.h>
 
-IntakeFrontRoller::IntakeFrontRoller()
+
+#define INTAKE_IN frc::DoubleSolenoid::Value::kForward
+#define INTAKE_OUT frc::DoubleSolenoid::Value::kReverse
+
+IntakeFrontRoller::IntakeFrontRoller() : 
+                            m_doubleSolenoid( CANConstants::kPneumaticHub,
+                              frc::PneumaticsModuleType::REVPH,
+                              PneumaticsChannelConst::kIntakeOutChannel,
+                              PneumaticsChannelConst::kIntakeInChannel )
 {
+  
+  
   IntakeFrontRollerMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kIntakeMotorID);
   IntakeFrontRollerMotor->Set(0);
+  RollerIn();
   SetName("IntakeFrontRoller");
 }
 
-void IntakeFrontRoller::setSpeed(double speed)
-{
-  IntakeFrontRollerMotor->Set(-speed);
-}
+
 
 frc2::CommandPtr IntakeFrontRoller::Out()
 {
   return frc2::FunctionalCommand(
       [this] {},
-      [this] {setSpeed(-1);},
-      [this] (bool interrupted) {setSpeed(0);},
-      [this] {return false;},
+      [this] {RollerOut(); setSpeed(.1);},
+      [this] (bool interrupted) {},
+      [this] {return true;},
       {this}
   ).ToPtr();
 }
@@ -27,16 +40,46 @@ frc2::CommandPtr IntakeFrontRoller::In()
 {
   return frc2::FunctionalCommand(
     [this] {},
-    [this] {setSpeed(.5);},
-    [this] (bool interrupted) {setSpeed(0);},
+    [this] {RollerIn(); setSpeed(0);},
+    [this] (bool interrupted) {},
+    [this] {return true;},
+    {this}
+  ).ToPtr();
+}
+
+
+frc2::CommandPtr IntakeFrontRoller::Momentary()
+{
+  return frc2::FunctionalCommand(
+    [this] {},
+    [this] {RollerOut(); setSpeed(-1);},
+    [this] (bool interrupted) {RollerIn(); setSpeed(.5);},
     [this] {return false;},
     {this}
   ).ToPtr();
 }
 
-frc2::CommandPtr IntakeFrontRoller::Stop()
+
+
+void IntakeFrontRoller::setSpeed(double speed)
 {
-  return this->RunOnce(
-    [this] {setSpeed(0);}
-  );
+  IntakeFrontRollerMotor->Set(-speed);
+}
+ 
+ 
+void IntakeFrontRoller::RollerJog(double speed)
+{
+  setSpeed(speed);
+}
+ 
+ 
+void IntakeFrontRoller::RollerIn()
+{
+  m_doubleSolenoid.Set(INTAKE_IN);
+}
+ 
+ 
+void IntakeFrontRoller::RollerOut()
+{
+  m_doubleSolenoid.Set(INTAKE_OUT);
 }
