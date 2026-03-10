@@ -1,4 +1,4 @@
-#include "subsystems/Shooting/ShooterHood.h"
+#include "subsystems/Shooter/Hood.h"
 
 #define HOOD_UP frc::DoubleSolenoid::Value::kForward
 #define HOOD_DOWN frc::DoubleSolenoid::Value::kReverse

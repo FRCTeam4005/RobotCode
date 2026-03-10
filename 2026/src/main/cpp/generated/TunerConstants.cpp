@@ -1,5 +1,5 @@
 #include "generated/TunerConstants.h"
-#include "subsystems/Drivetrain/Drivetrain.h"
+#include "subsystems/Drivetrain.h"
 
 subsystems::Drivetrain TunerConstants::CreateDrivetrain()
 {

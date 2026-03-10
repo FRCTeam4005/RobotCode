@@ -1,5 +1,5 @@
-#include "subsystems/Shooting/Turret.h"
-#include "subsystems/Drivetrain/Drivetrain.h"
+#include "subsystems/Shooter/Turret.h"
+#include "subsystems/Drivetrain.h"
 #include <cmath>
 #include <frc/Timer.h>
 

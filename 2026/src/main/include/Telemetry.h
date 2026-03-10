@@ -12,7 +12,7 @@
 
 
 #include <ctre/phoenix6/Pigeon2.hpp>
-#include "subsystems/Drivetrain/Drivetrain.h"
+#include "subsystems/Drivetrain.h"
 
 class Telemetry {
 private:

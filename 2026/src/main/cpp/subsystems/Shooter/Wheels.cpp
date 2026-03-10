@@ -1,4 +1,4 @@
-#include "subsystems/Shooting/ShooterWheels.h"
+#include "subsystems/Shooter/Wheels.h"
 
 ShooterWheels::ShooterWheels()
 {

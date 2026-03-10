@@ -8,7 +8,7 @@
 #include "generated/TunerConstants.h"
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
-#include "subsystems/Shooting/ShooterWheels.h"
+#include "subsystems/Shooter/Wheels.h"
 #include <functional>
 
 class ShooterWheels : public frc2::SubsystemBase 

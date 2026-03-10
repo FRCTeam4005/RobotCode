@@ -12,6 +12,9 @@
 #include "subsystems/Vision/Vision.h"
 #include <functional>
 
+using namespace LimelightHelpers;
+using Pose2d = frc::Pose2d;
+
 class Vision : public frc2::SubsystemBase 
 {
 private:
@@ -19,34 +22,35 @@ private:
   void Periodic() override
   {
     _pose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
-
     //TODO we should also check the area of the tag to make sure its close enough
     if(_pose.tagCount > 0)
     {
       _updateVisionMeasurement(_pose.pose, _pose.timestampSeconds);
     }
-    
   }
 
 public:
+  
+
   Vision(std::string LimeLightName) : _LimeLightName{LimeLightName}
   {
     SetName("LimeLight");
   }
 
-  auto getPose() -> frc::Pose2d {return _pose.pose;}
-  auto getPoseEstimate() -> LimelightHelpers::PoseEstimate {return _pose;}
+  auto getPose() -> Pose2d {return _pose.pose;}
+  auto getPoseEstimate() -> PoseEstimate {return _pose;}
   auto isTarget() -> bool {return _pose.tagCount > 0;}
   auto isTargetAreaLargeEnough(double TargetArea) -> bool {return _pose.avgTagArea > TargetArea;}
-
-  auto setPoseWithMegaTag2() -> void {
-                                      LimelightHelpers::SetRobotOrientation(
-                                        _LimeLightName,
-                                        LimelightHelpers::getBotPoseEstimate_wpiBlue(_LimeLightName).pose.Rotation().Degrees().value(),0,0,0,0,0);
-                                      }
+  
+  auto setPoseWithMegaTag2() -> void 
+  {
+    SetRobotOrientation(_LimeLightName,getMegaTag1Yaw().value(),0,0,0,0,0);
+  }
   
 private:
   std::string _LimeLightName;
-  LimelightHelpers::PoseEstimate _pose;
-  std::function<void(frc::Pose2d, units::time::second_t)> _updateVisionMeasurement;
+  PoseEstimate _pose;
+  std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
+
+  auto getMegaTag1Yaw() -> units::degree_t {return getBotPoseEstimate_wpiBlue(_LimeLightName).pose.Rotation().Degrees();}
 };

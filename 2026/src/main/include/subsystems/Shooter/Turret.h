@@ -20,7 +20,7 @@
 #include "frc2/command/FunctionalCommand.h"
 #include "frc/smartdashboard//SmartDashboard.h"
 #include <cmath>
-#include "subsystems/Drivetrain/Drivetrain.h"
+#include "subsystems/Drivetrain.h"
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/controller/PIDController.h>
 #include "subsystems/Vision/LimelightHelpers.h"

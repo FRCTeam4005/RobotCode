@@ -7,15 +7,15 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
-#include "subsystems/Drivetrain/Drivetrain.h"
+#include "subsystems/Drivetrain.h"
 #include <frc/PneumaticHub.h>
 #include "Telemetry.h"
-#include "subsystems/Shooting/Turret.h"
-#include "subsystems/Shooting/ShooterHood.h"
-#include "subsystems/Shooting/ShooterKicker.h"
-#include "subsystems/Shooting/ShooterWheels.h"
+#include "subsystems/Shooter/Turret.h"
+#include "subsystems/Shooter/Hood.h"
+#include "subsystems/Shooter/Kicker.h"
+#include "subsystems/Shooter/Wheels.h"
 #include "subsystems/Conveyor.h"
-#include "subsystems/Intake/IntakeFrontRoller.h"
+#include "subsystems/IntakeFrontRoller.h"
 #include "subsystems/Vision/Vision.h"
 
 class RobotContainer {
