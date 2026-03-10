@@ -1,10 +1,10 @@
-#include "subsystems/Turret.h"
-#include "subsystems/Drivetrain.h"
+#include "subsystems/Shooting/Turret.h"
+#include "subsystems/Drivetrain/Drivetrain.h"
 #include <cmath>
 #include <frc/Timer.h>
 
 
-Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc::Pose2d, units::time::second_t)>setVisionMeasurement) : getRobotBodyPose{getRobotPose}, setRobotBodyVisionMeasurement{setVisionMeasurement}
+Turret::Turret()
 {
     TurretMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kTurretMotorID);
     ctre::phoenix6::configs::TalonFXConfiguration turret_cfg{};
@@ -47,10 +47,7 @@ Turret::Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc
 
     TurretMotor->SetPosition(units::turn_t(0.0));
 
-    // frc::SmartDashboard::PutNumber("Prop", 0.0045);
-    // frc::SmartDashboard::PutNumber("FeedForward", 0.);
-    // frc::SmartDashboard::PutNumber("Derivative", 0.0000);
-    //frc::SmartDashboard::PutData(turret_controller.get());
+    frc::SmartDashboard::PutData(turret_controller.get());
 
     feedforward = 0.001;
 
@@ -66,8 +63,6 @@ void Turret::Periodic ()
   {
     setRobotBodyVisionMeasurement(pose.pose,units::millisecond_t{pose.latency});
   }
-
-  m_TurretCameraPose = TurretGetPose();
 
   sadfsafs();
 

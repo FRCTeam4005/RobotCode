@@ -8,25 +8,26 @@
 #include "generated/TunerConstants.h"
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
-#include "subsystems/Turret.h"
+#include "subsystems/Shooting/ShooterWheels.h"
+#include <functional>
 
 class ShooterWheels : public frc2::SubsystemBase 
 {
  public:
-  ShooterWheels(Turret* Turret_Sys);
+  ShooterWheels();
   auto Toggle() -> frc2::CommandPtr;
   auto Spin() -> frc2::CommandPtr;
   auto Stop() -> frc2::CommandPtr;
+  auto shootToDistance(std::function<void()> getDistance) -> frc2::CommandPtr;
   
 private:
-  bool ShouldShoot_ = false;
   units::turns_per_second_t ShootSpeed_;
 
-  Turret* Turret_Sys;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> LeftMotor;
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> RightMotor;
   ctre::phoenix6::configs::Slot0Configs pid;
 
   void Periodic() override;
-  void SetShooterSpeeds(units::turns_per_second_t speed);
+  void setSpeed(units::turns_per_second_t speed);
+  void setNeutral();
 };

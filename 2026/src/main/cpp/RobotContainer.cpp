@@ -3,7 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
-#include "LimelightHelpers.h"
+#include "Subsystems/Vision/LimelightHelpers.h"
+#include <algorithm>
 
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
@@ -13,13 +14,17 @@
 
 RobotContainer::RobotContainer()
 {
-    Turret_Sys = std::make_unique<Turret>([this](){return drivetrain.GetState().Pose;},[this](frc::Pose2d visionRobotPose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(visionRobotPose,Timestamp);});
-    
+    BodyCam_Sys = std::make_unique<Vision>("limelight-bodycam");
+    Turret_Sys = std::make_unique<Turret>();
     ShooterHood_Sys = std::make_unique<ShooterHood>();
     ShooterKicker_Sys = std::make_unique<ShooterKicker>();
-    ShooterWheels_Sys = std::make_unique<ShooterWheels>(Turret_Sys.get());
+    ShooterWheels_Sys = std::make_unique<ShooterWheels>();
     IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
+
+    pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
+
+
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
@@ -29,23 +34,23 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::ConfigureBindings()
 {
-    DriverControls();
-    OperatorControls();
+    DriverControls(Driver);
+    OperatorControls(Operator);
 
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 // If this doesn't work, these all need to go back into ConfigureBindings()
-void RobotContainer::DriverControls()
+void RobotContainer::DriverControls(const frc2::CommandXboxController& Controller)
 {
+    // Drivetrain will execute this command periodically
     drivetrain.SetDefaultCommand(
-        // Drivetrain will execute this command periodically
-        drivetrain.ApplyRequest([this]() -> auto&& {
-            return drive.WithVelocityX(-Driver.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                .WithVelocityY(-Driver.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(Driver.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
-        })
-    );
+        drivetrain.ApplyRequest([this, &Controller]() -> auto&& { return drive
+                .WithVelocityX(-Controller.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                .WithVelocityY(-Controller.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
+                .WithRotationalRate(Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+        }));
+
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled().WhileTrue(
@@ -55,34 +60,27 @@ void RobotContainer::DriverControls()
     );
 
     //Tracking targets
-    Driver.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ToggleTracking()));
+    Controller.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ToggleTracking()));
 }
 
-void RobotContainer::OperatorControls()
+void RobotContainer::OperatorControls(const frc2::CommandXboxController& Controller)
 {
-    //These should just test if the turret works
-    Operator.X().OnTrue(std::move(IntakeFrontRoller_Sys->Out()));
-    Operator.X().OnFalse(std::move(IntakeFrontRoller_Sys->In()));
+    auto IntakeBall = [&](){return IntakeFrontRoller_Sys->Out();};
+    auto StopIntaking = [&](){return IntakeFrontRoller_Sys->In();};
+    auto ConveyTowardsIntake = [&](){return IntakeConveyor_Sys->Out();};
+    auto ConveyTowardsShooter = [&](){return IntakeConveyor_Sys->In();};
+    auto FeedShooter = [&](){return ShooterKicker_Sys->Feed();};
 
 
-    //right trigger reverse toggle
-    Operator.RightTrigger(0.5).OnTrue(IntakeConveyor_Sys->Out());
-    Operator.RightTrigger(0.5).OnFalse(IntakeConveyor_Sys->Stop());
-
-
-    //b shoot turret // and autotrack
-    Operator.B().OnTrue( std::move(ShooterWheels_Sys->Spin()).AndThen(std::move(ShooterKicker_Sys->Feed())).AndThen(IntakeConveyor_Sys->In()));
-    Operator.B().OnFalse(std::move(ShooterWheels_Sys->Stop()).AndThen(std::move(ShooterKicker_Sys->Stop())).AndThen(IntakeConveyor_Sys->Stop()));
+    auto ShootBall = [&](){return ShooterWheels_Sys->Spin().AndThen(FeedShooter()).AndThen(IntakeBall());};
+    auto StopShooting = [&](){return ShooterWheels_Sys->Stop().AndThen(ShooterKicker_Sys->Stop()).AndThen(IntakeConveyor_Sys->Stop());};
 
 
 
-    //TODO: Ask if this should go to the driver
+    Controller.X().OnTrue(std::move(IntakeBall())).OnFalse(std::move(StopIntaking()));
+    Controller.B().OnTrue(std::move(ShootBall())).OnFalse(std::move(StopShooting()));
+    Controller.RightTrigger(0.5).OnTrue(std::move(ConveyTowardsIntake())).OnFalse(std::move(ConveyTowardsShooter()));
     // Operator.Y().OnTrue(std::move(ShooterHood_Sys->Toggle()));
-
-    //
-    
-    // Operator.LeftTrigger(0.5).WhileTrue(std::move(IntakeConveyor_Sys->In()).AlongWith(std::move(IntakeFrontRoller_Sys->In())));
-    // Operator.RightTrigger(0.5).WhileTrue(std::move(IntakeFrontRoller_Sys->Out().AlongWith(IntakeConveyor_Sys->Out())));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
@@ -92,8 +90,6 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand()
         IntakeFrontRoller_Sys->Out(),
         frc2::cmd::Wait(2_s),
         IntakeConveyor_Sys->In(),
-        // ShooterKicker_Sys->Feed(),
-        // IntakeFrontRoller_Sys->In(),
         frc2::cmd::Wait(10_s)
     );
 
@@ -108,12 +104,7 @@ void RobotContainer::CalibrateSensors()
     UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-bodycam").Rotation().Degrees().value();
     LimelightHelpers::SetRobotOrientation("limelight-bodycam",UnstableYaw,0,0,0,0,0);
 
-    //the internal IMU just sets the megatag2 yaw to 0 on start so we yoink it from megatag 1 since megatag one does know the yaw but is just not stable most of the time
-    // UnstableYaw = LimelightHelpers::getBotPose2d_wpiBlue("limelight-turret").Rotation().Degrees().value();
-    // LimelightHelpers::SetRobotOrientation("limelight-turret",UnstableYaw,0,0,0,0,0);
-
-    //set the pose of the drive train pose to match with the 
-    drivetrain.ResetPose(BodyGetPose());
+    //drivetrain.ResetPose(BodyGetPose());
 
     Turret_Sys->CalibratePose();
 }

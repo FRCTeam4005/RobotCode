@@ -1,8 +1,6 @@
 #include "Telemetry.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-#include "LimelightHelpers.h"
-
 using namespace ctre::phoenix6;
 
 Telemetry::Telemetry(units::meters_per_second_t maxSpeed) : MaxSpeed{maxSpeed}

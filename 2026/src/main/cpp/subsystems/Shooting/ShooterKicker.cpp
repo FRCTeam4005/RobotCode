@@ -1,4 +1,4 @@
-#include "subsystems/ShooterKicker.h"
+#include "subsystems/Shooting/ShooterKicker.h"
 
 
 using namespace ShooterConstants;

@@ -20,10 +20,10 @@
 #include "frc2/command/FunctionalCommand.h"
 #include "frc/smartdashboard//SmartDashboard.h"
 #include <cmath>
-#include "subsystems/Drivetrain.h"
+#include "subsystems/Drivetrain/Drivetrain.h"
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/controller/PIDController.h>
-#include "LimelightHelpers.h"
+#include "subsystems/Vision/LimelightHelpers.h"
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/DriverStation.h>
@@ -41,7 +41,7 @@
 class Turret : public frc2::SubsystemBase
 {
  public:
-    Turret(std::function<frc::Pose2d()> getRobotPose, std::function<void(frc::Pose2d, units::time::second_t)> setVisionMeasurement);
+    Turret();
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     //auto ShootDrivers() -> frc2::CommandPtr;
     auto getTurretPosition() -> units::angle::turn_t;
@@ -98,36 +98,4 @@ private:
     auto sadfsafs() -> void;
 
     void updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose);
-
-
-
-    frc::Pose2d getAlliancePose(std::string CameraName)
-    {
-        frc::Pose2d CameraPose;
-        CameraPose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(CameraName).pose;
-
-        frc::Pose2d BotPose = frc::Pose2d{CameraPose.X(), CameraPose.Y(), frc::Rotation2d{CameraPose.Rotation().Degrees()}};
-        return BotPose;
-    }
-
-    bool TurretTargetAvaliable()
-    {
-        return LimelightHelpers::getTV("limelight-turret") > 0;
-    }
-
-    //please just use m_TurretPose to reduce blocking calls to the network table
-    frc::Pose2d TurretGetPose()
-    {   
-        return getAlliancePose("limelight-turret");
-    }
-
-    bool BodyTargetAvaliable()
-    {
-        return LimelightHelpers::getTV("limelight-bodycam") > 0;
-    }
-
-    frc::Pose2d BodyGetPose()
-    {
-        return getAlliancePose("limelight-bodycam");
-    }
 };
