@@ -59,25 +59,20 @@ frc2::CommandPtr IntakeFrontRoller::Momentary()
   ).ToPtr();
 }
 
-
-
 void IntakeFrontRoller::setSpeed(double speed)
 {
   IntakeFrontRollerMotor->Set(-speed);
 }
- 
  
 void IntakeFrontRoller::RollerJog(double speed)
 {
   setSpeed(speed);
 }
  
- 
 void IntakeFrontRoller::RollerIn()
 {
   m_doubleSolenoid.Set(INTAKE_IN);
 }
- 
  
 void IntakeFrontRoller::RollerOut()
 {

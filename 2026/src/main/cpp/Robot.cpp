@@ -7,9 +7,6 @@
 
 #include <frc2/command/CommandScheduler.h>
 
-
-constexpr auto LimeLightYawOffset = 180_deg;
-
 Robot::Robot() {}
 
 void Robot::RobotPeriodic() {
@@ -43,14 +40,7 @@ void Robot::RobotPeriodic() {
 void Robot::DisabledInit() {}
 
 void Robot::DisabledPeriodic() 
-{
-
-    if (BodyTargetAvaliable())
-    {
-        m_container.CalibrateSensors();
-    }
-    
-}
+{}
 
 void Robot::DisabledExit() {}
 
@@ -69,7 +59,10 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {}
 
-void Robot::AutonomousExit() {}
+void Robot::AutonomousExit() 
+{
+    frc2::CommandScheduler::GetInstance().CancelAll();
+}
 
 void Robot::TeleopInit() {
     if (m_autonomousCommand) {

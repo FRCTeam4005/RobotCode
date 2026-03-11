@@ -36,7 +36,7 @@ private:
     std::unique_ptr<ShooterWheels> ShooterWheels_Sys;
     std::unique_ptr<IntakeConveyor> IntakeConveyor_Sys;
     std::unique_ptr<IntakeFrontRoller> IntakeFrontRoller_Sys;
-    std::unique_ptr<Vision> BodyCam_Sys;
+    std::shared_ptr<Vision> BodyCam_Sys;
 
     frc::PneumaticHub pnH{CANConstants::kPneumaticHub,};
     units::pounds_per_square_inch_t MinimumOnPressure{80};
