@@ -63,8 +63,13 @@ private:
      *       define a destructor to un-register the telemetry from the drivetrain */
     Telemetry logger{MaxSpeed};
 
-
-
     double angle;
     frc::SendableChooser<frc2::Command *> autoChooser;
+
+    void Drivetrain(const frc2::CommandXboxController& Controller);
+    void TurretTracking(frc2::Trigger trigger);
+    void IntakeBall(frc2::Trigger trigger);
+    void ShootBall(frc2::Trigger trigger);
+    void ReverseConveyor(frc2::Trigger trigger);
+
 };

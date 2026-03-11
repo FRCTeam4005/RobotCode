@@ -12,6 +12,7 @@
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
+#include <frc2/command/ParallelCommandGroup.h>
 
 RobotContainer::RobotContainer()
 {
@@ -33,97 +34,84 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::ConfigureBindings()
 {
-    DriverControls(Driver);
-    OperatorControls(Operator);
+    //i am doing this like this because it tell me what the button does (generically) and what the button is 
+    Drivetrain(Driver);
+    TurretTracking(Driver.RightTrigger());
+
+    IntakeBall(Operator.X());
+    ShootBall(Operator.B());
+    ReverseConveyor(Operator.RightTrigger());
 
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 
-// void RobotContainer::SwerveDrive(const frc2::CommandXboxController& Controller)
-// {
-//     drivetrain.SetDefaultCommand(// Drivetrain will execute this command periodically
-//     drivetrain.ApplyRequest([this, &Controller]() -> auto&& { return drive
-//             .WithVelocityX(-Controller.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-//             .WithVelocityY(-Controller.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-//             .WithRotationalRate(Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
-//     }));
-
-//     frc2::RobotModeTriggers::Disabled()
-//     .WhileTrue(
-//         drivetrain.ApplyRequest([] {
-//             return swerve::requests::Idle{};
-//         }).IgnoringDisable(true)
-//     );
-// }
-
-// void RobotContainer::SwerveDrive(const frc2::CommandXboxController& Controller)
-// {
-//     Controller.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ToggleTracking()));
-// }
-
-
-// If this doesn't work, these all need to go back into ConfigureBindings()
-void RobotContainer::DriverControls(const frc2::CommandXboxController& Controller)
+void RobotContainer::Drivetrain(const frc2::CommandXboxController& Controller)
 {
     drivetrain.SetDefaultCommand(// Drivetrain will execute this command periodically
-        drivetrain.ApplyRequest([this, &Controller]() -> auto&& { return drive
+        drivetrain.ApplyRequest([this, &Controller]() -> auto&& { 
+            return drive
                 .WithVelocityX(-Controller.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                 .WithVelocityY(-Controller.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
                 .WithRotationalRate(Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
-        }));
+    }));
 
-    // Idle while the robot is disabled. This ensures the configured
-    // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled()
         .WhileTrue(
             drivetrain.ApplyRequest([] {
                 return swerve::requests::Idle{};
             }).IgnoringDisable(true)
         );
-
-    //Tracking targets
-    Controller.RightTrigger(0.5).WhileTrue(std::move(Turret_Sys->ToggleTracking()));
 }
 
-void RobotContainer::OperatorControls(const frc2::CommandXboxController& Controller)
+void RobotContainer::TurretTracking(frc2::Trigger trigger)
 {
-    auto IntakeBall = [&](){return IntakeFrontRoller_Sys->Out();};
-    auto StopIntaking = [&](){return IntakeFrontRoller_Sys->In();};
-    auto ConveyTowardsIntake = [&](){return IntakeConveyor_Sys->Out();};
-    auto ConveyTowardsShooter = [&](){return IntakeConveyor_Sys->In();};
-    auto ConveyorStop= [&](){return IntakeConveyor_Sys->Stop();};
-    auto FeedShooter = [&](){return IntakeConveyor_Sys->Out();};
-    auto SpinUpShooter = [&](){return ShooterWheels_Sys->Spin();};
-    auto StopShooter = [&](){return ShooterWheels_Sys->Stop();};
-    auto StopKicker = [&](){return  ShooterKicker_Sys->Stop();};
+    trigger
+        .WhileTrue(Turret_Sys->ToggleTracking());
+}
 
-    auto ShootBall = [&](){return IntakeBall().AndThen(SpinUpShooter()).AndThen(FeedShooter());};
-    auto StopShooting = [&](){return StopShooter().AlongWith(ConveyorStop()).AlongWith(StopKicker());};
+void RobotContainer::IntakeBall(frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(IntakeFrontRoller_Sys->Out())
+        .OnFalse(IntakeFrontRoller_Sys->In());
+}
 
+void RobotContainer::ShootBall(frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(
+            frc2::cmd::Sequence
+            (
+                IntakeFrontRoller_Sys->Out(),
+                ShooterWheels_Sys->Spin(),
+                IntakeConveyor_Sys->Out()
+            ))
+        .OnFalse(
+            frc2::cmd::Parallel
+            (
+                ShooterWheels_Sys->Stop(),
+                IntakeConveyor_Sys->Stop(),
+                ShooterKicker_Sys->Stop()
+            ));
+}
 
-
-    Controller.X()
-        .OnTrue(IntakeBall())
-        .OnFalse(StopIntaking());
-    Controller.B()
-        .OnTrue(ShootBall())
-        .OnFalse(StopShooting());
-    Controller.RightTrigger(0.5)
-        .OnTrue(ConveyTowardsIntake())
-        .OnFalse(ConveyorStop());
-    // Operator.Y().OnTrue(std::move(ShooterHood_Sys->Toggle()));
+void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(IntakeConveyor_Sys->Out())
+        .OnFalse(IntakeConveyor_Sys->Stop());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
 {
-    auto Commands = frc2::cmd::Sequence(
-        ShooterWheels_Sys->Spin().AndThen(std::move(ShooterKicker_Sys->Feed())).AndThen(IntakeConveyor_Sys->In()),
+    return frc2::cmd::Sequence(
+        ShooterWheels_Sys->Spin(),
+        ShooterKicker_Sys->Feed(),
+        IntakeConveyor_Sys->In(),
         IntakeFrontRoller_Sys->Out(),
         frc2::cmd::Wait(2_s),
         IntakeConveyor_Sys->In(),
         frc2::cmd::Wait(10_s)
     );
-
-    return Commands;
 }
