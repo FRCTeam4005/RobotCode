@@ -16,7 +16,8 @@
 #include "subsystems/Shooter/Wheels.h"
 #include "subsystems/Conveyor.h"
 #include "subsystems/IntakeFrontRoller.h"
-#include "subsystems/Vision/Vision.h"
+#include <functional>
+
 
 class RobotContainer {
 
@@ -36,7 +37,6 @@ private:
     std::unique_ptr<ShooterWheels> ShooterWheels_Sys;
     std::unique_ptr<IntakeConveyor> IntakeConveyor_Sys;
     std::unique_ptr<IntakeFrontRoller> IntakeFrontRoller_Sys;
-    std::shared_ptr<Vision> BodyCam_Sys;
 
     frc::PneumaticHub pnH{CANConstants::kPneumaticHub,};
     units::pounds_per_square_inch_t MinimumOnPressure{80};
@@ -67,9 +67,5 @@ private:
     frc::SendableChooser<frc2::Command *> autoChooser;
 
     void Drivetrain(const frc2::CommandXboxController& Controller);
-    void TurretTracking(frc2::Trigger trigger);
-    void IntakeBall(frc2::Trigger trigger);
-    void ShootBall(frc2::Trigger trigger);
-    void ReverseConveyor(frc2::Trigger trigger);
 
 };

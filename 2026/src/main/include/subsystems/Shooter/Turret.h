@@ -23,7 +23,7 @@
 #include "subsystems/Drivetrain.h"
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/controller/PIDController.h>
-#include "subsystems/Vision/LimelightHelpers.h"
+#include "lib/LimelightHelpers.h"
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/DriverStation.h>

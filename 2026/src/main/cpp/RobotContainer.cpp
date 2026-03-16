@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
-#include "Subsystems/Vision/LimelightHelpers.h"
+
 #include <algorithm>
 
 #include <frc2/command/Commands.h>
@@ -16,7 +16,6 @@
 
 RobotContainer::RobotContainer()
 {
-    BodyCam_Sys = std::make_shared<Vision>("limelight-bodycam");
     Turret_Sys = std::make_unique<Turret>();
     ShooterHood_Sys = std::make_unique<ShooterHood>();
     ShooterKicker_Sys = std::make_unique<ShooterKicker>();
@@ -24,26 +23,65 @@ RobotContainer::RobotContainer()
     IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
 
-    pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
 
+    pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
+    
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
-
+    
     ConfigureBindings();
+
+    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 void RobotContainer::ConfigureBindings()
 {
-    //i am doing this like this because it tell me what the button does (generically) and what the button is 
     Drivetrain(Driver);
-    TurretTracking(Driver.RightTrigger());
 
-    IntakeBall(Operator.X());
-    ShootBall(Operator.B());
-    ReverseConveyor(Operator.RightTrigger());
+    //ShootBall
+    Operator.B()
+        .OnTrue(
+            frc2::cmd::Sequence
+            (
+                IntakeFrontRoller_Sys->Out(),
+                ShooterWheels_Sys->Spin(),
+                IntakeConveyor_Sys->Out()
+            ))
+        .OnFalse(
+            frc2::cmd::Parallel
+            (
+                ShooterWheels_Sys->Stop(),
+                IntakeConveyor_Sys->Stop(),
+                ShooterKicker_Sys->Stop()
+            ));
 
-    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+    //Intake Ball
+    Operator.X()    
+        .OnTrue(IntakeFrontRoller_Sys->Out().AlongWith(frc2::cmd::Print(" \n\n\n INTAKE BALL \n\n\n")))
+        .OnFalse(IntakeFrontRoller_Sys->In());
+    
+    // Reverse Conveyor
+    Operator.RightTrigger()
+        .OnTrue(IntakeConveyor_Sys->Out())
+        .OnFalse(IntakeConveyor_Sys->Stop());
+
 }
+
+frc2::CommandPtr RobotContainer::GetAutonomousCommand()
+{
+    return frc2::cmd::Sequence(
+        ShooterWheels_Sys->Spin(),
+        ShooterKicker_Sys->Feed(),
+        IntakeConveyor_Sys->In(),
+        IntakeFrontRoller_Sys->Out(),
+        frc2::cmd::Wait(2_s),
+        IntakeConveyor_Sys->In(),
+        frc2::cmd::Wait(10_s)
+    );
+}
+
+
+
 
 
 void RobotContainer::Drivetrain(const frc2::CommandXboxController& Controller)
@@ -62,56 +100,4 @@ void RobotContainer::Drivetrain(const frc2::CommandXboxController& Controller)
                 return swerve::requests::Idle{};
             }).IgnoringDisable(true)
         );
-}
-
-void RobotContainer::TurretTracking(frc2::Trigger trigger)
-{
-    trigger
-        .WhileTrue(Turret_Sys->ToggleTracking());
-}
-
-void RobotContainer::IntakeBall(frc2::Trigger trigger)
-{
-    trigger
-        .OnTrue(IntakeFrontRoller_Sys->Out())
-        .OnFalse(IntakeFrontRoller_Sys->In());
-}
-
-void RobotContainer::ShootBall(frc2::Trigger trigger)
-{
-    trigger
-        .OnTrue(
-            frc2::cmd::Sequence
-            (
-                IntakeFrontRoller_Sys->Out(),
-                ShooterWheels_Sys->Spin(),
-                IntakeConveyor_Sys->Out()
-            ))
-        .OnFalse(
-            frc2::cmd::Parallel
-            (
-                ShooterWheels_Sys->Stop(),
-                IntakeConveyor_Sys->Stop(),
-                ShooterKicker_Sys->Stop()
-            ));
-}
-
-void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
-{
-    trigger
-        .OnTrue(IntakeConveyor_Sys->Out())
-        .OnFalse(IntakeConveyor_Sys->Stop());
-}
-
-frc2::CommandPtr RobotContainer::GetAutonomousCommand()
-{
-    return frc2::cmd::Sequence(
-        ShooterWheels_Sys->Spin(),
-        ShooterKicker_Sys->Feed(),
-        IntakeConveyor_Sys->In(),
-        IntakeFrontRoller_Sys->Out(),
-        frc2::cmd::Wait(2_s),
-        IntakeConveyor_Sys->In(),
-        frc2::cmd::Wait(10_s)
-    );
 }

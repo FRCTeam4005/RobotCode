@@ -56,96 +56,64 @@ Turret::Turret()
 
 void Turret::Periodic ()
 {
-  m_RobotPose = getRobotBodyPose();
 
-  auto pose = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2("limelight-bodycam");
-  if(pose.tagCount > 0)
-  {
-    setRobotBodyVisionMeasurement(pose.pose,units::millisecond_t{pose.latency});
-  }
-
-  sadfsafs();
-
-  position = getTurretPosition();
-  auto body = m_RobotPose.Rotation().Degrees().value();
-  angle_ = ((m_Theta - body)/360.0);
-
-  auto RobotFieldPose = m_RobotPose;
-
-  auto TurretYaw = TurretMotor->GetPosition().GetValue().convert<units::degrees>();
-  m_TurretPose =  frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),{TurretYaw}};
-  auto desiredRobotPose = frc::Pose2d{m_RobotPose.X(),m_RobotPose.Y(),frc::Rotation2d{units::angle::degree_t{m_Theta}}};
-
-  frc::SmartDashboard::PutNumber("Turret YAW", TurretYaw.value());
-  frc::SmartDashboard::PutNumber("desired Turret YAW", angle_);
-  
-  updateField(RobotFieldPose, desiredRobotPose);
-
-  omega = drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble();
-  //frc::SmartDashboard::PutNumber("Rotation Speed", drivetrain.GetPigeon2().GetAngularVelocityZWorld().GetValueAsDouble());
-  
-
-  if(true)
-  {
-    SetTurretCommand(units::turn_t(angle_));
-  }
 }
 
-void Turret::updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose)
-{
-    m_field.SetRobotPose(robotfieldpose);
-  //frc::SmartDashboard::PutData("Current Filed State", &m_field);
+// void Turret::updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose)
+// {
+//     m_field.SetRobotPose(robotfieldpose);
+//   //frc::SmartDashboard::PutData("Current Filed State", &m_field);
 
-  m_DesiredPoseField.SetRobotPose(desiredPose);
-  //frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
-}
+//   m_DesiredPoseField.SetRobotPose(desiredPose);
+//   //frc::SmartDashboard::PutData("Desired Field State", &m_DesiredPoseField);
+// }
 
 
-void Turret::sadfsafs()
-{
+// void Turret::sadfsafs()
+// {
 
-  frc::Translation2d DesiredAimCoords;
+//   frc::Translation2d DesiredAimCoords;
 
-  if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
-  {
-    if (m_RobotPose.X() > RED_LINE_COORD)
-    {
-      DesiredAimCoords = SauronRed;
-    }
-    else
-    {
+//   if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
+//   {
+//     if (m_RobotPose.X() > RED_LINE_COORD)
+//     {
+//       DesiredAimCoords = SauronRed;
+//     }
+//     else
+//     {
 
-      if(m_RobotPose.Y() < MID_FIELD_LINE)
-      {
-        DesiredAimCoords = (LeftPassRed);
-      }
-      else
-      {
-        DesiredAimCoords = (RightPassRed);
-      }
-    }
-  }
-  else
-  {
-    if (m_RobotPose.X() < BLUE_LINE_COORD)
-    {
-      DesiredAimCoords = (SauronBlue);
-    }
-    else
-    {
-      if(m_RobotPose.Y() < MID_FIELD_LINE)
-      {
-        DesiredAimCoords = (LeftPassBlue);
-      }
-      else
-      {
-        DesiredAimCoords = (RightPassBlue);
-      }
-    }
-  }
+//       if(m_RobotPose.Y() < MID_FIELD_LINE)
+//       {
+//         DesiredAimCoords = (LeftPassRed);
+//       }
+//       else
+//       {
+//         DesiredAimCoords = (RightPassRed);
+//       }
+//     }
+//   }
+//   else
+//   {
+//     if (m_RobotPose.X() < BLUE_LINE_COORD)
+//     {
+//       DesiredAimCoords = (SauronBlue);
+//     }
+//     else
+//     {
+//       if(m_RobotPose.Y() < MID_FIELD_LINE)
+//       {
+//         DesiredAimCoords = (LeftPassBlue);
+//       }
+//       else
+//       {
+//         DesiredAimCoords = (RightPassBlue);
+//       }
+//     }
+//   }
 
-  CalculateTheta(DesiredAimCoords);
-}
+//   CalculateTheta(DesiredAimCoords);
+// }
 
 #if 0
 frc2::CommandPtr Turret::ShootDrivers() {
