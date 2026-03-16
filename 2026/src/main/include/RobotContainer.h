@@ -16,6 +16,10 @@
 #include "subsystems/Shooter/Wheels.h"
 #include "subsystems/Conveyor.h"
 #include "subsystems/IntakeFrontRoller.h"
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/auto/NamedCommands.h>
+#include <pathplanner/lib/Commands/PathPlannerAuto.h>
+#include <pathplanner/lib/events/EventTrigger.h>
 
 
 class RobotContainer {
@@ -26,8 +30,9 @@ public:
     std::unique_ptr<Turret> Turret_Sys;
     RobotContainer();
 
-    frc2::CommandPtr GetAutonomousCommand();
     void CalibrateSensors();
+    auto SetAutonomousRoutine( std::string RoutineName )  -> void {this->AutonomousRoutine = RoutineName;};
+    auto GetAutonomousCommand( void )  -> frc2::CommandPtr {return pathplanner::PathPlannerAuto(this->AutonomousRoutine).ToPtr();};
 
 private:
     
@@ -44,9 +49,7 @@ private:
     frc2::CommandXboxController Driver{0};
     frc2::CommandXboxController Operator{1};
     
-    void ConfigureBindings();
-    void OperatorControls(const frc2::CommandXboxController& Controller);
-    void DriverControls(const frc2::CommandXboxController& Controller);
+    std::string AutonomousRoutine;
 
     units::meters_per_second_t MaxSpeed = 0.5 * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
     units::radians_per_second_t MaxAngularRate = 0.75_tps; // 3/4 of a rotation per second max angular velocity
@@ -65,10 +68,14 @@ private:
     double angle;
     frc::SendableChooser<frc2::Command *> autoChooser;
 
+    void ConfigureBindings();
+    void OperatorControls(const frc2::CommandXboxController& Controller);
+    void DriverControls(const frc2::CommandXboxController& Controller);
+    
+    
     void Drivetrain(const frc2::CommandXboxController& Controller);
     void TurretTracking(frc2::Trigger trigger);
     void IntakeBall(frc2::Trigger trigger);
     void ShootBall(frc2::Trigger trigger);
     void ReverseConveyor(frc2::Trigger trigger);
-
 };

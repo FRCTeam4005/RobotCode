@@ -14,6 +14,7 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/ParallelCommandGroup.h>
 
+
 RobotContainer::RobotContainer()
 {
     Turret_Sys = std::make_unique<Turret>();
@@ -45,18 +46,7 @@ void RobotContainer::ConfigureBindings()
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand()
-{
-    return frc2::cmd::Sequence(
-        ShooterWheels_Sys->Spin(),
-        ShooterKicker_Sys->Feed(),
-        IntakeConveyor_Sys->In(),
-        IntakeFrontRoller_Sys->Out(),
-        frc2::cmd::Wait(2_s),
-        IntakeConveyor_Sys->In(),
-        frc2::cmd::Wait(10_s)
-    );
-}
+
 
 
 

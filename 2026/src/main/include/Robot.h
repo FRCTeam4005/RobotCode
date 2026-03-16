@@ -29,11 +29,25 @@ public:
     void TestPeriodic() override;
     void TestExit() override;
 
+
+
+
+
 private:
     static constexpr bool kUseLimelight = false;
 
     std::optional<frc2::CommandPtr> m_autonomousCommand;
     frc::SendableChooser<std::string> m_chooser;
+
+    std::vector<std::string> AvaliablePathPlannerAutos =
+    {
+        "Left Auto",
+        "Right Auto",
+        "Middle"
+    };
+
+    auto SetRobotAutoRoutine(std::string AutomousRoutineName) -> void {m_container.SetAutonomousRoutine(AutomousRoutineName);};
+    auto GetRobotAutoCommand() -> frc2::CommandPtr {return m_container.GetAutonomousCommand();};
 
     RobotContainer m_container;
 
@@ -41,11 +55,4 @@ private:
     ctre::phoenix6::HootAutoReplay m_timeAndJoystickReplay = ctre::phoenix6::HootAutoReplay{}
         .WithTimestampReplay()
         .WithJoystickReplay();
-    
-    std::vector<std::string> AvaliablePathPlannerAutos =
-    {
-        "Left Auto",
-        "Right Auto",
-        "New Auto"
-    };
 };

@@ -6,13 +6,22 @@
 
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot() {}
+Robot::Robot() 
+{
+}
 
 void Robot::RobotPeriodic() {
-
+    
     m_timeAndJoystickReplay.Update();
     frc2::CommandScheduler::GetInstance().Run();
+    
 
+    m_chooser.SetDefaultOption(AvaliablePathPlannerAutos[1],AvaliablePathPlannerAutos[1]);
+    for(auto Path : AvaliablePathPlannerAutos)
+    {
+        m_chooser.AddOption(Path, Path);
+    }
+    frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
 
     /*
@@ -49,7 +58,9 @@ void Robot::AutonomousInit() {
     BotPose = frc::Pose2d{BotPose.X(), BotPose.Y(), frc::Rotation2d{BotPose.Rotation().Degrees()}};
 
     m_container.drivetrain.ResetPose(BotPose);
-    m_autonomousCommand = m_container.GetAutonomousCommand();
+
+    this->SetRobotAutoRoutine(m_chooser.GetSelected());
+    m_autonomousCommand = this->GetRobotAutoCommand();
 
     if (m_autonomousCommand) {
         frc2::CommandScheduler::GetInstance().Schedule(std::move(m_autonomousCommand.value()));
