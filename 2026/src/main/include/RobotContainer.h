@@ -16,7 +16,6 @@
 #include "subsystems/Shooter/Wheels.h"
 #include "subsystems/Conveyor.h"
 #include "subsystems/IntakeFrontRoller.h"
-#include <functional>
 
 
 class RobotContainer {
@@ -67,5 +66,9 @@ private:
     frc::SendableChooser<frc2::Command *> autoChooser;
 
     void Drivetrain(const frc2::CommandXboxController& Controller);
+    void TurretTracking(frc2::Trigger trigger);
+    void IntakeBall(frc2::Trigger trigger);
+    void ShootBall(frc2::Trigger trigger);
+    void ReverseConveyor(frc2::Trigger trigger);
 
 };

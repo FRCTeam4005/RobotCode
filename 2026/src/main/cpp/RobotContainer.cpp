@@ -30,41 +30,19 @@ RobotContainer::RobotContainer()
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
     
     ConfigureBindings();
-
-    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 void RobotContainer::ConfigureBindings()
 {
+    // i am doing this like this because it tell me what the button does (generically) and what the button is 
     Drivetrain(Driver);
+    TurretTracking(Driver.RightTrigger());
 
-    //ShootBall
-    Operator.B()
-        .OnTrue(
-            frc2::cmd::Sequence
-            (
-                IntakeFrontRoller_Sys->Out(),
-                ShooterWheels_Sys->Spin(),
-                IntakeConveyor_Sys->Out()
-            ))
-        .OnFalse(
-            frc2::cmd::Parallel
-            (
-                ShooterWheels_Sys->Stop(),
-                IntakeConveyor_Sys->Stop(),
-                ShooterKicker_Sys->Stop()
-            ));
+    IntakeBall(Operator.X());
+    ShootBall(Operator.B());
+    ReverseConveyor(Operator.RightTrigger());
 
-    //Intake Ball
-    Operator.X()    
-        .OnTrue(IntakeFrontRoller_Sys->Out().AlongWith(frc2::cmd::Print(" \n\n\n INTAKE BALL \n\n\n")))
-        .OnFalse(IntakeFrontRoller_Sys->In());
-    
-    // Reverse Conveyor
-    Operator.RightTrigger()
-        .OnTrue(IntakeConveyor_Sys->Out())
-        .OnFalse(IntakeConveyor_Sys->Stop());
-
+    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()
@@ -101,3 +79,44 @@ void RobotContainer::Drivetrain(const frc2::CommandXboxController& Controller)
             }).IgnoringDisable(true)
         );
 }
+
+void RobotContainer::TurretTracking(frc2::Trigger trigger)
+{
+    trigger
+        .WhileTrue(Turret_Sys->ToggleTracking());
+}
+
+void RobotContainer::IntakeBall(frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(IntakeFrontRoller_Sys->Out().AlongWith(frc2::cmd::Print(" \n\n\n INTAKE BALL \n\n\n")))
+        .OnFalse(IntakeFrontRoller_Sys->In());
+}
+
+void RobotContainer::ShootBall(frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(
+            frc2::cmd::Sequence
+            (
+                ShooterWheels_Sys->Spin(),
+                IntakeFrontRoller_Sys->Out(),
+                IntakeConveyor_Sys->In()
+            ))
+        .OnFalse(
+            frc2::cmd::Parallel
+            (
+                ShooterWheels_Sys->Stop(),
+                IntakeConveyor_Sys->Stop(),
+                ShooterKicker_Sys->Stop(),
+                IntakeFrontRoller_Sys->In()
+            ));
+}
+
+void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
+{
+    trigger
+        .OnTrue(IntakeConveyor_Sys->Out())
+        .OnFalse(IntakeConveyor_Sys->Stop());
+}
+

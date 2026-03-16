@@ -22,6 +22,7 @@ ShooterWheels::ShooterWheels()
 void ShooterWheels::Periodic()
 {
   // auto distance = Turret_Sys->GetDistanceMeters();
+  ShootSpeed_ = units::turns_per_second_t(5.31 * 5 + 37.95);
   // ShootSpeed_ = units::turns_per_second_t(5.31 * distance + 37.95);
 }
 
