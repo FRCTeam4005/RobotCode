@@ -18,27 +18,19 @@ void Drivetrain::ConfigureAutoBuilder()
         [this] { return GetState().Speeds; },
         // Consumer of ChassisSpeeds and feedforwards to drive the robot
         [this](frc::ChassisSpeeds const &speeds, pathplanner::DriveFeedforwards const &feedforwards) {
-                // this->ApplyRequest()
-                // speeds.vx = 1_mps;
-                // speeds.vy = 0_mps;
-
-                frc::ChassisSpeeds tempSPeeds {};
-                tempSPeeds.vx = 0.1_mps;
-                tempSPeeds.vy = 0_mps;
-                tempSPeeds.omega = 0_rad_per_s;
 
             return SetControl(
                 
-                m_pathApplyRobotSpeeds.WithSpeeds(frc::ChassisSpeeds::Discretize(tempSPeeds, 20_ms))
-                    // .WithWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX)
-                    // .WithWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY)
+                m_pathApplyRobotSpeeds.WithSpeeds(frc::ChassisSpeeds::Discretize(speeds, 20_ms))
+                    .WithWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX)
+                    .WithWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY)
             );
         },
         std::make_shared<pathplanner::PPHolonomicDriveController>(
             // PID constants for translation
-            pathplanner::PIDConstants{0, 0.0, 0.0},
+            pathplanner::PIDConstants{10, 0.0, 0.0},
             // PID constants for rotation
-            pathplanner::PIDConstants{0, 0.0, 0.0}
+            pathplanner::PIDConstants{4.5839, 0.0, 0.0}
         ),
         std::move(config),
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case

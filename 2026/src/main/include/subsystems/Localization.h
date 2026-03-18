@@ -14,6 +14,7 @@
 #include <functional>
 #include <wpi/print.h>
 #include <ctre/phoenix6/Pigeon2.hpp>
+#include <frc/DriverStation.h>
 
 using namespace LimelightHelpers;
 using Pose2d = frc::Pose2d;
@@ -28,6 +29,15 @@ private:
     //TODO we should also check the area of the tag to make sure its close enough
     if(CameraPoseEstimate.tagCount > 0  && CameraPoseEstimate.avgTagArea > 0.25)
     {
+
+      if(frc::DriverStation::IsDisabled())
+      {
+        _SetRobotOrientation_With_MegaTag1();
+        CameraPoseEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
+        _SetOdometryPose(CameraPoseEstimate.pose);
+        _hasSeenAprilTag = true;
+      }
+
       if (!_hasSeenAprilTag)
       {
         _SetRobotOrientation_With_MegaTag1();
