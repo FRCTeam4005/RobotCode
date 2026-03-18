@@ -3,84 +3,120 @@
 // the WPILib BSD license file in the root directory of this project.
 #pragma once
 
-#include <frc2/command/CommandPtr.h>
 #include <frc2/command/SubsystemBase.h>
-#include <frc2/command/Commands.h>
 #include "lib/LimelightHelpers.h"
-
 #include <frc/geometry/Pose2d.h>
-#include <frc2/command/button/RobotModeTriggers.h>
-#include "subsystems/Localization.h"
-#include <functional>
-#include <wpi/print.h>
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include <frc/DriverStation.h>
+#include <functional>
+#include <string>
+#include <wpi/print.h>
 
 using namespace LimelightHelpers;
 using Pose2d = frc::Pose2d;
 
-class Localization : public frc2::SubsystemBase 
+class Localization : public frc2::SubsystemBase
 {
-private:
-
-  void Periodic() override
-  {
-    auto CameraPoseEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
-    //TODO we should also check the area of the tag to make sure its close enough
-    if(CameraPoseEstimate.tagCount > 0  && CameraPoseEstimate.avgTagArea > 0.25)
-    {
-
-      if(frc::DriverStation::IsDisabled())
-      {
-        _SetRobotOrientation_With_MegaTag1();
-        CameraPoseEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
-        _SetOdometryPose(CameraPoseEstimate.pose);
-        _hasSeenAprilTag = true;
-      }
-
-      if (!_hasSeenAprilTag)
-      {
-        _SetRobotOrientation_With_MegaTag1();
-        CameraPoseEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
-        _SetOdometryPose(CameraPoseEstimate.pose);
-        _hasSeenAprilTag = true;
-      }
-      else
-      {
-        LimelightHelpers::SetIMUMode(_LimeLightName, 4);
-        SetRobotOrientation(_LimeLightName,getPose().Rotation().Degrees().value(),0,0,0,0,0);
-        CameraPoseEstimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_LimeLightName);
-        _updateVisionMeasurement(CameraPoseEstimate.pose,units::time::second_t{CameraPoseEstimate.latency});
-      }
-    }
-  }
-
 public:
-  
-  Localization(std::string CameraName, ctre::phoenix6::hardware::Pigeon2& IMU, std::function<Pose2d()> getRobotOdometryPose, std::function<void(Pose2d)> setRobotOdometryPose, std::function<void(Pose2d, units::time::second_t)> updateVisionMeasurement):
-  _LimeLightName{CameraName},
-  _IMU{IMU},
-  _getPose{getRobotOdometryPose}, 
-  _SetOdometryPose{setRobotOdometryPose}, 
-  _updateVisionMeasurement{updateVisionMeasurement}
-  {
-    SetName("Localization");
-  }
+    Localization(
+        std::string cameraName,
+        ctre::phoenix6::hardware::Pigeon2 &imu,
+        std::function<Pose2d()> getRobotOdometryPose,
+        std::function<void(Pose2d)> setRobotOdometryPose,
+        std::function<void(Pose2d, units::time::second_t)> updateVisionMeasurement)
+        : _limelightName{cameraName},
+          _imu{imu},
+          _getPose{getRobotOdometryPose},
+          _setOdometryPose{setRobotOdometryPose},
+          _updateVisionMeasurement{updateVisionMeasurement}
+    {
+        SetName("Localization");
 
-  
-  auto getPoseEstimate() -> PoseEstimate {return _pose;}
-  
-  frc::Pose2d getPose() {return _getPose();}
-  private:
-  std::string _LimeLightName;
-  ctre::phoenix6::hardware::Pigeon2& _IMU;
-  std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
-  std::function<Pose2d()> _getPose;
-  std::function<void(Pose2d)> _SetOdometryPose;
-  PoseEstimate _pose;
-  bool _hasSeenAprilTag = false;
-  
-  
-  auto _SetRobotOrientation_With_MegaTag1() -> void {SetRobotOrientation(_LimeLightName,_getMegaTag1Yaw().value(),0,0,0,0,0);}
-  auto _getMegaTag1Yaw() -> units::degree_t {return getBotPoseEstimate_wpiBlue(_LimeLightName).pose.Rotation().Degrees();}
+        // Set IMU mode once at init — external IMU fused with MegaTag2
+        LimelightHelpers::SetIMUMode(_limelightName, 4);
+    }
+
+    frc::Pose2d getPose() { return _getPose(); }
+
+private:
+    void Periodic() override
+    {
+        // If disabled, try to seed pose from vision every loop
+        if (frc::DriverStation::IsDisabled())
+        {
+            _TrySeedPoseFromVision();
+            return;
+        }
+
+        // Guard: don't use vision if gyro is spinning too fast (MegaTag2 unreliable)
+        double angularVelocityDegPerSec = std::abs(
+            _imu.GetAngularVelocityZWorld().GetValue().value());
+        if (angularVelocityDegPerSec > 720.0)
+            return;
+
+        // Update Limelight with current robot heading for MegaTag2
+        LimelightHelpers::SetRobotOrientation(
+            _limelightName,
+            _getPose().Rotation().Degrees().value(),
+            0, 0, 0, 0, 0);
+
+        // Get MegaTag2 estimate (single call, cached)
+        auto estimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_limelightName);
+
+        // Require at least one tag and a minimum tag area for reliability
+        if (estimate.tagCount == 0 || estimate.avgTagArea < 0.25)
+            return;
+
+        if (!_hasSeenAprilTag)
+        {
+            // First time seeing a tag — hard reset odometry to vision pose
+            _SeedPoseFromMegaTag1();
+            _hasSeenAprilTag = true;
+            return;
+        }
+
+        // Normal operation — feed vision measurement with correct timestamp
+        _updateVisionMeasurement(
+            estimate.pose,
+            units::time::second_t{estimate.timestampSeconds});
+    }
+
+    // Hard-resets odometry using MegaTag1 yaw + MegaTag2 pose
+    // Used on first tag acquisition and while disabled
+    void _SeedPoseFromMegaTag1()
+    {
+        // Get yaw from MegaTag1 (more reliable for initial heading)
+        auto mt1Estimate = LimelightHelpers::getBotPoseEstimate_wpiBlue(_limelightName);
+        if (mt1Estimate.tagCount == 0)
+            return;
+
+        double yawDeg = mt1Estimate.pose.Rotation().Degrees().value();
+        LimelightHelpers::SetRobotOrientation(_limelightName, yawDeg, 0, 0, 0, 0, 0);
+
+        // Now get MegaTag2 pose with corrected orientation and hard-set odometry
+        auto mt2Estimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_limelightName);
+        if (mt2Estimate.tagCount == 0)
+            return;
+
+        _setOdometryPose(mt2Estimate.pose);
+    }
+
+    // Attempts to seed pose from vision while disabled (called every loop when disabled)
+    void _TrySeedPoseFromVision()
+    {
+        auto estimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_limelightName);
+        if (estimate.tagCount == 0 || estimate.avgTagArea < 0.25)
+            return;
+
+        _SeedPoseFromMegaTag1();
+        _hasSeenAprilTag = true;
+    }
+
+    std::string _limelightName;
+    ctre::phoenix6::hardware::Pigeon2 &_imu;
+    std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
+    std::function<Pose2d()> _getPose;
+    std::function<void(Pose2d)> _setOdometryPose;
+
+    bool _hasSeenAprilTag = false;
 };

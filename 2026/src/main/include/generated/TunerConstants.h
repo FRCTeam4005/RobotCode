@@ -55,14 +55,16 @@ class TunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants::SteerMotorClosedLoopOutput
     static constexpr configs::Slot0Configs steerGains = configs::Slot0Configs{}
-        .WithKP(47.626).WithKI(0).WithKD(0)
-        .WithKS(0.12583).WithKV(2.4552).WithKA(0.1297)
+    .WithKP(47.626).WithKI(0).WithKD(0)
+    .WithKS(0.12583).WithKV(2.4552).WithKA(0.1297)
         .WithStaticFeedforwardSign(signals::StaticFeedforwardSignValue::UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants::DriveMotorClosedLoopOutput
     static constexpr configs::Slot0Configs driveGains = configs::Slot0Configs{}
-        .WithKP(0.14211).WithKI(0).WithKD(0)
-        .WithKS(0.039117).WithKV(0.11369).WithKA(0.012953);
+        .WithKP(0).WithKI(0).WithKD(0)
+        .WithKS(0).WithKV(0).WithKA(0);
+        // .WithKP(0.14211).WithKI(0).WithKD(0)
+        // .WithKS(0.039117).WithKV(0.11369).WithKA(0.012953);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -87,6 +89,8 @@ class TunerConstants {
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `With*InitialConfigs()` API documentation.
     static constexpr configs::TalonFXConfiguration driveInitialConfigs{};
+
+    
     static constexpr configs::TalonFXConfiguration steerInitialConfigs = configs::TalonFXConfiguration{}
         .WithCurrentLimits(
             configs::CurrentLimitsConfigs{}
@@ -117,7 +121,7 @@ private:
     // This may need to be tuned to your individual robot
     static constexpr units::scalar_t kCoupleRatio = 3.5714285714285716;
 
-    static constexpr units::scalar_t kDriveGearRatio = 6.746031746031747;
+    static constexpr units::scalar_t kDriveGearRatio = 5.36;
     static constexpr units::scalar_t kSteerGearRatio = 21.428571428571427;
     static constexpr units::inch_t kWheelRadius = 2_in;
 

@@ -53,8 +53,8 @@ private:
     
     std::string AutonomousRoutine;
 
-    units::meters_per_second_t MaxSpeed = 0.5 * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
-    units::radians_per_second_t MaxAngularRate = 0.75_tps; // 3/4 of a rotation per second max angular velocity
+    units::meters_per_second_t MaxSpeed = .9 * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
+    units::radians_per_second_t MaxAngularRate = .75_tps; // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     swerve::requests::FieldCentric drive = swerve::requests::FieldCentric{}

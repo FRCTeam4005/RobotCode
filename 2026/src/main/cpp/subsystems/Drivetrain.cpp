@@ -2,6 +2,7 @@
 #include <frc/RobotController.h>
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 
 using namespace subsystems;
@@ -19,18 +20,31 @@ void Drivetrain::ConfigureAutoBuilder()
         // Consumer of ChassisSpeeds and feedforwards to drive the robot
         [this](frc::ChassisSpeeds const &speeds, pathplanner::DriveFeedforwards const &feedforwards) {
 
+            // ApplyRequest([this, &Controller]() -> auto&& { 
+            // return drive
+            //     .WithVelocityX(speeds.vx)// Drive forward with negative Y (forward)
+            //     .WithVelocityY(speeds.vy) // Drive left with negative X (left)
+            //     .WithRotationalRate(Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+            // }
+
+
+            // frc::SmartDashboard::PutNumber("vx",speeds.vx.value());
+            // frc::SmartDashboard::PutNumber("vy",speeds.vy.value());
+            // frc::SmartDashboard::PutNumber("omega",speeds.omega.value());
+
             return SetControl(
                 
-                m_pathApplyRobotSpeeds.WithSpeeds(frc::ChassisSpeeds::Discretize(speeds, 20_ms))
-                    .WithWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX)
-                    .WithWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY)
+                
+                m_pathApplyRobotSpeeds.WithSpeeds(frc::ChassisSpeeds::Discretize({1_mps,0_mps,0_deg_per_s}, 4_ms))
+                    // .WithWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX)
+                    // .WithWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY)
             );
         },
         std::make_shared<pathplanner::PPHolonomicDriveController>(
-            // PID constants for translation
-            pathplanner::PIDConstants{10, 0.0, 0.0},
-            // PID constants for rotation
-            pathplanner::PIDConstants{4.5839, 0.0, 0.0}
+        // Translation PID — corrects X/Y position error (meters)
+        pathplanner::PIDConstants{0.0, 0.0, 0.0},
+        // Rotation PID — corrects heading error (radians)
+        pathplanner::PIDConstants{0.0, 0.0, 0.0}
         ),
         std::move(config),
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case
