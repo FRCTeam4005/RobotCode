@@ -43,7 +43,8 @@ private:
     {
         "Left Auto",
         "Right Auto",
-        "Middle"
+        "Middle",
+        "Straight Auto"
     };
 
     auto SetRobotAutoRoutine(std::string AutomousRoutineName) -> void {m_container.SetAutonomousRoutine(AutomousRoutineName);};

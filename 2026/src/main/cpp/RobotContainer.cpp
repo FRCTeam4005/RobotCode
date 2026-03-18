@@ -23,13 +23,17 @@ RobotContainer::RobotContainer()
     ShooterWheels_Sys = std::make_unique<ShooterWheels>();
     IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
-
+    Localization_Sys = std::make_unique<Localization>(
+        "limelight-bodycam", 
+        drivetrain.GetPigeon2(),
+        [this](){return drivetrain.GetState().Pose;}, // just dp this on init
+        [this](frc::Pose2d pose){drivetrain.ResetPose(pose);}, 
+        [this](frc::Pose2d pose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(pose,Timestamp);});
 
     pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
-    
+
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
-    
     ConfigureBindings();
 }
 
@@ -44,6 +48,20 @@ void RobotContainer::ConfigureBindings()
     ReverseConveyor(Operator.RightTrigger());
 
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+
+    Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
+    Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
+
+    /*
+    * Joystick Y = quasistatic forward
+    * Joystick A = quasistatic reverse
+    * Joystick B = dynamic forward
+    * Joystick X = dynamic reverse
+    */
+    Driver.Y().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
+    Driver.A().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    Driver.B().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
+    Driver.X().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
 }
 
 

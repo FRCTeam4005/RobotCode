@@ -16,6 +16,7 @@
 #include "subsystems/Shooter/Wheels.h"
 #include "subsystems/Conveyor.h"
 #include "subsystems/IntakeFrontRoller.h"
+#include "subsystems/Localization.h"
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/auto/NamedCommands.h>
 #include <pathplanner/lib/Commands/PathPlannerAuto.h>
@@ -41,6 +42,7 @@ private:
     std::unique_ptr<ShooterWheels> ShooterWheels_Sys;
     std::unique_ptr<IntakeConveyor> IntakeConveyor_Sys;
     std::unique_ptr<IntakeFrontRoller> IntakeFrontRoller_Sys;
+    std::unique_ptr<Localization> Localization_Sys;
 
     frc::PneumaticHub pnH{CANConstants::kPneumaticHub,};
     units::pounds_per_square_inch_t MinimumOnPressure{80};
