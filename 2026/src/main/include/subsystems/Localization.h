@@ -114,9 +114,9 @@ private:
 
     std::string _limelightName;
     ctre::phoenix6::hardware::Pigeon2 &_imu;
-    std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
     std::function<Pose2d()> _getPose;
     std::function<void(Pose2d)> _setOdometryPose;
+    std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
 
     bool _hasSeenAprilTag = false;
 };

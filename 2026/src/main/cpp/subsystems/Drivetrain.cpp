@@ -14,7 +14,7 @@ void Drivetrain::ConfigureAutoBuilder()
         // Supplier of current robot pose
         [this] { return GetState().Pose; },
         // Consumer for seeding pose against auto
-        [this](frc::Pose2d const &pose) { return ResetPose(pose); },
+        [this](frc::Pose2d const &pose) { },
         // Supplier of current robot speeds
         [this] { return GetState().Speeds; },
         // Consumer of ChassisSpeeds and feedforwards to drive the robot
@@ -32,9 +32,9 @@ void Drivetrain::ConfigureAutoBuilder()
         },
         std::make_shared<pathplanner::PPHolonomicDriveController>(
         // Translation PID — corrects X/Y position error (meters)
-        pathplanner::PIDConstants{0.0, 0.0, 0.0},
+        pathplanner::PIDConstants{10.0, 0.0, 0.0},
         // Rotation PID — corrects heading error (radians)
-        pathplanner::PIDConstants{0.0, 0.0, 0.0}
+        pathplanner::PIDConstants{7.0, 0.0, 0.0}
         ),
         std::move(config),
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case

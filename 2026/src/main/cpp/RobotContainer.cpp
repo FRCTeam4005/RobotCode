@@ -23,12 +23,12 @@ RobotContainer::RobotContainer()
     // ShooterWheels_Sys = std::make_unique<ShooterWheels>();
     // IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     // IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
-    // Localization_Sys = std::make_unique<Localization>(
-    //     "limelight-bodycam", 
-    //     drivetrain.GetPigeon2(),
-    //     [this](){return drivetrain.GetState().Pose;}, // just dp this on init
-    //     [this](frc::Pose2d pose){drivetrain.ResetPose(pose);}, 
-    //     [this](frc::Pose2d pose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(pose,Timestamp);});
+    Localization_Sys = std::make_unique<Localization>(
+        "limelight-bodycam", 
+        drivetrain.GetPigeon2(),
+        [this](){return drivetrain.GetState().Pose;}, // just dp this on init
+        [this](frc::Pose2d pose){drivetrain.ResetPose(pose);}, 
+        [this](frc::Pose2d pose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(pose,Timestamp);});
 
     pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
 
@@ -75,9 +75,9 @@ void RobotContainer::Drivetrain(const frc2::CommandXboxController& Controller)
     drivetrain.SetDefaultCommand(// Drivetrain will execute this command periodically
         drivetrain.ApplyRequest([this, &Controller]() -> auto&& { 
             return drive
-                .WithVelocityX(Controller.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                .WithVelocityY(Controller.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                .WithVelocityX(-Controller.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                .WithVelocityY(-Controller.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
+                .WithRotationalRate(-Controller.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
     }));
 
     frc2::RobotModeTriggers::Disabled()
