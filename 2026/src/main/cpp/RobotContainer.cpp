@@ -17,12 +17,12 @@
 
 RobotContainer::RobotContainer()
 {
-    Turret_Sys = std::make_unique<Turret>();
-    ShooterHood_Sys = std::make_unique<ShooterHood>();
-    ShooterKicker_Sys = std::make_unique<ShooterKicker>();
-    ShooterWheels_Sys = std::make_unique<ShooterWheels>();
-    IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
-    IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
+    // Turret_Sys = std::make_unique<Turret>();
+    // ShooterHood_Sys = std::make_unique<ShooterHood>();
+    // ShooterKicker_Sys = std::make_unique<ShooterKicker>();
+    // ShooterWheels_Sys = std::make_unique<ShooterWheels>();
+    // IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
+    // IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
     // Localization_Sys = std::make_unique<Localization>(
     //     "limelight-bodycam", 
     //     drivetrain.GetPigeon2(),
@@ -41,27 +41,27 @@ void RobotContainer::ConfigureBindings()
 {
     // i am doing this like this because it tell me what the button does (generically) and what the button is 
     Drivetrain(Driver);
-    TurretTracking(Driver.RightTrigger());
-
-    IntakeBall(Operator.X());
-    ShootBall(Operator.B());
-    ReverseConveyor(Operator.RightTrigger());
-
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+    
+    // TurretTracking(Driver.RightTrigger());
+    // ShootBall(Operator.B());
+    // IntakeBall(Operator.X());
+    // ReverseConveyor(Operator.RightTrigger());
 
-    Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
-    Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
 
-    /*
-    * Joystick Y = quasistatic forward
-    * Joystick A = quasistatic reverse
-    * Joystick B = dynamic forward
-    * Joystick X = dynamic reverse
-    */
-    Driver.Y().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    Driver.A().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-    Driver.B().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    Driver.X().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
+    // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
+    // Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
+
+    // /*
+    // * Joystick Y = quasistatic forward
+    // * Joystick A = quasistatic reverse
+    // * Joystick B = dynamic forward
+    // * Joystick X = dynamic reverse
+    // */
+    // Driver.Y().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
+    // Driver.A().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    // Driver.B().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
+    // Driver.X().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
 }
 
 

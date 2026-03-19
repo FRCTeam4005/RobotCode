@@ -55,8 +55,6 @@ class Turret : public frc2::SubsystemBase
 
 private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> TurretMotor;
-    subsystems::Drivetrain drivetrain{TunerConstants::CreateDrivetrain()};
-    std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
     ctre::phoenix6::controls::MotionMagicVoltage elevate_mmReq{0_tr};
     
     bool TurretTrack_{false};
@@ -97,5 +95,4 @@ private:
     auto GetPosition() -> units::turn_t;
     auto sadfsafs() -> void;
 
-    void updateField(frc::Pose2d robotfieldpose,  frc::Pose2d desiredPose);
 };
