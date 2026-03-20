@@ -62,8 +62,6 @@ private:
             ->Append<frc::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, frc::Color8Bit{frc::Color::kWhite}),
     };
 
-
-    std::unique_ptr<ctre::phoenix6::hardware::Pigeon2> Pigeon_Sys;
 public:
 
 
