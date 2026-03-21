@@ -17,17 +17,17 @@
 
 RobotContainer::RobotContainer()
 {
-    // Turret_Sys = std::make_unique<Turret>();
-    // ShooterHood_Sys = std::make_unique<ShooterHood>();
-    // ShooterKicker_Sys = std::make_unique<ShooterKicker>();
-    // ShooterWheels_Sys = std::make_unique<ShooterWheels>();
-    // IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
-    // IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
+    Turret_Sys = std::make_unique<Turret>([this](){return Localization_Sys->getPose();}, [this](){return drivetrain.GetPigeon2().GetYaw().GetValue();});
+    ShooterHood_Sys = std::make_unique<ShooterHood>();
+    ShooterKicker_Sys = std::make_unique<ShooterKicker>();
+    ShooterWheels_Sys = std::make_unique<ShooterWheels>();
+    IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
+    IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
     Localization_Sys = std::make_unique<Localization>(
         "limelight-bodycam", 
         drivetrain.GetPigeon2(),
         [this](){return drivetrain.GetState().Pose;}, // just dp this on init
-        [this](frc::Pose2d pose){drivetrain.ResetPose(pose);}, 
+        [this](frc::Pose2d pose){drivetrain.ResetPose(pose); drivetrain.GetPigeon2().SetYaw(pose.Rotation().Degrees());}, 
         [this](frc::Pose2d pose, units::time::second_t Timestamp){drivetrain.AddVisionMeasurement(pose,Timestamp);});
 
     pnH.EnableCompressorAnalog( MinimumOnPressure, MamimumOffPressure);
@@ -43,10 +43,10 @@ void RobotContainer::ConfigureBindings()
     Drivetrain(Driver);
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
     
-    // TurretTracking(Driver.RightTrigger());
-    // ShootBall(Operator.B());
-    // IntakeBall(Operator.X());
-    // ReverseConveyor(Operator.RightTrigger());
+    TurretTracking(Driver.RightTrigger());
+    ShootBall(Operator.B());
+    IntakeBall(Operator.X());
+    ReverseConveyor(Operator.RightTrigger());
 
 
     // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
@@ -58,10 +58,13 @@ void RobotContainer::ConfigureBindings()
     // * Joystick B = dynamic forward
     // * Joystick X = dynamic reverse
     // */
-    // Driver.Y().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    // Driver.A().WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-    // Driver.B().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    // Driver.X().WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
+
+    Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
+    Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
+    Driver.Y().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kForward));
+    Driver.A().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    Driver.B().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kForward));
+    Driver.X().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kReverse));
 }
 
 

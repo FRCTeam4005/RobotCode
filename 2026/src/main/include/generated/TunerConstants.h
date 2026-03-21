@@ -22,7 +22,10 @@ namespace CANConstants {
 
     inline const int kClimberID{30};
     inline const int kPneumaticHub{33};
-
+    
+    inline const int RightMagSwtich{11};
+    inline const int MiddleMagSwitch{12};
+    inline const int LeftMagSwitch{13};
     //inline const int kClimberRightID{31};
 }
 
