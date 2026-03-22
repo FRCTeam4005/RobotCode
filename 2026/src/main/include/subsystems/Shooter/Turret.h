@@ -147,4 +147,35 @@ public: //SYSID STUFF
     frc2::sysid::SysIdRoutine *m_sysIdRoutineToApply = &characterization;
     frc2::CommandPtr SysIdQuasistatic(frc2::sysid::Direction direction){return m_sysIdRoutineToApply->Quasistatic(direction);}
     frc2::CommandPtr SysIdDynamic(frc2::sysid::Direction direction){return m_sysIdRoutineToApply->Dynamic(direction);}
+
+private:
+    void setupControllerGains(ctre::phoenix6::configs::TalonFXConfiguration& config)
+    {
+        config.Slot0.kS = 0.10063; // Add 0.25 V output to overcome static friction
+        config.Slot0.kV = 1.1036; // A velocity target of 1 rps results in 0.12 V output
+        config.Slot0.kA = 0.13873; // An acceleration of 1 rps/s requires 0.01 V output
+        config.Slot0.kP = 15; // A position error of 0.2 rotations results in 12 V output
+        config.Slot0.kI = 0.0; // No output for integrated error
+        config.Slot0.kD = 0; // A velocity error of 1 rps results in 0.5 V output
+    }
+
+    void setupMagicMotionValues(ctre::phoenix6::configs::TalonFXConfiguration& config)
+    {
+        // set Motion Magic settings
+        auto& motionMagicConfigs = config.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 64_tps; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 128_tr_per_s_sq; // Target acceleration of 160 rps/s (0.5 seconds)
+        motionMagicConfigs.MotionMagicJerk = 640_tr_per_s_cu; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    }
+
+
+    void setupLimitSwitches(ctre::phoenix6::configs::TalonFXConfiguration& config)
+    {
+        // set Motion Magic settings
+        auto& SoftwareLimitSwitchConfig = config.SoftwareLimitSwitch;
+        SoftwareLimitSwitchConfig.ForwardSoftLimitEnable = true;
+        SoftwareLimitSwitchConfig.ForwardSoftLimitThreshold = units::turn_t(0.25);
+        SoftwareLimitSwitchConfig.ReverseSoftLimitEnable = true;
+        SoftwareLimitSwitchConfig.ReverseSoftLimitThreshold = units::turn_t(-0.25);
+    }    
 };

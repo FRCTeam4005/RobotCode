@@ -11,47 +11,24 @@ getIMUAngle{getIMU}
 {
     _Motor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kTurretMotorID);
 
-    // // in init function
     ctre::phoenix6::configs::TalonFXConfiguration turret_cfg{};
 
     turret_cfg.ClosedLoopGeneral.ContinuousWrap = true;
     turret_cfg.Feedback.SensorToMechanismRatio = 10;
-
-    // // turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    turret_cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = units::turn_t(0.25);
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    turret_cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = units::turn_t(-0.25);
-
-    turret_cfg.MotorOutput.Inverted = true;
-
-    // // turret_cfg.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(40);
     turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
+    turret_cfg.MotorOutput.Inverted = true;
+    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 
+    setupLimitSwitches(turret_cfg);
 
-    // // set slot 0 gains
-    auto& slot0Configs = turret_cfg.Slot0;
+    setupControllerGains(turret_cfg);
 
-    slot0Configs.kS = 0.10063; // Add 0.25 V output to overcome static friction
-    slot0Configs.kV = 1.1036; // A velocity target of 1 rps results in 0.12 V output
-    slot0Configs.kA = 0.13873; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = 7.5; // A position error of 0.2 rotations results in 12 V output
-    slot0Configs.kI = 0.0; // No output for integrated error
-    slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.5 V output
-
-    // set Motion Magic settings
-    auto& motionMagicConfigs = turret_cfg.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 64_tps; // Target cruise velocity of 80 rps
-    motionMagicConfigs.MotionMagicAcceleration = 128_tr_per_s_sq; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigs.MotionMagicJerk = 640_tr_per_s_cu; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    setupMagicMotionValues(turret_cfg);
 
     ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
     status = _Motor->GetConfigurator().Apply(turret_cfg);
     
-    // _Motor->SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
     _Motor->GetConfigurator().Apply(turret_cfg);
-    // _Motor->GetConfigurator().Apply(std::noop);
 
     _Motor->SetPosition(units::turn_t(0));
 
@@ -61,8 +38,6 @@ getIMUAngle{getIMU}
 void Turret::Periodic ()
 {
 #if 1
-    // _Motor->Set(-.2);
-
   auto HasLeftHitLimitSwitch =  LeftMagSwitch.GetData().magnetDetected;
   auto HasRightHitLimitSwitch =  RightMagSwtich.GetData().magnetDetected;
   auto HasMiddleHitLimitSwitch =  MiddleMagSwitch.GetData().magnetDetected;
@@ -77,49 +52,12 @@ void Turret::Periodic ()
   auto CurrPose = _getBotPose();
   auto TargetCoords = getTargetTranlation(CurrPose);
   // auto TurretAngle = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
-  auto TurretAngle = CalculateTheta(TargetCoords, CurrPose) - CurrPose.Rotation().Degrees();
+  // auto TurretAngle = CalculateTheta(TargetCoords, CurrPose) - CurrPose.Rotation().Degrees();
   auto withPigeon = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
 
+  this->elevate_mmReq.WithPosition(withPigeon ).WithSlot(0);
+  _Motor->SetControl(elevate_mmReq);
 
-  frc::SmartDashboard::PutNumber("TurretAngle", _Motor->GetMotorVoltage().GetValueAsDouble());
-  frc::SmartDashboard::PutNumber("withPigeon", _Motor->GetMotorVoltage().GetValueAsDouble());
-  
-  // if (abs((TurretAngle - _Motor->GetPosition().GetValue()).convert<units::angle::degree>().value() < 1))
-  // {
-    //   _Motor->Set(0);
-    // }
-    // else
-    // {
-      // frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kBlue ? TurretAngle : TurretAngle + 180_deg;
-      
-      // if(HasRightHitLimitSwitch)
-      // {
-      //   _Motor->Set(0);
-      //   // _Motor->SetPosition(units::turn_t(0.25));
-      // }
-      // else if (HasLeftHitLimitSwitch)
-      // {
-      //   _Motor->Set(0);
-      //   // _Motor->SetPosition(units::turn_t(-0.25));
-      // }
-      // else if (HasMiddleHitLimitSwitch)
-      // {
-      //   // _Motor->SetPosition(units::turn_t(0));
-      // }
-      
-    // auto deltaAngle = (_Motor->GetPosition().GetValue().convert<units::angle::degree>() + CurrPose.Rotation().Degrees()) - TurretAngle;
-    // frc::SmartDashboard::PutNumber("deltaAngle", deltaAngle.value());
-
-
-  // if (abs(deltaAngle.value()) > 1)
-  // {
-    this->elevate_mmReq.WithPosition(withPigeon ).WithSlot(0);
-    _Motor->SetControl(elevate_mmReq);
-  // }
-  // else
-  // {
-  //   _Motor->Set(0);
-  // }
 #endif
 }
 

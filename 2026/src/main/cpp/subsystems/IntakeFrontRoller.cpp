@@ -29,7 +29,7 @@ frc2::CommandPtr IntakeFrontRoller::Out()
 {
   return frc2::FunctionalCommand(
       [this] {},
-      [this] {RollerOut(); setSpeed(.1);},
+      [this] {RollerOut(); setSpeed(.5);},
       [this] (bool interrupted) {},
       [this] {return true;},
       {this}

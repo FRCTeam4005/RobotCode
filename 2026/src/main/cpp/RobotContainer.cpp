@@ -43,7 +43,7 @@ void RobotContainer::ConfigureBindings()
     Drivetrain(Driver);
     drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
     
-    TurretTracking(Driver.RightTrigger());
+    // TurretTracking(Driver.RightTrigger());
     ShootBall(Operator.B());
     IntakeBall(Operator.X());
     ReverseConveyor(Operator.RightTrigger());
@@ -111,6 +111,7 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
             frc2::cmd::Sequence
             (
                 ShooterWheels_Sys->Spin(),
+                ShooterKicker_Sys->Feed(),
                 IntakeFrontRoller_Sys->Out(),
                 IntakeConveyor_Sys->In()
             ))
