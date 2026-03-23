@@ -1,6 +1,7 @@
 #include "subsystems/Shooter/Wheels.h"
 
-ShooterWheels::ShooterWheels()
+ShooterWheels::ShooterWheels(std::function<frc::Pose2d()> getBotPose):
+_getPose{getBotPose}
 {
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kRightShooterID);
@@ -21,8 +22,12 @@ ShooterWheels::ShooterWheels()
 
 void ShooterWheels::Periodic()
 {
-  // auto distance = Turret_Sys->GetDistanceMeters();
-  ShootSpeed_ = units::turns_per_second_t(5.31 * 5 + 37.95);
+
+  auto CurrPose = _getPose();
+  auto TargetLocation = getTargetTranlation(CurrPose);
+  auto TargetCoords = getTargetDistance(TargetLocation,CurrPose);
+
+  ShootSpeed_ = units::turns_per_second_t(5.6 * TargetCoords.value() + 37.95);
   // ShootSpeed_ = units::turns_per_second_t(5.31 * distance + 37.95);
 }
 

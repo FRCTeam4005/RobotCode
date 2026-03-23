@@ -154,7 +154,7 @@ private:
         config.Slot0.kS = 0.10063; // Add 0.25 V output to overcome static friction
         config.Slot0.kV = 1.1036; // A velocity target of 1 rps results in 0.12 V output
         config.Slot0.kA = 0.13873; // An acceleration of 1 rps/s requires 0.01 V output
-        config.Slot0.kP = 15; // A position error of 0.2 rotations results in 12 V output
+        config.Slot0.kP = 200; // A position error of 0.2 rotations results in 12 V output
         config.Slot0.kI = 0.0; // No output for integrated error
         config.Slot0.kD = 0; // A velocity error of 1 rps results in 0.5 V output
     }

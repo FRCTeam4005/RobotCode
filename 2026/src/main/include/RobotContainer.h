@@ -50,6 +50,7 @@ private:
 
     frc2::CommandXboxController Driver{0};
     frc2::CommandXboxController Operator{1};
+    frc2::CommandXboxController Grammer{2};
     
     std::string AutonomousRoutine;
 

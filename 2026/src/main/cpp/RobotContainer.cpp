@@ -20,7 +20,7 @@ RobotContainer::RobotContainer()
     Turret_Sys = std::make_unique<Turret>([this](){return Localization_Sys->getPose();}, [this](){return drivetrain.GetPigeon2().GetYaw().GetValue();});
     ShooterHood_Sys = std::make_unique<ShooterHood>();
     ShooterKicker_Sys = std::make_unique<ShooterKicker>();
-    ShooterWheels_Sys = std::make_unique<ShooterWheels>();
+    ShooterWheels_Sys = std::make_unique<ShooterWheels>([this](){return Localization_Sys->getPose();});
     IntakeConveyor_Sys = std::make_unique<IntakeConveyor>();
     IntakeFrontRoller_Sys = std::make_unique<IntakeFrontRoller>();
     Localization_Sys = std::make_unique<Localization>(
@@ -35,18 +35,24 @@ RobotContainer::RobotContainer()
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser("New Auto");
     frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
     ConfigureBindings();
+    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
 void RobotContainer::ConfigureBindings()
 {
-    // i am doing this like this because it tell me what the button does (generically) and what the button is 
-    Drivetrain(Driver);
-    drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+    // // i am doing this like this because it tell me what the button does (generically) and what the button is 
+    // Drivetrain(Driver);
     
-    // TurretTracking(Driver.RightTrigger());
-    ShootBall(Operator.B());
-    IntakeBall(Operator.X());
-    ReverseConveyor(Operator.RightTrigger());
+    // // TurretTracking(Driver.RightTrigger());
+    // ShootBall(Operator.B());
+    // IntakeBall(Operator.X());
+    // ReverseConveyor(Operator.RightTrigger());
+
+
+    Drivetrain(Grammer);
+    ShootBall(Grammer.RightTrigger());
+    IntakeBall(Grammer.LeftTrigger());
+    ReverseConveyor(Grammer.B());
 
 
     // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
@@ -59,12 +65,12 @@ void RobotContainer::ConfigureBindings()
     // * Joystick X = dynamic reverse
     // */
 
-    Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
-    Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
-    Driver.Y().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    Driver.A().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-    Driver.B().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kForward));
-    Driver.X().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kReverse));
+    // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
+    // Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
+    // Driver.Y().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kForward));
+    // Driver.A().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    // Driver.B().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kForward));
+    // Driver.X().WhileTrue(Turret_Sys->SysIdDynamic(frc2::sysid::Direction::kReverse));
 }
 
 
@@ -100,7 +106,7 @@ void RobotContainer::TurretTracking(frc2::Trigger trigger)
 void RobotContainer::IntakeBall(frc2::Trigger trigger)
 {
     trigger
-        .OnTrue(IntakeFrontRoller_Sys->Out().AlongWith(frc2::cmd::Print(" \n\n\n INTAKE BALL \n\n\n")))
+        .OnTrue(IntakeFrontRoller_Sys->Out())
         .OnFalse(IntakeFrontRoller_Sys->In());
 }
 
