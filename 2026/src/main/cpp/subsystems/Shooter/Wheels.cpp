@@ -5,16 +5,24 @@ _getPose{getBotPose}
 {
   LeftMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kLeftShooterID);
   RightMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kRightShooterID);
+  
+  
+  ctre::phoenix6::configs::TalonFXConfiguration LeftMotorcfg{};
+  ctre::phoenix6::configs::TalonFXConfiguration RightMotorcfg{};
+
   LeftMotor->SetNeutralMode(0);
   RightMotor->SetNeutralMode(0);
 
-  pid.kV = ShooterConstants::kShooterFF;
-  pid.kP = ShooterConstants::kShooterP;
-  pid.kI = ShooterConstants::kShooterI;
-  pid.kD = ShooterConstants::kShooterD;
-  LeftMotor->GetConfigurator().Apply(pid);
-  RightMotor->GetConfigurator().Apply(pid);
+  setupControllerGains(LeftMotorcfg);
+  setupControllerGains(RightMotorcfg);
+  
+  RightMotorcfg.MotorOutput.Inverted = false;
+  LeftMotorcfg.MotorOutput.Inverted = true;
 
+  ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
+  status = LeftMotor->GetConfigurator().Apply(LeftMotorcfg);
+  status = RightMotor->GetConfigurator().Apply(RightMotorcfg);
+    
   SetName("ShooterWheels");
   
   //SetDefaultCommand(frc2::cmd::Run([this] {setSpeed(0_tps);}, {this}));
@@ -34,7 +42,7 @@ void ShooterWheels::Periodic()
 void ShooterWheels::setSpeed(units::turns_per_second_t TPS) 
 {
     ctre::phoenix6::controls::VelocityVoltage m_velocity{0_tps};
-    LeftMotor->SetControl(m_velocity.WithVelocity(-TPS));
+    LeftMotor->SetControl(m_velocity.WithVelocity(TPS));
     RightMotor->SetControl(m_velocity.WithVelocity(TPS));
 }
 

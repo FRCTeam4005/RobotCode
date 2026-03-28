@@ -42,7 +42,8 @@ private:
     std::vector<std::string> AvaliablePathPlannerAutos =
     {
         "Crazy Auto",
-        "Depot Left"
+        "Depot Left",
+        "Test"
     };
 
     auto SetRobotAutoRoutine(std::string AutomousRoutineName) -> void {m_container.SetAutonomousRoutine(AutomousRoutineName);};

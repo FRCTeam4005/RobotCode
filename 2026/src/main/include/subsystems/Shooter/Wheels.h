@@ -10,6 +10,8 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include "subsystems/Shooter/Wheels.h"
 #include <functional>
+#include <frc2/command/sysid/SysIdRoutine.h>
+#include "ctre/phoenix6/SignalLogger.hpp"
 
 class ShooterWheels : public frc2::SubsystemBase 
 {
@@ -99,4 +101,53 @@ units::meter_t getTargetDistance(frc::Translation2d TargetPose, frc::Pose2d Robo
 
   return units::meter_t{std::sqrt(DeltaPose.Y().value() * DeltaPose.Y().value() + DeltaPose.X().value() * DeltaPose.X().value())};
 }
+
+
+
+
+public:
+  void setupControllerGains(ctre::phoenix6::configs::TalonFXConfiguration& config)
+  {
+    config.Slot0.kS = 0.16137; // Add 0.25 V output to overcome static friction
+    config.Slot0.kV = 0.092206; // A velocity target of 1 rps results in 0.12 V output
+    config.Slot0.kA = 0.0081774; // An acceleration of 1 rps/s requires 0.01 V output
+    config.Slot0.kP = 0.069557; // A position error of 0.2 rotations results in 12 V output
+    config.Slot0.kI = 0.0; // No output for integrated error
+    config.Slot0.kD = 0; // A velocity error of 1 rps results in 0.5 V output
+  }
+
+
+public: //SYSID STUFF
+
+    frc2::sysid::SysIdRoutine characterization{
+        frc2::sysid::Config{
+            /* This is in radians per second², but SysId only supports "volts per second" */
+            units::constants::detail::PI_VAL / 6 * (1_V / 1_s),
+            /* This is in radians per second, but SysId only supports "volts" */
+            units::constants::detail::PI_VAL * 1_V,
+            std::nullopt, // Use default timeout (10 s)
+            // Log state with SignalLogger class
+            [](frc::sysid::State state)
+            {
+                SignalLogger::WriteString("SysIdRotation_State", frc::sysid::SysIdRoutineLog::StateEnumToString(state));
+            }
+        },
+        frc2::sysid::Mechanism{
+            [this](units::voltage::volt_t output)
+            {
+                /* output is actually radians per second, but SysId only supports "volts" */
+                LeftMotor->SetVoltage(output);
+                RightMotor->SetVoltage(output);
+                /* also log the requested output for SysId */
+                SignalLogger::WriteValue("Rotational_Rate", output);
+            },
+            {},
+            this
+        }
+    };
+
+
+    frc2::sysid::SysIdRoutine *m_sysIdRoutineToApply = &characterization;
+    frc2::CommandPtr SysIdQuasistatic(frc2::sysid::Direction direction){return m_sysIdRoutineToApply->Quasistatic(direction);}
+    frc2::CommandPtr SysIdDynamic(frc2::sysid::Direction direction){return m_sysIdRoutineToApply->Dynamic(direction);}
 };
