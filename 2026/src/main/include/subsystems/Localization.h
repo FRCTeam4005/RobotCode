@@ -40,6 +40,8 @@ public:
 
     bool isValid (){return _hasSeenAprilTag;}
 
+    void tryResetPose(){_SeedPoseFromMegaTag1();};
+
 private:
     void Periodic() override
     {
@@ -107,7 +109,7 @@ private:
     void _TrySeedPoseFromVision()
     {
         auto estimate = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(_limelightName);
-        if (estimate.tagCount == 0 || estimate.avgTagArea < 0.25)
+        if (estimate.tagCount == 0 || estimate.avgTagArea < 0.15)
             return;
 
         _SeedPoseFromMegaTag1();

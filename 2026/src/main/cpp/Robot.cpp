@@ -16,7 +16,7 @@ void Robot::RobotPeriodic() {
     frc2::CommandScheduler::GetInstance().Run();
     
 
-    m_chooser.SetDefaultOption(AvaliablePathPlannerAutos[3],AvaliablePathPlannerAutos[3]);
+    m_chooser.SetDefaultOption(AvaliablePathPlannerAutos[0],AvaliablePathPlannerAutos[0]);
     for(auto Path : AvaliablePathPlannerAutos)
     {
         m_chooser.AddOption(Path, Path);

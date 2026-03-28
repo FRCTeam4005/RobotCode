@@ -55,6 +55,12 @@ void RobotContainer::ConfigureBindings()
     ReverseConveyor(Grammer.B());
 
 
+
+    
+    // frc2::RobotModeTriggers::Disabled()
+    //     .WhileTrue(loca);
+
+
     // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
     // Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
     // Driver.Y().WhileTrue(Turret_Sys->SysIdQuasistatic(frc2::sysid::Direction::kForward));
