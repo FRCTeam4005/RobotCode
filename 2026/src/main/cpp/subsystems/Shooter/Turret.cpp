@@ -5,11 +5,13 @@
 #include <ctre/phoenix6/Pigeon2.hpp>
 
 
-Turret::Turret(std::function<frc::Pose2d()> getBotPose, std::function<units::angle::degree_t()> getIMU)
+Turret::Turret(std::function<frc::Pose2d()> getBotPose, std::function<units::angle::degree_t()> getIMU, std::function<bool()> isPoseValid)
 : _getBotPose{getBotPose},
-getIMUAngle{getIMU}
+getIMUAngle{getIMU},
+_isPoseValid{isPoseValid}
 {
-    _Motor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kTurretMotorID);
+ _Motor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kTurretMotorID);
+
 
     ctre::phoenix6::configs::TalonFXConfiguration turret_cfg{};
 
@@ -17,7 +19,7 @@ getIMUAngle{getIMU}
     turret_cfg.Feedback.SensorToMechanismRatio = 10;
     turret_cfg.CurrentLimits.StatorCurrentLimitEnable = false;
     turret_cfg.MotorOutput.Inverted = true;
-    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
+    turret_cfg.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
 
     setupLimitSwitches(turret_cfg);
 
@@ -46,16 +48,20 @@ void Turret::Periodic ()
   frc::SmartDashboard::PutBoolean("leftmagswitchvals" , HasLeftHitLimitSwitch );
   frc::SmartDashboard::PutBoolean("middlemagswitchvals" , HasMiddleHitLimitSwitch );
   frc::SmartDashboard::PutBoolean("rightmagswitchvals" , HasRightHitLimitSwitch );
-  
-  auto angle = frc::Rotation2d{getIMUAngle().convert<units::angle::degree>()};
 
+  if(!_isPoseValid())
+  {
+    _Motor->Set(0);
+    return;
+  }
+  
+  auto angle = frc::Rotation2d{units::degree_t{std::fmod(getIMUAngle().value(),180)}};
+  
   auto CurrPose = _getBotPose();
   auto TargetCoords = getTargetTranlation(CurrPose);
-  // auto TurretAngle = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
-  // auto TurretAngle = CalculateTheta(TargetCoords, CurrPose) - CurrPose.Rotation().Degrees();
-  auto withPigeon = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
-
-  this->elevate_mmReq.WithPosition(withPigeon ).WithSlot(0);
+  auto AngleSetpoint = CalculateTheta(TargetCoords,CurrPose) - CurrPose.Rotation().Degrees();
+  // auto AngleSetpoint = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
+  this->elevate_mmReq.WithPosition(AngleSetpoint).WithSlot(0);
   _Motor->SetControl(elevate_mmReq);
 
 #endif

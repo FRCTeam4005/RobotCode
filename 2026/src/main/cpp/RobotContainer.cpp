@@ -17,7 +17,7 @@
 
 RobotContainer::RobotContainer()
 {
-    Turret_Sys = std::make_unique<Turret>([this](){return Localization_Sys->getPose();}, [this](){return drivetrain.GetPigeon2().GetYaw().GetValue();});
+    Turret_Sys = std::make_unique<Turret>([this](){return Localization_Sys->getPose();}, [this](){return drivetrain.GetPigeon2().GetYaw().GetValue();}, [this](){return Localization_Sys->isValid();});
     ShooterHood_Sys = std::make_unique<ShooterHood>();
     ShooterKicker_Sys = std::make_unique<ShooterKicker>();
     ShooterWheels_Sys = std::make_unique<ShooterWheels>([this](){return Localization_Sys->getPose();});
@@ -54,16 +54,6 @@ void RobotContainer::ConfigureBindings()
     IntakeBall(Grammer.LeftTrigger());
     ReverseConveyor(Grammer.B());
 
-
-    // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
-    // Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));
-
-    // /*
-    // * Joystick Y = quasistatic forward
-    // * Joystick A = quasistatic reverse
-    // * Joystick B = dynamic forward
-    // * Joystick X = dynamic reverse
-    // */
 
     // Driver.LeftBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Start));
     // Driver.RightBumper().OnTrue(frc2::cmd::RunOnce(SignalLogger::Stop));

@@ -38,6 +38,8 @@ public:
 
     frc::Pose2d getPose() { return _getPose(); }
 
+    bool isValid (){return _hasSeenAprilTag;}
+
 private:
     void Periodic() override
     {

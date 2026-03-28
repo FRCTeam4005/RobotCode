@@ -44,7 +44,7 @@ class Turret : public frc2::SubsystemBase
 {
  public:
     // Turret();
-    Turret(std::function<frc::Pose2d()> getBotPose, std::function<units::angle::degree_t()> getIMU);
+    Turret(std::function<frc::Pose2d()> getBotPose, std::function<units::angle::degree_t()> getIMU,  std::function<bool()> isPoseValid);
     auto Move(units::turn_t goal) -> frc2::CommandPtr;
     //auto ShootDrivers() -> frc2::CommandPtr;
     auto getTurretPosition() -> units::angle::turn_t;
@@ -99,6 +99,7 @@ private:
     
     std::function<frc::Pose2d()> getRobotBodyPose;
     std::function<frc::Pose2d()> _getBotPose;
+    std::function<bool()> _isPoseValid;
     
     std::function<void(frc::Pose2d, units::time::second_t)> setRobotBodyVisionMeasurement;
     void Periodic () override;
