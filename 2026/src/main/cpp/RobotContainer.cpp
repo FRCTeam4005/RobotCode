@@ -128,8 +128,7 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
 void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
 {
     trigger
-        .OnTrue(IntakeConveyor_Sys->Out().AlongWith(IntakeFrontRoller_Sys->Unstick()))
-        .OnFalse(IntakeConveyor_Sys->Stop());
+        .WhileTrue(IntakeConveyor_Sys->Out().AlongWith(IntakeFrontRoller_Sys->Unstick()));
 }
 
 void RobotContainer::AutoNamedCommands()
