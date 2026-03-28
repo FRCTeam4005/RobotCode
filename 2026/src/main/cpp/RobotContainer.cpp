@@ -115,9 +115,9 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
             frc2::cmd::Parallel
             (
                 ShooterWheels_Sys->Stop(),
-                IntakeConveyor_Sys->Stop(),
                 ShooterKicker_Sys->Stop(),
-                IntakeFrontRoller_Sys->In()
+                IntakeFrontRoller_Sys->In(),
+                IntakeConveyor_Sys->Stop()
             ));
 }
 
@@ -126,5 +126,29 @@ void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
     trigger
         .OnTrue(IntakeConveyor_Sys->Out())
         .OnFalse(IntakeConveyor_Sys->Stop());
+}
+
+void RobotContainer::AutoNamedCommands()
+{
+    using namespace pathplanner;
+    auto shootBall = ShooterWheels_Sys->Spin()
+                    .AndThen(ShooterKicker_Sys->Feed())
+                    .AndThen(IntakeFrontRoller_Sys->Out())
+                    .AndThen(IntakeConveyor_Sys->In());
+
+    auto stopShoot = ShooterWheels_Sys->Stop()
+                    .AlongWith(ShooterKicker_Sys->Stop())
+                    .AndThen(IntakeFrontRoller_Sys->In())
+                    .AndThen(IntakeConveyor_Sys->Stop());
+    
+    auto intakeBall = IntakeFrontRoller_Sys->Out();
+    auto noIntake = IntakeFrontRoller_Sys->In();
+
+    
+    NamedCommands::registerCommand("Shoot Ball", std::move(shootBall));
+    NamedCommands::registerCommand("Stop Shoot", std::move(stopShoot));
+    NamedCommands::registerCommand("Intake Ball", std::move(intakeBall));
+    NamedCommands::registerCommand("Intake Up", std::move(noIntake));
+
 }
 

@@ -74,6 +74,7 @@ private:
     void ConfigureBindings();
     void OperatorControls(const frc2::CommandXboxController& Controller);
     void DriverControls(const frc2::CommandXboxController& Controller);
+    void AutoNamedCommands();
     
     
     void Drivetrain(const frc2::CommandXboxController& Controller);
