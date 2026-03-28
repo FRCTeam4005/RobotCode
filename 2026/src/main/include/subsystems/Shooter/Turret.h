@@ -61,7 +61,12 @@ private:
     std::unique_ptr<ctre::phoenix6::hardware::TalonFX> _Motor;
     AM_CAN_Mag_Switch RightMagSwtich{CANConstants::RightMagSwtich};
     AM_CAN_Mag_Switch MiddleMagSwitch{CANConstants::MiddleMagSwitch};
-    AM_CAN_Mag_Switch LeftMagSwitch{CANConstants::LeftMagSwitch};    
+    AM_CAN_Mag_Switch LeftMagSwitch{CANConstants::LeftMagSwitch};   
+
+    std::function<frc::Pose2d()> _getBotPose;
+    std::function<units::angle::degree_t()> getIMUAngle;
+    std::function<bool()> _isPoseValid;
+    // std::function<frc::Pose2d()> getRobotBodyPose;
 
 private:
 
@@ -97,9 +102,7 @@ private:
     const frc::Translation2d LeftPassRed = frc::Translation2d(15.5_m, 1.5_m);
     const frc::Translation2d RightPassRed = frc::Translation2d(15.5_m, 7_m);
     
-    std::function<frc::Pose2d()> getRobotBodyPose;
-    std::function<frc::Pose2d()> _getBotPose;
-    std::function<bool()> _isPoseValid;
+
     
     std::function<void(frc::Pose2d, units::time::second_t)> setRobotBodyVisionMeasurement;
     void Periodic () override;
@@ -110,7 +113,6 @@ private:
     auto SetTurretCommand(units::turn_t goal) -> void;
     auto GetPosition() -> units::turn_t;
     auto getTargetTranlation(frc::Pose2d RobotPose) -> frc::Translation2d;
-    std::function<units::angle::degree_t()> getIMUAngle;
 
     
 
@@ -155,7 +157,7 @@ private:
         config.Slot0.kS = 0.10063; // Add 0.25 V output to overcome static friction
         config.Slot0.kV = 1.1036; // A velocity target of 1 rps results in 0.12 V output
         config.Slot0.kA = 0.13873; // An acceleration of 1 rps/s requires 0.01 V output
-        config.Slot0.kP = 200; // A position error of 0.2 rotations results in 12 V output
+        config.Slot0.kP = 120; // A position error of 0.2 rotations results in 12 V output
         config.Slot0.kI = 0.0; // No output for integrated error
         config.Slot0.kD = 0; // A velocity error of 1 rps results in 0.5 V output
     }
@@ -164,9 +166,9 @@ private:
     {
         // set Motion Magic settings
         auto& motionMagicConfigs = config.MotionMagic;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 64_tps; // Target cruise velocity of 80 rps
-        motionMagicConfigs.MotionMagicAcceleration = 128_tr_per_s_sq; // Target acceleration of 160 rps/s (0.5 seconds)
-        motionMagicConfigs.MotionMagicJerk = 640_tr_per_s_cu; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        motionMagicConfigs.MotionMagicCruiseVelocity = 8_tps; // Target cruise velocity of 80 rps        32
+        motionMagicConfigs.MotionMagicAcceleration = 64_tr_per_s_sq; // Target acceleration of 160 rps/s (0.5 seconds)  128 
+        motionMagicConfigs.MotionMagicJerk = 320_tr_per_s_cu; // Target jerk of 1600 rps/s/s (0.1 seconds)     640
     }
 
 

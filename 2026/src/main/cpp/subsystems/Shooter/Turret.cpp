@@ -55,11 +55,25 @@ void Turret::Periodic ()
     return;
   }
   
-  auto angle = frc::Rotation2d{units::degree_t{std::fmod(getIMUAngle().value(),180)}};
+  // auto angle = frc::Rotation2d{units::degree_t{std::fmod(getIMUAngle().value(),180)}};
   
   auto CurrPose = _getBotPose();
   auto TargetCoords = getTargetTranlation(CurrPose);
-  auto AngleSetpoint = CalculateTheta(TargetCoords,CurrPose) - CurrPose.Rotation().Degrees();
+  auto DesiredRobotAngle = CalculateTheta(TargetCoords,CurrPose);
+  auto AngleSetpoint = DesiredRobotAngle - CurrPose.Rotation().Degrees();
+
+  // frc::SmartDashboard::PutNumber("")
+  // frc::SmartDashboard::PutNumber("")
+  // frc::SmartDashboard::PutNumber("")
+  // frc::SmartDashboard::PutNumber("")
+
+
+  
+  if( AngleSetpoint > 180_deg )
+  {
+    AngleSetpoint = 0_deg;
+  }
+
   // auto AngleSetpoint = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
   this->elevate_mmReq.WithPosition(AngleSetpoint).WithSlot(0);
   _Motor->SetControl(elevate_mmReq);
