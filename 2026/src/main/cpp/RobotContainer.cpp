@@ -41,18 +41,19 @@ RobotContainer::RobotContainer()
 void RobotContainer::ConfigureBindings()
 {
     // // i am doing this like this because it tell me what the button does (generically) and what the button is 
-    // Drivetrain(Driver);
+    Drivetrain(Driver);
     
     // // TurretTracking(Driver.RightTrigger());
-    // ShootBall(Operator.B());
-    // IntakeBall(Operator.X());
-    // ReverseConveyor(Operator.RightTrigger());
+    ShootBall(Operator.B());
+    IntakeBall(Operator.X());
+    ReverseConveyor(Operator.RightTrigger());
 
 
-    Drivetrain(Grammer);
-    ShootBall(Grammer.RightTrigger());
-    IntakeBall(Grammer.LeftTrigger());
-    ReverseConveyor(Grammer.B());
+    // Drivetrain(Grammer);
+    // ShootBall(Grammer.RightTrigger());
+    // IntakeBall(Grammer.LeftTrigger());
+    // ReverseConveyor(Grammer.B());
+    AutoNamedCommands();
 
 
 
@@ -102,8 +103,7 @@ void RobotContainer::TurretTracking(frc2::Trigger trigger)
 void RobotContainer::IntakeBall(frc2::Trigger trigger)
 {
     trigger
-        .OnTrue(IntakeFrontRoller_Sys->Out())
-        .OnFalse(IntakeFrontRoller_Sys->In());
+        .ToggleOnTrue(IntakeFrontRoller_Sys->Out());
 }
 
 void RobotContainer::ShootBall(frc2::Trigger trigger)
@@ -114,7 +114,6 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
             (
                 ShooterWheels_Sys->Spin(),
                 ShooterKicker_Sys->Feed(),
-                IntakeFrontRoller_Sys->Out(),
                 IntakeConveyor_Sys->In()
             ))
         .OnFalse(
@@ -122,7 +121,6 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
             (
                 ShooterWheels_Sys->Stop(),
                 ShooterKicker_Sys->Stop(),
-                IntakeFrontRoller_Sys->In(),
                 IntakeConveyor_Sys->Stop()
             ));
 }
@@ -130,7 +128,7 @@ void RobotContainer::ShootBall(frc2::Trigger trigger)
 void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
 {
     trigger
-        .OnTrue(IntakeConveyor_Sys->Out())
+        .OnTrue(IntakeConveyor_Sys->Out().AlongWith(IntakeFrontRoller_Sys->Unstick()))
         .OnFalse(IntakeConveyor_Sys->Stop());
 }
 
@@ -144,17 +142,17 @@ void RobotContainer::AutoNamedCommands()
 
     auto stopShoot = ShooterWheels_Sys->Stop()
                     .AlongWith(ShooterKicker_Sys->Stop())
-                    .AndThen(IntakeFrontRoller_Sys->In())
-                    .AndThen(IntakeConveyor_Sys->Stop());
+                    //.AlongWith(IntakeFrontRoller_Sys->In())
+                    .AlongWith(IntakeConveyor_Sys->Stop());
     
     auto intakeBall = IntakeFrontRoller_Sys->Out();
-    auto noIntake = IntakeFrontRoller_Sys->In();
+    //auto noIntake = IntakeFrontRoller_Sys->In();
 
     
     NamedCommands::registerCommand("Shoot Ball", std::move(shootBall));
     NamedCommands::registerCommand("Stop Shoot", std::move(stopShoot));
     NamedCommands::registerCommand("Intake Ball", std::move(intakeBall));
-    NamedCommands::registerCommand("Intake Up", std::move(noIntake));
+    //NamedCommands::registerCommand("Intake Up", std::move(noIntake));
 
 }
 

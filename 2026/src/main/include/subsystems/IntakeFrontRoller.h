@@ -19,8 +19,9 @@ class IntakeFrontRoller : public frc2::SubsystemBase
   IntakeFrontRoller();
 
 
-  auto In() -> frc2::CommandPtr; //Pick up fuel, intake in
+  auto Unstick() -> frc2::CommandPtr; //Pick up fuel, intake in
   auto Out() -> frc2::CommandPtr; //Feed fuel to shooter
+  auto StopIntake() -> frc2::CommandPtr; //Feed fuel to shooter
   auto Momentary() -> frc2::CommandPtr; // its momentaary
   auto Stop() -> frc2::CommandPtr;
 

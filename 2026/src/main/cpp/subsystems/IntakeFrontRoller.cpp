@@ -29,24 +29,34 @@ frc2::CommandPtr IntakeFrontRoller::Out()
 {
   return frc2::FunctionalCommand(
       [this] {},
-      [this] {RollerOut(); setSpeed(.25);},
-      [this] (bool interrupted) {},
-      [this] {return true;},
+      [this] {RollerOut(); setSpeed(.5);},
+      [this] (bool interrupted) {RollerIn(); setSpeed(0);},
+      [this] {return false;},
       {this}
   ).ToPtr();
 }
 
-frc2::CommandPtr IntakeFrontRoller::In()
+frc2::CommandPtr IntakeFrontRoller::Unstick()
 {
   return frc2::FunctionalCommand(
     [this] {},
-    [this] {RollerIn(); setSpeed(0);},
+    [this] {setSpeed(-0.5);},
+    [this] (bool interrupted) {setSpeed(0);},
+    [this] {return false;},
+    {this}
+  ).ToPtr();
+}
+
+frc2::CommandPtr IntakeFrontRoller::StopIntake()
+{
+  return frc2::FunctionalCommand(
+    [this] {},
+    [this] {setSpeed(0);},
     [this] (bool interrupted) {},
     [this] {return true;},
     {this}
   ).ToPtr();
 }
-
 
 frc2::CommandPtr IntakeFrontRoller::Momentary()
 {
