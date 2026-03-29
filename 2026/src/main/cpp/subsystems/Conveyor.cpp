@@ -9,7 +9,7 @@ IntakeConveyor::IntakeConveyor()
 
 void IntakeConveyor::setSpeed(double speed)
 {
-  IntakeConveyorMotor->Set(speed/2);
+  IntakeConveyorMotor->Set(speed);
 }
 
 frc2::CommandPtr IntakeConveyor::Out()
@@ -17,7 +17,7 @@ frc2::CommandPtr IntakeConveyor::Out()
     return frc2::FunctionalCommand(
         [this] {},
         [this] {setSpeed(-.5);},
-        [this] (bool interrupted) {setSpeed(0);},
+        [this] (bool interrupted) {},
         [this] {return true;},
         {this}
     ).ToPtr();
@@ -28,8 +28,8 @@ frc2::CommandPtr IntakeConveyor::In()
   return frc2::FunctionalCommand(
     [this] {},
     [this] {setSpeed(1);},
-    [this] (bool interrupted) {setSpeed(0);},
-    [this] {return true;},
+    [this] (bool interrupted) {},
+    [this] {return false;},
     {this}
   ).ToPtr();
 }
