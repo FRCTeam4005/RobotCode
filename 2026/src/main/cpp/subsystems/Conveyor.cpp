@@ -29,7 +29,7 @@ frc2::CommandPtr IntakeConveyor::In()
     [this] {},
     [this] {setSpeed(1);},
     [this] (bool interrupted) {},
-    [this] {return false;},
+    [this] {return true;},
     {this}
   ).ToPtr();
 }

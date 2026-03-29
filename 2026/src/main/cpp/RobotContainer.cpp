@@ -136,7 +136,6 @@ void RobotContainer::AutoNamedCommands()
     using namespace pathplanner;
     auto shootBall = ShooterWheels_Sys->Spin()
                     .AndThen(ShooterKicker_Sys->Feed())
-                    .AndThen(IntakeFrontRoller_Sys->Out())
                     .AndThen(IntakeConveyor_Sys->In());
 
     auto stopShoot = ShooterWheels_Sys->Stop()

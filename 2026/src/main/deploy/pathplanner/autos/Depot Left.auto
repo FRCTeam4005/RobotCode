@@ -5,27 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Intake Ball"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left to Depot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Ball"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Ball"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left to Depot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot Ball"
+                }
+              }
+            ]
           }
         },
         {

@@ -35,7 +35,7 @@ void ShooterWheels::Periodic()
   auto TargetLocation = getTargetTranlation(CurrPose);
   auto TargetCoords = getTargetDistance(TargetLocation,CurrPose);
 
-  ShootSpeed_ = units::turns_per_second_t(5.6 * TargetCoords.value() + 37.95);
+  ShootSpeed_ = units::turns_per_second_t(5.9 * TargetCoords.value() + 39.83);
   // ShootSpeed_ = units::turns_per_second_t(5.31 * distance + 37.95);
 }
 
