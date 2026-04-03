@@ -12,6 +12,7 @@
 #include <functional>
 #include <frc2/command/sysid/SysIdRoutine.h>
 #include "ctre/phoenix6/SignalLogger.hpp"
+#include <frc/DriverStation.h>
 
 class ShooterWheels : public frc2::SubsystemBase 
 {
@@ -54,8 +55,10 @@ private:
 
   // frc::Translation2d DesiredAimCoords;
 
-  // if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
-  // {
+  if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
+  {
+    return SauronBlue;
+  }
   //   if (RobotPose.X() > RED_LINE_COORD)
   //   {
   //     DesiredAimCoords = SauronRed;
@@ -73,8 +76,10 @@ private:
   //     }
   //   }
   // }
-  // else
-  // {
+  else
+  {
+    return SauronBlue;
+  }
   //   if (RobotPose.X() < BLUE_LINE_COORD)
   //   {
   //     DesiredAimCoords = (SauronBlue);
@@ -93,7 +98,7 @@ private:
   // }
 
   // return DesiredAimCoords;
-  return SauronRed;
+ // return SauronRed;
 }
 
 units::meter_t getTargetDistance(frc::Translation2d TargetPose, frc::Pose2d RobotPose)
