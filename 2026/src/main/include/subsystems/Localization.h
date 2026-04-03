@@ -37,8 +37,8 @@ public:
         // Set IMU mode once at init — external IMU fused with MegaTag2
         LimelightHelpers::SetIMUMode(_limelightName, 4);
 
-        // auto& log = frc::DataLogManager::GetLog();
-        // poseLogger =  wpi::log::StructLogEntry<frc::Pose2d>(log,"/media/sdb1/logs/Pose");
+        auto& log = frc::DataLogManager::GetLog();
+        poseLogger =  wpi::log::StructLogEntry<frc::Pose2d>(log,"/media/sda1/logs/Pose");
 
     }
 
@@ -51,7 +51,7 @@ public:
 private:
     void Periodic() override
     {
-        // poseLogger.Append(_getPose());
+        poseLogger.Append(_getPose());
 
         // If disabled, try to seed pose from vision every loop
         if (frc::DriverStation::IsDisabled())
@@ -132,7 +132,7 @@ private:
     std::function<void(Pose2d)> _setOdometryPose;
     std::function<void(Pose2d, units::time::second_t)> _updateVisionMeasurement;
 
-    // wpi::log::StructLogEntry<frc::Pose2d> poseLogger;
+    wpi::log::StructLogEntry<frc::Pose2d> poseLogger;
 
     bool _hasSeenAprilTag = false;
 };
