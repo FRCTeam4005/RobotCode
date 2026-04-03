@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.1475113636363634,
-        "y": 5.982988636363636
+        "y": 7.61146590909091
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9673077715268494,
-        "y": 6.0491008906772334
+        "x": 4.147511363636363,
+        "y": 7.61146590909091
       },
       "isLocked": false,
-      "linkedName": "Start Left"
+      "linkedName": "Left Wall"
     },
     {
       "anchor": {
-        "x": 0.7047954545454542,
-        "y": 5.982988636363636
+        "x": 7.548522727272726,
+        "y": 7.61146590909091
       },
       "prevControl": {
-        "x": 1.9055395741931769,
-        "y": 5.913603206044598
+        "x": 6.548522727272726,
+        "y": 7.61146590909091
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 135.72056554068172
+    "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

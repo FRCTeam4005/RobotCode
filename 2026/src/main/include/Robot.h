@@ -41,7 +41,7 @@ private:
 
     std::vector<std::string> AvaliablePathPlannerAutos =
     {
-        "Nothing",
+        "Match 2 Auto",
         "Depot Left"
     };
 

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9673077715268494,
-        "y": 6.0491008906772334
+        "x": 3.168630437524952,
+        "y": 6.425616899888252
       },
       "isLocked": false,
       "linkedName": "Start Left"
     },
     {
       "anchor": {
-        "x": 0.7047954545454542,
-        "y": 5.982988636363636
+        "x": 3.1475113636363634,
+        "y": 7.61146590909091
       },
       "prevControl": {
-        "x": 1.9055395741931769,
-        "y": 5.913603206044598
+        "x": 3.1784547611695433,
+        "y": 6.403337483151924
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Left Wall"
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": 135.72056554068172
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

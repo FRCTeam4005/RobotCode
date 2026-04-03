@@ -103,8 +103,10 @@ frc::Translation2d Turret::getTargetTranlation(frc::Pose2d RobotPose)
 
   // frc::Translation2d DesiredAimCoords;
 
-  // if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
-  // {
+  if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
+  {
+    return SauronRed;
+  }
   //   if (RobotPose.X() > RED_LINE_COORD)
   //   {
   //     DesiredAimCoords = SauronRed;
@@ -122,8 +124,10 @@ frc::Translation2d Turret::getTargetTranlation(frc::Pose2d RobotPose)
   //     }
   //   }
   // }
-  // else
-  // {
+  else
+  {
+    return SauronBlue;
+  }
   //   if (RobotPose.X() < BLUE_LINE_COORD)
   //   {
   //     DesiredAimCoords = (SauronBlue);
@@ -139,10 +143,9 @@ frc::Translation2d Turret::getTargetTranlation(frc::Pose2d RobotPose)
   //       DesiredAimCoords = (RightPassBlue);
   //     }
   //   }
-  // }
 
   // return DesiredAimCoords;
-  return SauronRed;
+  
 }
 
 #if 0
