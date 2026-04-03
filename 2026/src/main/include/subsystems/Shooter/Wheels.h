@@ -57,7 +57,7 @@ private:
 
   if(frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed)
   {
-    return SauronBlue;
+    return SauronRed;
   }
   //   if (RobotPose.X() > RED_LINE_COORD)
   //   {
