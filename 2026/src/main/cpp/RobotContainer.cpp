@@ -144,7 +144,7 @@ void RobotContainer::AutoNamedCommands()
                     //.AlongWith(IntakeFrontRoller_Sys->In())
                     .AlongWith(IntakeConveyor_Sys->Stop());
     
-    auto intakeBall = IntakeFrontRoller_Sys->Out();
+    auto intakeBall = IntakeFrontRoller_Sys->AutoOut();
     //auto noIntake = IntakeFrontRoller_Sys->In();
 
     

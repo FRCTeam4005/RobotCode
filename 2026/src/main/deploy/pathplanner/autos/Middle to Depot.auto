@@ -13,26 +13,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.0
+            "waitTime": 1.0
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot Ball"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.0
-                }
-              }
-            ]
+            "pathName": "Middle to Depot A"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Ball"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
           }
         },
         {
@@ -44,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Depot"
+            "pathName": "Middle to Depot B"
           }
         },
         {
