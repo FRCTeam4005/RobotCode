@@ -11,6 +11,8 @@
 #include <functional>
 #include <string>
 #include <wpi/print.h>
+#include <frc/DataLogManager.h>
+#include <wpi/DataLog.h>
 
 using namespace LimelightHelpers;
 using Pose2d = frc::Pose2d;
