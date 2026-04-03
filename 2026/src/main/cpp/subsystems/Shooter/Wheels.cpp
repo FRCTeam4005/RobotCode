@@ -64,6 +64,18 @@ frc2::CommandPtr ShooterWheels::Spin()
   ).ToPtr();
 }
 
+frc2::CommandPtr ShooterWheels::AutoSpin()
+{
+    return frc2::FunctionalCommand(
+    [this] {},
+    [this] {
+      setSpeed(units::turns_per_second_t{ShootSpeed_.value()*1.05});},
+    [this] (bool interrupted) {},
+    [this] {return (RightMotor->GetVelocity().GetValue().convert<units::turns_per_second>() >= ShootSpeed_.convert<units::turns_per_second>());},
+    {this}
+  ).ToPtr();
+}
+
 frc2::CommandPtr ShooterWheels::shootToDistance(std::function<void()> getDistance)
 {
     return frc2::FunctionalCommand(

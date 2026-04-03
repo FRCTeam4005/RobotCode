@@ -51,9 +51,9 @@ void Robot::AutonomousExit()
 }
 
 void Robot::TeleopInit() {
-    if (m_autonomousCommand) {
-        frc2::CommandScheduler::GetInstance().Cancel(std::move(m_autonomousCommand.value()));
-    }
+    // if (m_autonomousCommand) {
+    //     frc2::CommandScheduler::GetInstance().Cancel(std::move(m_autonomousCommand.value()));
+    // }
 }
 
 void Robot::TeleopPeriodic() {}

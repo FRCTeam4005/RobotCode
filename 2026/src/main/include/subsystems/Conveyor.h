@@ -10,6 +10,8 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/Phoenix.h>
+#include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 
 class IntakeConveyor : public frc2::SubsystemBase
 {
@@ -21,5 +23,7 @@ class IntakeConveyor : public frc2::SubsystemBase
 
 private:
   std::unique_ptr<ctre::phoenix6::hardware::TalonFX> IntakeConveyorMotor;
+  std::unique_ptr<ctre::phoenix::motorcontrol::can::TalonSRX> ConveyorBiasWheel;
+  //std::unique_ptr<ctre::phoenix6::hardware::TalonFX> ConveyorBiasWheel;
   void setSpeed(double speed);
 };

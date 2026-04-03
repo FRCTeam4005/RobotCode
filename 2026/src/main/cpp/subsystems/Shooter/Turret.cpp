@@ -40,14 +40,14 @@ _isPoseValid{isPoseValid}
 void Turret::Periodic ()
 {
 #if 1
-  auto HasLeftHitLimitSwitch =  LeftMagSwitch.GetData().magnetDetected;
-  auto HasRightHitLimitSwitch =  RightMagSwtich.GetData().magnetDetected;
-  auto HasMiddleHitLimitSwitch =  MiddleMagSwitch.GetData().magnetDetected;
+  // auto HasLeftHitLimitSwitch =  LeftMagSwitch.GetData().magnetDetected;
+  // auto HasRightHitLimitSwitch =  RightMagSwtich.GetData().magnetDetected;
+  // auto HasMiddleHitLimitSwitch =  MiddleMagSwitch.GetData().magnetDetected;
 
 
-  frc::SmartDashboard::PutBoolean("leftmagswitchvals" , HasLeftHitLimitSwitch );
-  frc::SmartDashboard::PutBoolean("middlemagswitchvals" , HasMiddleHitLimitSwitch );
-  frc::SmartDashboard::PutBoolean("rightmagswitchvals" , HasRightHitLimitSwitch );
+  // frc::SmartDashboard::PutBoolean("leftmagswitchvals" , HasLeftHitLimitSwitch );
+  // frc::SmartDashboard::PutBoolean("middlemagswitchvals" , HasMiddleHitLimitSwitch );
+  // frc::SmartDashboard::PutBoolean("rightmagswitchvals" , HasRightHitLimitSwitch );
 
   if(!_isPoseValid())
   {
@@ -69,14 +69,21 @@ void Turret::Periodic ()
 
 
   
-  if( AngleSetpoint > 180_deg )
+  if( AngleSetpoint > 90_deg || AngleSetpoint < -90_deg)
   {
     AngleSetpoint = 0_deg;
   }
 
   // auto AngleSetpoint = CalculateTheta(TargetCoords, CurrPose) - angle.Degrees();
+  if(TurretTrack_)
+  {
   this->elevate_mmReq.WithPosition(AngleSetpoint).WithSlot(0);
   _Motor->SetControl(elevate_mmReq);
+  }
+  else{
+    this->elevate_mmReq.WithPosition(0_deg).WithSlot(0);
+  _Motor->SetControl(elevate_mmReq);
+}
 
 #endif
 }

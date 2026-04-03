@@ -82,4 +82,6 @@ private:
     void IntakeBall(frc2::Trigger trigger);
     void ShootBall(frc2::Trigger trigger);
     void ReverseConveyor(frc2::Trigger trigger);
+    void ResetYAW(frc2::Trigger trigger);
+    // void Testing(frc2::Trigger trigger);
 };

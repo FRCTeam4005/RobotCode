@@ -55,6 +55,7 @@ class Turret : public frc2::SubsystemBase
     auto GetDistanceMeters() -> double;
     bool IsHoodUp();
     auto ToggleTracking() -> frc2::CommandPtr;
+    auto LockInPlace() -> frc2::CommandPtr;
 
 
 private:
@@ -74,7 +75,7 @@ private:
     ctre::phoenix6::controls::MotionMagicVoltage elevate_mmReq{0_tr};
 
     
-    bool TurretTrack_{false};
+    bool TurretTrack_{true};
 
     units::turn_t goal = 0_tr;
     

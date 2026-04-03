@@ -41,7 +41,7 @@ frc2::CommandPtr IntakeFrontRoller::Unstick()
   return frc2::FunctionalCommand(
     [this] {},
     [this] {RollerOut(); setSpeed(-0.5);},
-    [this] (bool interrupted) {RollerOut(); setSpeed(0);},
+    [this] (bool interrupted) {RollerOut(); setSpeed(0.5);},
     [this] {return false;},
     {this}
   ).ToPtr();

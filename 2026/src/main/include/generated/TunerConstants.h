@@ -15,6 +15,7 @@ namespace CANConstants {
     inline const int kIntakeMotorID{62};
     inline const int kKickerMotorID{56};
     inline const int kConveyorMotorID{55};
+    inline const int kConveyorBiasWheelID{16};
     inline const int kTurretMotorID{60};
 
     inline const int kRightShooterID{58};

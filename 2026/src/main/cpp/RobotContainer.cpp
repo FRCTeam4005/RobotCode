@@ -42,11 +42,12 @@ void RobotContainer::ConfigureBindings()
 {
     // // i am doing this like this because it tell me what the button does (generically) and what the button is 
     Drivetrain(Driver);
-    
-    // // TurretTracking(Driver.RightTrigger());
+    Driver.RightBumper().OnTrue(drivetrain.RunOnce([this] {drivetrain.SeedFieldCentric();}));
+    TurretTracking(Operator.Y());
     ShootBall(Operator.B());
     IntakeBall(Operator.X());
     ReverseConveyor(Operator.RightTrigger());
+    //Testing(Driver.RightTrigger());
 
 
     // Drivetrain(Grammer);
@@ -134,7 +135,7 @@ void RobotContainer::ReverseConveyor( frc2::Trigger trigger)
 void RobotContainer::AutoNamedCommands()
 {
     using namespace pathplanner;
-    auto shootBall = ShooterWheels_Sys->Spin()
+    auto shootBall = ShooterWheels_Sys->AutoSpin()
                     .AndThen(ShooterKicker_Sys->Feed())
                     .AndThen(IntakeConveyor_Sys->In());
 
@@ -153,4 +154,10 @@ void RobotContainer::AutoNamedCommands()
     //NamedCommands::registerCommand("Intake Up", std::move(noIntake));
 
 }
+
+// void RobotContainer::Testing(frc2::Trigger trigger)
+// {
+//     trigger
+//         .ToggleOnTrue(IntakeConveyor_Sys->In());
+// }
 

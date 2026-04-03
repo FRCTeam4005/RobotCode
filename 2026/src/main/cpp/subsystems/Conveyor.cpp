@@ -3,13 +3,18 @@
 IntakeConveyor::IntakeConveyor()
 {
   IntakeConveyorMotor = std::make_unique<ctre::phoenix6::hardware::TalonFX>(CANConstants::kConveyorMotorID);
+  ConveyorBiasWheel = std::make_unique<ctre::phoenix::motorcontrol::can::TalonSRX>(CANConstants::kConveyorBiasWheelID);
+
+
   IntakeConveyorMotor->Set(0);
+  ConveyorBiasWheel->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
   SetName("IntakeConveyor");
 }
 
 void IntakeConveyor::setSpeed(double speed)
 {
   IntakeConveyorMotor->Set(speed);
+  ConveyorBiasWheel->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -speed);
 }
 
 frc2::CommandPtr IntakeConveyor::Out()
@@ -17,8 +22,8 @@ frc2::CommandPtr IntakeConveyor::Out()
     return frc2::FunctionalCommand(
         [this] {},
         [this] {setSpeed(-.5);},
-        [this] (bool interrupted) {},
-        [this] {return true;},
+        [this] (bool interrupted) {setSpeed(0);},
+        [this] {return false;},
         {this}
     ).ToPtr();
 }

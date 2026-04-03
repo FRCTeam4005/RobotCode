@@ -19,6 +19,7 @@ class ShooterWheels : public frc2::SubsystemBase
   ShooterWheels(std::function<frc::Pose2d()> getBotPose);
   auto Toggle() -> frc2::CommandPtr;
   auto Spin() -> frc2::CommandPtr;
+  auto AutoSpin() -> frc2::CommandPtr;
   auto Stop() -> frc2::CommandPtr;
   auto shootToDistance(std::function<void()> getDistance) -> frc2::CommandPtr;
   
