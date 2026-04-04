@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4029444970042484,
-        "y": 5.929281834870088
+        "x": 2.1168295454545456,
+        "y": 4.797704545454547
       },
       "isLocked": false,
       "linkedName": "Middle Shoot Spot"
     },
     {
       "anchor": {
-        "x": 0.5604999999999998,
-        "y": 5.982988636363636
+        "x": 0.6532613636363636,
+        "y": 6.312806818181818
       },
       "prevControl": {
-        "x": 0.9226421837866903,
-        "y": 5.96082467678744
+        "x": 2.2405113636363634,
+        "y": 5.436727272727273
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -152.70042778860196
   },
   "reversed": false,
   "folder": null,
