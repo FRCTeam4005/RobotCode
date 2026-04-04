@@ -127,8 +127,8 @@ private:
     static constexpr units::scalar_t kSteerGearRatio = 21.428571428571427;
     static constexpr units::inch_t kWheelRadius = 2_in;
 
-    static constexpr bool kInvertLeftSide = true;
-    static constexpr bool kInvertRightSide = false;
+    static constexpr bool kInvertLeftSide = !true;
+    static constexpr bool kInvertRightSide = !false;
 
     static constexpr int kPigeonId = 45;
 
